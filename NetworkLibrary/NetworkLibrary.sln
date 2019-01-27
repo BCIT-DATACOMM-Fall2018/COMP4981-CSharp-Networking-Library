@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkLibrary", "NetworkLibrary.csproj", "{8DCD2172-BE62-4752-BC93-4370D2E0B1A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkLibraryTest", "NetworkLibraryTest\NetworkLibraryTest.csproj", "{9583D726-227C-4418-8CA9-56C6DA81FA51}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,5 +15,9 @@ Global
 		{8DCD2172-BE62-4752-BC93-4370D2E0B1A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DCD2172-BE62-4752-BC93-4370D2E0B1A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DCD2172-BE62-4752-BC93-4370D2E0B1A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9583D726-227C-4418-8CA9-56C6DA81FA51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9583D726-227C-4418-8CA9-56C6DA81FA51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9583D726-227C-4418-8CA9-56C6DA81FA51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9583D726-227C-4418-8CA9-56C6DA81FA51}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
