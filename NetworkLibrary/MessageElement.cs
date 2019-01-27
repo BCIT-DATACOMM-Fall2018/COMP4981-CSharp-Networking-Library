@@ -4,7 +4,7 @@ namespace NetworkLibrary
 {
 	public abstract class MessageElement
 	{
-		public int ID { get; private set; }
+		public int ID { get; protected set; }
 
 		public virtual int SIZE { get;}
 

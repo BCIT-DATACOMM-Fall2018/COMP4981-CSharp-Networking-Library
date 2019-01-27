@@ -5,7 +5,7 @@ using NetworkLibrary;
 namespace NetworkLibraryTest
 {
 	[TestFixture ()]
-	public class Test
+	public class BitStreamTest
 	{
 		[Test ()]
 		public void WriteLessThanByteTest ()
@@ -72,6 +72,32 @@ namespace NetworkLibraryTest
 			int retrievedData = bitstream.Read (0, bits);
 			int retrievedData2 = bitstream.Read (bits, bits2);
 			int retrievedData3 = bitstream.Read (bits + bits2, bits3);
+
+			Assert.AreEqual (testData, retrievedData);
+			Assert.AreEqual (testData2, retrievedData2);
+			Assert.AreEqual (testData3, retrievedData3);
+		}
+
+		[Test ()]
+		public void ReadNextTest ()
+		{
+			int testData = 1057;
+			int testData2 = 15;
+			int testData3 = 4;
+
+			int bits = 20;
+			int bits2 = 4;
+			int bits3 = 3;
+
+			BitStream bitstream = new BitStream ();
+
+			bitstream.Write (testData, 0, bits);
+			bitstream.Write (testData2, 0, bits2);
+			bitstream.Write (testData3, 0, bits3);
+
+			int retrievedData = bitstream.ReadNext (bits);
+			int retrievedData2 = bitstream.ReadNext (bits2);
+			int retrievedData3 = bitstream.ReadNext (bits3);
 
 			Assert.AreEqual (testData, retrievedData);
 			Assert.AreEqual (testData2, retrievedData2);

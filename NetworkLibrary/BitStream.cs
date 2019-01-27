@@ -61,8 +61,9 @@ namespace NetworkLibrary
 
 		public int ReadNext (int bits)
 		{
+			int result = Read (readIndex, bits);
 			readIndex += bits;
-			return Read (readIndex, bits);
+			return result;
 		}
 
 		private static int GetBits (int data, int offset, int bits)
