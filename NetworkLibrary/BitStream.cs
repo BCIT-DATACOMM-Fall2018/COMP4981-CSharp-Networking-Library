@@ -12,9 +12,9 @@ namespace NetworkLibrary
 		private int spaceInByte;
 		private int readIndex;
 
-		public BitStream ()
+		public BitStream (byte[] bytes)
 		{
-			buffer = new byte[20];
+			buffer = bytes;
 			spaceInByte = 8;
 		}
 

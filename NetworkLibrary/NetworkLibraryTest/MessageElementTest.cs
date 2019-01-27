@@ -10,8 +10,10 @@ namespace NetworkLibraryTest
 		[Test ()]
 		public void SerializeHealthElement ()
 		{
+			byte[] bytes = new byte[1024];
+
 			HealthElement element = new HealthElement (10, 18);
-			BitStream bitstream = new BitStream ();
+			BitStream bitstream = new BitStream (bytes);
 			element.WriteTo (bitstream);
 
 			HealthElement element2 = new HealthElement (0, 0);
