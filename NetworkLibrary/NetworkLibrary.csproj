@@ -38,6 +38,10 @@
     <Compile Include="TCPSocket.cs" />
     <Compile Include="ReliableUDPConnection.cs" />
     <Compile Include="BitStream.cs" />
+    <Compile Include="MessageElement.cs" />
+    <Compile Include="MessageFactory.cs" />
+    <Compile Include="IStateMessageBridge.cs" />
+    <Compile Include="HealthElement.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

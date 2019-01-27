@@ -10,6 +10,7 @@ namespace NetworkLibrary
 		private byte[] buffer;
 		private uint wordCount;
 		private int spaceInByte;
+		private int readIndex;
 
 		public BitStream ()
 		{
@@ -56,7 +57,12 @@ namespace NetworkLibrary
 				nextBits = Math.Min (8 - bitIndex, bitsRemaining);
 			}
 			return output;
+		}
 
+		public int ReadNext (int bits)
+		{
+			readIndex += bits;
+			return Read (readIndex, bits);
 		}
 
 		private static int GetBits (int data, int offset, int bits)
