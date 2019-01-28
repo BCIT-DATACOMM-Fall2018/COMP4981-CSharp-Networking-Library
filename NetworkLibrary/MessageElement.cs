@@ -4,43 +4,47 @@ namespace NetworkLibrary
 {
 	public abstract class MessageElement
 	{
-		public int ID { get; protected set; }
-
-		public virtual int SIZE { get;}
 
 		public MessageElement ()
 		{
 
 		}
 
-		public void WriteTo (BitStream bitStream){
-			Serialize(bitStream);
+		public abstract ElementIndicatorElement GetIndicator ();
+
+		public MessageElement (BitStream bitstream)
+		{
+			ReadFrom (bitstream);
 		}
 
-		protected abstract void Serialize(BitStream bitstream);
+		public void WriteTo (BitStream bitStream)
+		{
+			Serialize (bitStream);
+		}
 
-		public void ReadFrom (BitStream bitstream){
-			Deserialize(bitstream);
+		protected abstract void Serialize (BitStream bitstream);
+
+		public void ReadFrom (BitStream bitstream)
+		{
+			Deserialize (bitstream);
 			Validate ();
 		}
 
-		protected abstract void Deserialize(BitStream bitstream);
+		protected abstract void Deserialize (BitStream bitstream);
 
 		protected abstract void Validate ();
 
-		public abstract void UpdateState(IStateMessageBridge bridge);
+		public abstract void UpdateState (IStateMessageBridge bridge);
 
-
-		protected static int RequiredBits (int v)
+		public static int RequiredBits (int v)
 		{
-			v--;
-			v |= v >> 1;
-			v |= v >> 2;
-			v |= v >> 4;
-			v |= v >> 8;
-			v |= v >> 16;
-			v++;
-			return v;
+			int r = 0;
+
+			while ( (v >>= 1) != 0)
+			{
+				r++;
+			}
+			return r + 1;
 		}
 	}
 }

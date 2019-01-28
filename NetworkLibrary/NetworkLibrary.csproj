@@ -42,6 +42,10 @@
     <Compile Include="MessageFactory.cs" />
     <Compile Include="IStateMessageBridge.cs" />
     <Compile Include="HealthElement.cs" />
+    <Compile Include="PacketHeaderElement.cs" />
+    <Compile Include="ElementIndicatorElement.cs" />
+    <Compile Include="ElementId.cs" />
+    <Compile Include="UnpackedPacket.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

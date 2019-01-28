@@ -23,6 +23,16 @@ namespace NetworkLibraryTest
 			Assert.AreEqual (element.Health, element2.Health);
 
 		}
+
+		[Test ()]
+		public void RequiredBitsTest ()
+		{
+			int bitsNeeded = MessageElement.RequiredBits (25);
+
+			Assert.AreEqual (bitsNeeded, 5);
+
+		}
+	
 	}
 }
 

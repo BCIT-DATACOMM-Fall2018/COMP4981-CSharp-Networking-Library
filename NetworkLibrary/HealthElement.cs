@@ -4,21 +4,31 @@ namespace NetworkLibrary
 {
 	public class HealthElement : MessageElement
 	{
+		private static ElementIndicatorElement indicator = new ElementIndicatorElement (ElementId.HealthElement);
+
+		public override ElementIndicatorElement GetIndicator ()
+		{
+			return indicator;
+		}
+
 		private static int HEALTH_MAX = 20;
 		private static int ACTORID_MAX = 32;
-		private static int HEALTH_BITS = RequiredBits(HEALTH_MAX);
-		private static int ACTORID_BITS = RequiredBits(ACTORID_MAX);
+		private static int HEALTH_BITS = RequiredBits (HEALTH_MAX);
+		private static int ACTORID_BITS = RequiredBits (ACTORID_MAX);
 
-		public int ActorId { get; private set;}
+		public int ActorId { get; private set; }
 
-		public int Health { get; private set;}
+		public int Health { get; private set; }
 
 
 		public HealthElement (int actorId, int health)
 		{
-			ID = 1;
 			ActorId = actorId;
 			Health = health;
+		}
+
+		public HealthElement (BitStream bitstream) : base (bitstream)
+		{
 		}
 
 
@@ -35,8 +45,9 @@ namespace NetworkLibrary
 
 		}
 
-		public override void UpdateState(IStateMessageBridge bridge){
-			bridge.UpdateActorHealth(ActorId, Health);
+		public override void UpdateState (IStateMessageBridge bridge)
+		{
+			bridge.UpdateActorHealth (ActorId, Health);
 		}
 
 
@@ -46,6 +57,26 @@ namespace NetworkLibrary
 				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
 			}
 		}
+		public override bool Equals (object obj)
+		{
+			if (obj == null)
+				return false;
+			if (ReferenceEquals (this, obj))
+				return true;
+			if (obj.GetType () != typeof(HealthElement))
+				return false;
+			HealthElement other = (HealthElement)obj;
+			return ActorId == other.ActorId && Health == other.Health;
+		}
+		
+
+		public override int GetHashCode ()
+		{
+			unchecked {
+				return ActorId.GetHashCode () ^ Health.GetHashCode ();
+			}
+		}
+		
 	}
 }
 

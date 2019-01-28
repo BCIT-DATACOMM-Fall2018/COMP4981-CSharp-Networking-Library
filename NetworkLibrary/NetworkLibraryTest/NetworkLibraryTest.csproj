@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="BitStreamTest.cs" />
     <Compile Include="MessageElementTest.cs" />
+    <Compile Include="ReliableUDPConnectionTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
