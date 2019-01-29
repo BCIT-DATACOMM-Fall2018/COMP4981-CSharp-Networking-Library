@@ -4,6 +4,29 @@ using NetworkLibrary.MessageElements;
 
 namespace NetworkLibrary
 {
+	/// ----------------------------------------------
+	/// Class: 	ReliableUDPConnection - A class to keep track of state in a
+	/// 								reliable udp connection.
+	/// 
+	/// PROGRAM: NetworkLibrary
+	///
+	/// CONSTRUCTORS:	public ReliableUDPConnection ()
+	/// 
+	/// FUNCTIONS:	public Packet CreatePacket (List<UpdateElement> unreliableElements, List<UpdateElement> reliableElements)
+	///				public UnpackedPacket ProcessPacket (Packet packet)
+	/// 
+	/// DATE: 		January 28th, 2018
+	///
+	/// REVISIONS: 
+	///
+	/// DESIGNER: 	Cameron Roberts
+	///
+	/// PROGRAMMER: Cameron Roberts
+	///
+	/// NOTES:		This class does not send or recieve data. It is purely
+	/// 			for the purpose of keeping track of keeping track of
+	/// 			the connection state.
+	/// ----------------------------------------------
 	public class ReliableUDPConnection
 	{
 
@@ -29,6 +52,27 @@ namespace NetworkLibrary
 			messageFactory = new MessageFactory ();
 		}
 
+		/// ----------------------------------------------
+		/// FUNCTION:	CreatePacket
+		/// 
+		/// DATE:		January 28th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public Packet CreatePacket (List<UpdateElement> unreliableElements, List<UpdateElement> reliableElements)
+		/// 				List<UpdateElement> unreliableElements: A list of unreliable elements to add to the packet.
+		/// 				List<UpdateElement> reliableElements: A list of reliable elements to add to the message buffer.
+		/// 
+		/// RETURNS: 	A Packet object to be consumed to another ReliableUDPConnection
+		/// 
+		/// NOTES:		The reliable elements given to this function will be added to a message buffer
+		/// 			that will resend them after a certain amount of packet creations if they have 
+		/// 			not been acknowledged by an consumed packet.
+		/// ----------------------------------------------
 		public Packet CreatePacket (List<UpdateElement> unreliableElements, List<UpdateElement> reliableElements)
 		{
 			foreach (var element in reliableElements) {
@@ -64,13 +108,10 @@ namespace NetworkLibrary
 			PacketHeaderElement header = new PacketHeaderElement (seqNumber, ack, reliableCount);
 			header.WriteTo (bitStream);
 
-
-
 			// pack unreliable elements into packet
 			foreach (var element in unreliableElements) {
 				element.WriteTo (bitStream);
 			}
-
 
 			// pack reliable packets into header
 			foreach (var element in packetReliableElements) {
@@ -82,11 +123,28 @@ namespace NetworkLibrary
 			return packet;
 		}
 
+		/// ----------------------------------------------
+		/// FUNCTION:	ProcessPacket
+		/// 
+		/// DATE:		January 28th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public UnpackedPacket ProcessPacket (Packet packet)
+		/// 				Packet packet: The packet to consume
+		/// 
+		/// RETURNS: 	An unpacked packet containing unreliable and reliable UpdateElements
+		/// 
+		/// NOTES:		Consuming a packet will change the state of the connection.
+		/// ----------------------------------------------
 		public UnpackedPacket ProcessPacket (Packet packet)
 		{
 			BitStream bitStream = new BitStream (packet.Data);
 			PacketHeaderElement header = new PacketHeaderElement (bitStream);
-
 
 			// read packet header info
 			int seqNumber = header.SeqNumber;
@@ -97,11 +155,11 @@ namespace NetworkLibrary
 			// check that this unreliable information is new
 			if (seqNumber >= CurrentAck) {
 				// extract unreliable elements from packet
+
 				//TODO Add actual elements that need to be read from unreliable section
 				unreliableElements.Add (new HealthElement (bitStream));
 			}
 			
-
 			List<UpdateElement> reliableElements = new List<UpdateElement> ();
 			// reliable elements were not missed
 			if (CurrentAck + reliableCount - 1 == seqNumber) {

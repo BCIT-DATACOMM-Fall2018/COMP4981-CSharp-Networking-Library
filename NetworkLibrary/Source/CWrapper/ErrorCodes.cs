@@ -2,6 +2,21 @@
 
 namespace NetworkLibrary.CWrapper
 {
+	/// ----------------------------------------------
+	/// Enum: 	ErrorCodes - An enum to store Linux error codes
+	/// 
+	/// PROGRAM: NetworkLibrary
+	///
+	/// DATE: 		January 28th, 2018
+	///
+	/// REVISIONS: 
+	///
+	/// DESIGNER: 	Cameron Roberts
+	///
+	/// PROGRAMMER: Cameron Roberts
+	///
+	/// NOTES:		This enum exists to store relevant Linux error codes.
+	/// ----------------------------------------------
 	public enum ErrorCodes: int
 	{
 		EPERM = 1,

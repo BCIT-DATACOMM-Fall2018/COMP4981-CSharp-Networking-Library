@@ -3,10 +3,54 @@ using NetworkLibrary.CWrapper;
 
 namespace NetworkLibrary
 {
+	/// ----------------------------------------------
+	/// Class: 	TCPSocket - A class to send and recieve data through TCP
+	/// 
+	/// PROGRAM: NetworkLibrary
+	///
+	/// CONSTRUCTORS:	public TCPSocket ()
+	/// 				protected TCPSocket (Int32 socket)
+	/// 
+	/// FUNCTIONS:	public void Bind (ushort port = 0)
+	///				public void Connect (Destination destination)
+	/// 			public void Close ()
+	/// 			public void Send (Packet packet)
+	/// 			public Packet Receive ()
+	/// 			public TCPSocket Accept ()
+	/// 
+	/// DATE: 		January 28th, 2018
+	///
+	/// REVISIONS: 
+	///
+	/// DESIGNER: 	Cameron Roberts
+	///
+	/// PROGRAMMER: Cameron Roberts
+	///
+	/// NOTES:	A TCPSocket must have Bind or Connect called before it
+	/// 		can be used. A TCPSocket opened with Bind should not
+	/// 		be used to send data, only to accept incoming connections.
+	/// 		When done with a socket that socket should have its Close
+	/// 		method called.
+	/// ----------------------------------------------
 	public class TCPSocket
 	{
 		private Int32 socket;
 
+		/// ----------------------------------------------
+		/// CONSTRUCTOR: TCPSocket
+		/// 
+		/// DATE:		January 28th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public TCPSocket ()
+		/// 
+		/// NOTES: 	Creates a new TCP socket.
+		/// ----------------------------------------------
 		public TCPSocket ()
 		{
 			socket = Libsocket.createSocket ();
@@ -16,16 +60,68 @@ namespace NetworkLibrary
 			;
 		}
 
+		/// ----------------------------------------------
+		/// CONSTRUCTOR: TCPSocket
+		/// 
+		/// DATE:		January 28th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	protected TCPSocket (Int32 socket)
+		/// 
+		/// NOTES: 	Creates a new TCP socket from the given socket
+		/// 	   	pointer. Only intended to be used by the Accept
+		/// 	   	function
+		/// ----------------------------------------------
 		protected TCPSocket (Int32 socket)
 		{
 			this.socket = socket;
 		}
 
+		/// ----------------------------------------------
+		/// DESTRUCTOR: ~TCPSocket
+		/// 
+		/// DATE:		January 28th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	~TCPSocket ()
+		/// 
+		/// NOTES: 	Deallocates the memory used to store the
+		/// 		pointer in the underlying libsock library.
+		/// ----------------------------------------------
 		~TCPSocket ()
 		{
 			Libsocket.freeSocket (socket);
 		}
 
+		/// ----------------------------------------------
+		/// FUNCTION:	Bind
+		/// 
+		/// DATE:		January 28th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public void Bind (ushort port = 0)
+		/// 				ushort port 0: The port to bind to. 0 if unspecified.
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		Will bind the socket to the specified port or an ephemeral
+		/// 			port if no port is specified.
+		/// ----------------------------------------------
 		public void Bind (ushort port = 0)
 		{
 			if (0 == Libsocket.bindPort (socket, port)) {
@@ -42,6 +138,26 @@ namespace NetworkLibrary
 			}
 		}
 
+		/// ----------------------------------------------
+		/// FUNCTION:	Connect
+		/// 
+		/// DATE:		January 28th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public void Connect (Destination destination)
+		/// 				Destination destination: A Destination object containing the IP address
+		/// 										 and port to connect to.
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		The Destination objects IP address and port should
+		/// 			be in network byte order.
+		/// ----------------------------------------------
 		public void Connect (Destination destination)
 		{
 			if (0 == Libsocket.connectPort (socket, destination)) {
@@ -74,6 +190,23 @@ namespace NetworkLibrary
 			}
 		}
 
+		/// ----------------------------------------------
+		/// FUNCTION:	Close
+		/// 
+		/// DATE:		January 28th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public void Close ()
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		A port should be closed once it will no longer be used.
+		/// ----------------------------------------------
 		public void Close ()
 		{
 			if (0 == Libsocket.closeSocket (socket)) {
@@ -87,7 +220,25 @@ namespace NetworkLibrary
 		}
 
 
-
+		/// ----------------------------------------------
+		/// FUNCTION:	Send
+		/// 
+		/// DATE:		January 28th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public void Send (Packet packet)
+		/// 				Packet packet: The packet to send.
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		Sends the specified Packet objects data to the
+		/// 			connected socket.
+		/// ----------------------------------------------
 		public void Send (Packet packet)
 		{
 			if (0 == Libsocket.sendDataTCP (socket, ref packet.Data [0], packet.Length)) {
@@ -104,6 +255,23 @@ namespace NetworkLibrary
 			}
 		}
 
+		/// ----------------------------------------------
+		/// FUNCTION:	Receive
+		/// 
+		/// DATE:		January 28th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public Packet Receive ()
+		/// 
+		/// RETURNS: 	A Packet object containing the recieved data.
+		/// 
+		/// NOTES:		Recieves a packet from the connected socket.
+		/// ----------------------------------------------
 		public Packet Receive ()
 		{
 			Packet packet = new Packet ();
@@ -124,6 +292,23 @@ namespace NetworkLibrary
 			return packet;
 		}
 
+		/// ----------------------------------------------
+		/// FUNCTION:	Accept
+		/// 
+		/// DATE:		January 28th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public TCPSocket Accept ()
+		/// 
+		/// RETURNS: 	A TCPSocket object for the new connection.
+		/// 
+		/// NOTES:		Used to accept an incoming connection.
+		/// ----------------------------------------------
 		public TCPSocket Accept ()
 		{
 			Int32 acceptSocket = Libsocket.acceptClient (socket);

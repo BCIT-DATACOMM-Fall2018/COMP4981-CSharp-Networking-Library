@@ -3,11 +3,49 @@ using NetworkLibrary.CWrapper;
 
 namespace NetworkLibrary
 {
-
+	/// ----------------------------------------------
+	/// Class: 	UDPSocket - A class to send and recieve data through UDP
+	/// 
+	/// PROGRAM: NetworkLibrary
+	///
+	/// CONSTRUCTORS:	public UDPSocket ()
+	/// 
+	/// FUNCTIONS:	public void Bind (ushort port = 0)
+	/// 			public void Close ()
+	/// 			public void Send (Packet packet)
+	/// 			public Packet Receive ()
+	/// 
+	/// DATE: 		January 28th, 2018
+	///
+	/// REVISIONS: 
+	///
+	/// DESIGNER: 	Cameron Roberts
+	///
+	/// PROGRAMMER: Cameron Roberts
+	///
+	/// NOTES:	A UDP must have Bind called before it can be used to send 
+	/// 		or receive data. When done with a socket that socket 
+	/// 		should have its Close method called.
+	/// ----------------------------------------------
 	public class UDPSocket
 	{
 		private Int32 socket;
 
+		/// ----------------------------------------------
+		/// CONSTRUCTOR: UDPSocket
+		/// 
+		/// DATE:		January 28th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public TCPSocket ()
+		/// 
+		/// NOTES: 	Creates a new UDP socket.
+		/// ----------------------------------------------
 		public UDPSocket ()
 		{
 			socket = Libsocket.createSocket ();
@@ -18,11 +56,46 @@ namespace NetworkLibrary
 
 		}
 
+		/// ----------------------------------------------
+		/// DESTRUCTOR: ~UDPSocket
+		/// 
+		/// DATE:		January 28th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	~UDPSocket ()
+		/// 
+		/// NOTES: 	Deallocates the memory used to store the
+		/// 		pointer in the underlying libsock library.
+		/// ----------------------------------------------
 		~UDPSocket ()
 		{
 			Libsocket.freeSocket (socket);
 		}
 
+		/// ----------------------------------------------
+		/// FUNCTION:	Bind
+		/// 
+		/// DATE:		January 28th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public void Bind (ushort port = 0)
+		/// 				ushort port 0: The port to bind to. 0 if unspecified.
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		Will bind the socket to the specified port or an ephemeral
+		/// 			port if no port is specified.
+		/// ----------------------------------------------
 		public void Bind (ushort port = 0)
 		{
 			if (0 == Libsocket.bindPort (socket, port)) {
@@ -39,6 +112,24 @@ namespace NetworkLibrary
 			}
 		}
 
+
+		/// ----------------------------------------------
+		/// FUNCTION:	Close
+		/// 
+		/// DATE:		January 28th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public void Close ()
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		A port should be closed once it will no longer be used.
+		/// ----------------------------------------------
 		public void Close ()
 		{
 			if (0 == Libsocket.closeSocket (socket)) {
@@ -51,7 +142,29 @@ namespace NetworkLibrary
 			}
 		}
 
-
+		/// ----------------------------------------------
+		/// FUNCTION:	Send
+		/// 
+		/// DATE:		January 28th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public void Send (Packet packet, Destination destination)
+		/// 				Packet packet: The packet to send.
+		/// 				Destination destination: A destination object containing the IP address
+		/// 										 and port to send the data to.
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		Sends the specified Packet objects data to the
+		/// 			specified Destinations IP address and port. The
+		/// 			Destination objects IP address and port should
+		/// 			be in network byte order.
+		/// ----------------------------------------------
 		public void Send (Packet packet, Destination destination)
 		{
 			if (0 == Libsocket.sendData (socket, destination, ref packet.Data [0], packet.Length)) {
@@ -68,6 +181,23 @@ namespace NetworkLibrary
 			}
 		}
 
+		/// ----------------------------------------------
+		/// FUNCTION:	Receive
+		/// 
+		/// DATE:		January 28th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public Packet Receive ()
+		/// 
+		/// RETURNS: 	A Packet object containing the recieved data.
+		/// 
+		/// NOTES:		Recieves a packet that has been sent to the socket.
+		/// ----------------------------------------------
 		public Packet Receive ()
 		{
 			Packet packet = new Packet ();
