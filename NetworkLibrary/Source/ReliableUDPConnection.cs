@@ -134,8 +134,9 @@ namespace NetworkLibrary
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public UnpackedPacket ProcessPacket (Packet packet)
+		/// INTERFACE: 	public UnpackedPacket ProcessPacket (Packet packet, ElementId[] expectedUnreliableIds)
 		/// 				Packet packet: The packet to consume
+		/// 				ElementId[] expectedUnreliableIds: An array of IDs to use to create the unreliable UpdateElements
 		/// 
 		/// RETURNS: 	An unpacked packet containing unreliable and reliable UpdateElements
 		/// 
