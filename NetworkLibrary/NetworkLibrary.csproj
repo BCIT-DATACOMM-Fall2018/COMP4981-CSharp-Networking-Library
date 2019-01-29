@@ -48,6 +48,7 @@
     <Compile Include="Source\MessageElements\UpdateElement.cs" />
     <Compile Include="Source\MessageElements\MessageFactory.cs" />
     <Compile Include="Source\IStateMessageBridge.cs" />
+    <Compile Include="Source\Socket.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
