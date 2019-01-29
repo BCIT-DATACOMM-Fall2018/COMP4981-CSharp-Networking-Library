@@ -11,7 +11,7 @@ namespace NetworkLibrary
 
 		void UseActorAbility (int actorId, int abilityId, int targetId, int x, int y);
 
-		void CreateHealthMessage();
+		void CreateHealthMessage ();
 
 	}
 }

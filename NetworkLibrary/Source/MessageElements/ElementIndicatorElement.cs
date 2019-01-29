@@ -1,20 +1,23 @@
 ﻿using System;
 
-namespace NetworkLibrary
+namespace NetworkLibrary.MessageElements
 {
 	public class ElementIndicatorElement : MessageElement
 	{
 	
-		private static ElementIndicatorElement indicator = new ElementIndicatorElement(ElementId.ElementIndicatorElement);
+		private static readonly ElementIndicatorElement indicator = new ElementIndicatorElement (ElementId.ElementIndicatorElement);
 
-		public override ElementIndicatorElement GetIndicator(){
+		public override ElementIndicatorElement GetIndicator ()
+		{
 			return indicator;
 		}
 
+		//TODO Add constant for maximum indicator number and base bits off that
+		private const int INDICATOR_BITS = 4;
 
-		private static int INDICATOR_BITS = 4;
 
 		public ElementId ElementIndicator { get; private set; }
+
 
 		public ElementIndicatorElement (int elementIndicator)
 		{
@@ -41,15 +44,9 @@ namespace NetworkLibrary
 			ElementIndicator = (ElementId)bitstream.ReadNext (INDICATOR_BITS);
 		}
 
-		public override void UpdateState (IStateMessageBridge bridge)
-		{
-		}
-
-
-
-
 		protected override void Validate ()
 		{
+			//TODO Add validation for ElementIndicatorElement
 		}
 	}
 }

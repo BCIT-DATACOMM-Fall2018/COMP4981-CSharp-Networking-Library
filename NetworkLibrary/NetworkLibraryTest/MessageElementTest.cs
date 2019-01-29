@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using NetworkLibrary;
+using NetworkLibrary.MessageElements;
 
 namespace NetworkLibraryTest
 {

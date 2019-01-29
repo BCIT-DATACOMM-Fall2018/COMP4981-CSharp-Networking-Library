@@ -2,6 +2,7 @@
 using System;
 using NetworkLibrary;
 using System.Collections.Generic;
+using NetworkLibrary.MessageElements;
 
 namespace NetworkLibraryTest
 {
@@ -12,61 +13,132 @@ namespace NetworkLibraryTest
 		[Test ()]
 		public void AddReliableMessagesToBuffer ()
 		{
-			List<MessageElement> unreliableElements = new List<MessageElement> ();
-			List<MessageElement> reliableElements = new List<MessageElement> ();
-			unreliableElements.Add(new HealthElement(10,10));
-			reliableElements.Add(new HealthElement(10,10));
+			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
+			List<UpdateElement> reliableElements = new List<UpdateElement> ();
+			unreliableElements.Add (new HealthElement (10, 10));
+			reliableElements.Add (new HealthElement (10, 10));
 
 			ReliableUDPConnection conn = new ReliableUDPConnection ();
 
-			conn.CreatePacket (new UnpackedPacket(unreliableElements, reliableElements));
-			conn.CreatePacket (new UnpackedPacket(unreliableElements, reliableElements));
+			conn.CreatePacket (unreliableElements, reliableElements);
+			conn.CreatePacket (unreliableElements, reliableElements);
 
-			Assert.AreEqual (conn.messageIndex, 2);
+			Assert.AreEqual (conn.MessageIndex, 2);
 		}
 
 		[Test ()]
 		public void UnpackingUnreliableElements ()
 		{
 
-			List<MessageElement> unreliableElements = new List<MessageElement> ();
-			List<MessageElement> reliableElements = new List<MessageElement> ();
-			unreliableElements.Add(new HealthElement(10,10));
-			reliableElements.Add(new HealthElement(10,10));
+			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
+			List<UpdateElement> reliableElements = new List<UpdateElement> ();
+			unreliableElements.Add (new HealthElement (10, 10));
+			reliableElements.Add (new HealthElement (10, 10));
 
 			ReliableUDPConnection conn = new ReliableUDPConnection ();
-			UnpackedPacket unpacked1 = new UnpackedPacket (unreliableElements, reliableElements);
-			Packet packet = conn.CreatePacket (unpacked1);
-			UnpackedPacket unpacked2 = conn.ProcessPacket (packet);
+			Packet packet = conn.CreatePacket (unreliableElements, reliableElements);
+			UnpackedPacket unpacked = conn.ProcessPacket (packet);
 
-			Assert.AreEqual (unpacked1.UnreliableElements.Count, unpacked2.UnreliableElements.Count);
+			Assert.AreEqual (unreliableElements.Count, unpacked.UnreliableElements.Count);
 
-			for (int i = 0; i < unpacked1.UnreliableElements.Count; i++) {
-				Assert.AreEqual (unpacked1.UnreliableElements[i], unpacked2.UnreliableElements[i]);
-
-			}
 		}
 
 		[Test ()]
 		public void UnpackingReliableElements ()
 		{
 
-			List<MessageElement> unreliableElements = new List<MessageElement> ();
-			List<MessageElement> reliableElements = new List<MessageElement> ();
-			unreliableElements.Add(new HealthElement(10,10));
-			reliableElements.Add(new HealthElement(10,10));
+			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
+			List<UpdateElement> reliableElements = new List<UpdateElement> ();
+			unreliableElements.Add (new HealthElement (10, 10));
+			reliableElements.Add (new HealthElement (10, 10));
 
 			ReliableUDPConnection conn = new ReliableUDPConnection ();
-			UnpackedPacket unpacked1 = new UnpackedPacket (unreliableElements, reliableElements);
-			Packet packet = conn.CreatePacket (unpacked1);
-			UnpackedPacket unpacked2 = conn.ProcessPacket (packet);
+			Packet packet = conn.CreatePacket (unreliableElements, reliableElements);
+			UnpackedPacket unpacked = conn.ProcessPacket (packet);
 
-			Assert.AreEqual (unpacked1.ReliableElements.Count, unpacked2.ReliableElements.Count);
+			Assert.AreEqual (reliableElements.Count, unpacked.ReliableElements.Count);
 
-			for (int i = 0; i < unpacked1.ReliableElements.Count; i++) {
-				Assert.AreEqual (unpacked1.ReliableElements[i], unpacked2.ReliableElements[i]);
+		}
 
-			}
+
+		[Test ()]
+		public void ConnectionAckNumberIncreases ()
+		{
+
+			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
+			List<UpdateElement> reliableElements = new List<UpdateElement> ();
+			unreliableElements.Add (new HealthElement (10, 10));
+			reliableElements.Add (new HealthElement (10, 10));
+
+			ReliableUDPConnection conn = new ReliableUDPConnection ();
+			ReliableUDPConnection conn2 = new ReliableUDPConnection ();
+
+			Packet packet = conn.CreatePacket (unreliableElements, reliableElements);
+			Packet packet2 = conn.CreatePacket (unreliableElements, reliableElements);
+			conn2.ProcessPacket (packet);
+			Assert.AreEqual (conn2.CurrentAck, 2);
+			conn2.ProcessPacket (packet2);
+			Assert.AreEqual (conn2.CurrentAck, 3);
+		}
+
+		[Test ()]
+		public void DuplicatePacketDoesNotIncreaseCurrentAck ()
+		{
+
+			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
+			List<UpdateElement> reliableElements = new List<UpdateElement> ();
+			unreliableElements.Add (new HealthElement (10, 10));
+			reliableElements.Add (new HealthElement (10, 10));
+
+			ReliableUDPConnection conn = new ReliableUDPConnection ();
+			ReliableUDPConnection conn2 = new ReliableUDPConnection ();
+
+			Packet packet = conn.CreatePacket (unreliableElements, reliableElements);
+			conn2.ProcessPacket (packet);
+			Assert.AreEqual (conn2.CurrentAck, 2);
+			conn2.ProcessPacket (packet);
+			Assert.AreNotEqual (conn2.CurrentAck, 3);
+		}
+
+		[Test ()]
+		public void ReliableElementsWillBeResent ()
+		{
+
+			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
+			List<UpdateElement> reliableElements = new List<UpdateElement> ();
+			unreliableElements.Add (new HealthElement (10, 10));
+			reliableElements.Add (new HealthElement (10, 10));
+
+			ReliableUDPConnection conn = new ReliableUDPConnection ();
+			ReliableUDPConnection conn2 = new ReliableUDPConnection ();
+
+			conn.CreatePacket (unreliableElements, reliableElements);
+			conn.CreatePacket (unreliableElements, reliableElements);
+			conn.CreatePacket (unreliableElements, reliableElements);
+			conn.CreatePacket (unreliableElements, reliableElements);
+			Packet packet = conn.CreatePacket (unreliableElements, reliableElements);
+			UnpackedPacket unpacked2 = conn2.ProcessPacket (packet);
+			Assert.AreEqual (unpacked2.ReliableElements.Count, 5);
+		}
+		[Test ()]
+
+		public void MultipleReliableElementsInOnePacket ()
+		{
+
+			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
+			List<UpdateElement> reliableElements = new List<UpdateElement> ();
+			unreliableElements.Add (new HealthElement (10, 10));
+			reliableElements.Add (new HealthElement (10, 10));
+			reliableElements.Add (new HealthElement (15, 18));
+			reliableElements.Add (new HealthElement (9, 1));
+			reliableElements.Add (new HealthElement (2, 3));
+
+			ReliableUDPConnection conn = new ReliableUDPConnection ();
+			ReliableUDPConnection conn2 = new ReliableUDPConnection ();
+
+			Packet packet = conn.CreatePacket (unreliableElements, reliableElements);
+			UnpackedPacket unpacked2 = conn2.ProcessPacket (packet);
+			Assert.AreEqual (unpacked2.ReliableElements.Count, 4);
 		}
 	}
 }

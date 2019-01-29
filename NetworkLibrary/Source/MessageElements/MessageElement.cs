@@ -1,13 +1,12 @@
 ﻿using System;
 
-namespace NetworkLibrary
+namespace NetworkLibrary.MessageElements
 {
 	public abstract class MessageElement
 	{
 
 		public MessageElement ()
 		{
-
 		}
 
 		public abstract ElementIndicatorElement GetIndicator ();
@@ -34,14 +33,10 @@ namespace NetworkLibrary
 
 		protected abstract void Validate ();
 
-		public abstract void UpdateState (IStateMessageBridge bridge);
-
 		public static int RequiredBits (int v)
 		{
 			int r = 0;
-
-			while ( (v >>= 1) != 0)
-			{
+			while ((v >>= 1) != 0) {
 				r++;
 			}
 			return r + 1;

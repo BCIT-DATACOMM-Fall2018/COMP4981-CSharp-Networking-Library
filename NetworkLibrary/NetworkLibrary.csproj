@@ -31,21 +31,28 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CWrapper.cs" />
-    <Compile Include="Destination.cs" />
-    <Compile Include="UDPSocket.cs" />
-    <Compile Include="Packet.cs" />
-    <Compile Include="TCPSocket.cs" />
-    <Compile Include="ReliableUDPConnection.cs" />
-    <Compile Include="BitStream.cs" />
-    <Compile Include="MessageElement.cs" />
-    <Compile Include="MessageFactory.cs" />
-    <Compile Include="IStateMessageBridge.cs" />
-    <Compile Include="HealthElement.cs" />
-    <Compile Include="PacketHeaderElement.cs" />
-    <Compile Include="ElementIndicatorElement.cs" />
-    <Compile Include="ElementId.cs" />
-    <Compile Include="UnpackedPacket.cs" />
+    <Compile Include="Source\BitStream.cs" />
+    <Compile Include="Source\Destination.cs" />
+    <Compile Include="Source\Packet.cs" />
+    <Compile Include="Source\ReliableUDPConnection.cs" />
+    <Compile Include="Source\TCPSocket.cs" />
+    <Compile Include="Source\UDPSocket.cs" />
+    <Compile Include="Source\UnpackedPacket.cs" />
+    <Compile Include="Source\CWrapper\ErrorCodes.cs" />
+    <Compile Include="Source\CWrapper\Libsocket.cs" />
+    <Compile Include="Source\MessageElements\ElementIndicatorElement.cs" />
+    <Compile Include="Source\MessageElements\HealthElement.cs" />
+    <Compile Include="Source\MessageElements\MessageElement.cs" />
+    <Compile Include="Source\MessageElements\PacketHeaderElement.cs" />
+    <Compile Include="Source\MessageElements\ElementId.cs" />
+    <Compile Include="Source\MessageElements\UpdateElement.cs" />
+    <Compile Include="Source\MessageElements\MessageFactory.cs" />
+    <Compile Include="Source\IStateMessageBridge.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Source\" />
+    <Folder Include="Source\CWrapper\" />
+    <Folder Include="Source\MessageElements\" />
+  </ItemGroup>
 </Project>

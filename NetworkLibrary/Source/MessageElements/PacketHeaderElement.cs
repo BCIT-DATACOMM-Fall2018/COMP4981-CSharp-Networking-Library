@@ -1,18 +1,19 @@
 ﻿using System;
 
-namespace NetworkLibrary
+namespace NetworkLibrary.MessageElements
 {
 	public class PacketHeaderElement : MessageElement
 	{
-		private static ElementIndicatorElement indicator = new ElementIndicatorElement(ElementId.PacketHeaderElement);
+		private static readonly ElementIndicatorElement indicator = new ElementIndicatorElement (ElementId.PacketHeaderElement);
 
-		public override ElementIndicatorElement GetIndicator(){
+		public override ElementIndicatorElement GetIndicator ()
+		{
 			return indicator;
 		}
 
-		private static int SEQ_BITS = 10;
-		private static int ACK_BITS = 10;
-		private static int RELIABLE_BITS = 10;
+		private const int SEQ_BITS = 10;
+		private const int ACK_BITS = 10;
+		private const int RELIABLE_BITS = 10;
 
 		public int SeqNumber { get; private set; }
 
@@ -46,11 +47,6 @@ namespace NetworkLibrary
 			AckNumber = bitstream.ReadNext (ACK_BITS);
 			ReliableElements = bitstream.ReadNext (RELIABLE_BITS);
 		}
-
-		public override void UpdateState (IStateMessageBridge bridge)
-		{
-		}
-
 
 		protected override void Validate ()
 		{

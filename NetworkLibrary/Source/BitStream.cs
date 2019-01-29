@@ -7,6 +7,7 @@ namespace NetworkLibrary
 {
 	public class BitStream
 	{
+		private const int BYTE_SIZE = 8;
 		private byte[] buffer;
 		private uint wordCount;
 		private int spaceInByte;
@@ -15,17 +16,18 @@ namespace NetworkLibrary
 		public BitStream (byte[] bytes)
 		{
 			buffer = bytes;
-			spaceInByte = 8;
+			spaceInByte = BYTE_SIZE;
 		}
 
 		public void Write (int data, int offset, int bits)
 		{
+			//TODO Add check to make sure you cant attempt to write past the end of the buffer
 			data >>= offset;
 			int bitsRemaining = bits;
 			int nextBits;
 			while (bitsRemaining > 0) {
 				if (spaceInByte == 0) {
-					spaceInByte = 8;
+					spaceInByte = BYTE_SIZE;
 					wordCount++;
 				}
 				nextBits = Math.Min (spaceInByte, bitsRemaining);
@@ -37,20 +39,20 @@ namespace NetworkLibrary
 
 		public int Read (int offset, int bits)
 		{
-			int byteIndex = offset / 8;
-			int bitIndex = offset % 8;
+			//TODO Add check to make sure you cant read past the end of the data buffer
+			int byteIndex = offset / BYTE_SIZE;
+			int bitIndex = offset % BYTE_SIZE;
 			int bitsRemaining = bits;
-			int nextBits;
 			int output = 0;
-			nextBits = Math.Min (8 - bitIndex, bitsRemaining);
+			int nextBits = Math.Min (BYTE_SIZE - bitIndex, bitsRemaining);
 
 			while (bitsRemaining > 0) {
-				if (bitIndex == 8) {
+				if (bitIndex == BYTE_SIZE) {
 					bitIndex = 0;
 					byteIndex++;
 				}
 				output <<= nextBits;
-				output |= GetBits (buffer [byteIndex], 8 - bitIndex - nextBits, nextBits);
+				output |= GetBits (buffer [byteIndex], BYTE_SIZE - bitIndex - nextBits, nextBits);
 
 				bitIndex += nextBits;
 				bitsRemaining -= nextBits;
@@ -61,6 +63,7 @@ namespace NetworkLibrary
 
 		public int ReadNext (int bits)
 		{
+			//TODO Add check to make sure you cant read past the end of the data buffer
 			int result = Read (readIndex, bits);
 			readIndex += bits;
 			return result;

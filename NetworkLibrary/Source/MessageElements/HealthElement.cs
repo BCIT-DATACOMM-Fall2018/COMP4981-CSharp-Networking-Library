@@ -1,20 +1,20 @@
 ﻿using System;
 
-namespace NetworkLibrary
+namespace NetworkLibrary.MessageElements
 {
-	public class HealthElement : MessageElement
+	public class HealthElement : UpdateElement
 	{
-		private static ElementIndicatorElement indicator = new ElementIndicatorElement (ElementId.HealthElement);
+		private static readonly ElementIndicatorElement indicator = new ElementIndicatorElement (ElementId.HealthElement);
 
 		public override ElementIndicatorElement GetIndicator ()
 		{
 			return indicator;
 		}
 
-		private static int HEALTH_MAX = 20;
-		private static int ACTORID_MAX = 32;
-		private static int HEALTH_BITS = RequiredBits (HEALTH_MAX);
-		private static int ACTORID_BITS = RequiredBits (ACTORID_MAX);
+		private const int HEALTH_MAX = 20;
+		private const int ACTORID_MAX = 32;
+		private static readonly int HEALTH_BITS = RequiredBits (HEALTH_MAX);
+		private static readonly int ACTORID_BITS = RequiredBits (ACTORID_MAX);
 
 		public int ActorId { get; private set; }
 
@@ -57,26 +57,6 @@ namespace NetworkLibrary
 				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
 			}
 		}
-		public override bool Equals (object obj)
-		{
-			if (obj == null)
-				return false;
-			if (ReferenceEquals (this, obj))
-				return true;
-			if (obj.GetType () != typeof(HealthElement))
-				return false;
-			HealthElement other = (HealthElement)obj;
-			return ActorId == other.ActorId && Health == other.Health;
-		}
-		
-
-		public override int GetHashCode ()
-		{
-			unchecked {
-				return ActorId.GetHashCode () ^ Health.GetHashCode ();
-			}
-		}
-		
 	}
 }
 

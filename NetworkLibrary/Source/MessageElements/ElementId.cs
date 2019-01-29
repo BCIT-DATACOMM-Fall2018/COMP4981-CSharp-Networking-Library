@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NetworkLibrary
+namespace NetworkLibrary.MessageElements
 {
 	public enum ElementId : int
 	{
