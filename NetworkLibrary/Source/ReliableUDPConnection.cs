@@ -141,7 +141,7 @@ namespace NetworkLibrary
 		/// 
 		/// NOTES:		Consuming a packet will change the state of the connection.
 		/// ----------------------------------------------
-		public UnpackedPacket ProcessPacket (Packet packet)
+		public UnpackedPacket ProcessPacket (Packet packet, ElementId[] expectedUnreliableIds)
 		{
 			BitStream bitStream = new BitStream (packet.Data);
 			PacketHeaderElement header = new PacketHeaderElement (bitStream);
@@ -155,9 +155,9 @@ namespace NetworkLibrary
 			// check that this unreliable information is new
 			if (seqNumber >= CurrentAck) {
 				// extract unreliable elements from packet
-
-				//TODO Add actual elements that need to be read from unreliable section
-				unreliableElements.Add (new HealthElement (bitStream));
+				foreach (var id in expectedUnreliableIds) {
+					unreliableElements.Add (messageFactory.CreateUpdateElement(id, bitStream));
+				}
 			}
 			
 			List<UpdateElement> reliableElements = new List<UpdateElement> ();
