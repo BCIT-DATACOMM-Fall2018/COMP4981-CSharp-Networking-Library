@@ -25,7 +25,7 @@ namespace NetworkLibrary
 	/// ----------------------------------------------
 	public abstract class Socket
 	{
-		protected Int32 socket;
+		protected SocketStruct socket;
 
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: Socket
@@ -44,32 +44,8 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		public Socket ()
 		{
-			socket = Libsocket.createSocket ();
-			if (0 == socket) {
-				throw new OutOfMemoryException ("Ran out of memory attempting to create socket");
-			}
 		}
 
-		/// ----------------------------------------------
-		/// DESTRUCTOR: ~Socket
-		/// 
-		/// DATE:		January 28th, 2018
-		/// 
-		/// REVISIONS:	
-		/// 
-		/// DESIGNER:	Cameron Roberts
-		/// 
-		/// PROGRAMMER:	Cameron Roberts
-		/// 
-		/// INTERFACE: 	~Socket ()
-		/// 
-		/// NOTES: 	Deallocates the memory used to store the
-		/// 		pointer in the underlying libsock library.
-		/// ----------------------------------------------
-		~Socket ()
-		{
-			Libsocket.freeSocket (socket);
-		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Bind
@@ -92,8 +68,8 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		public void Bind (ushort port = 0)
 		{
-			if (0 == Libsocket.bindPort (socket, port)) {
-				switch ((ErrorCodes)Libsocket.getSocketError (socket)) {
+			if (0 == Libsocket.bindPort (ref socket, port)) {
+				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
 				case ErrorCodes.EACCES:
 					throw new System.Security.SecurityException ("Insufficient permission to bind port");
 				case ErrorCodes.EADDRINUSE:
@@ -126,8 +102,8 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		public void Close ()
 		{
-			if (0 == Libsocket.closeSocket (socket)) {
-				switch ((ErrorCodes)Libsocket.getSocketError (socket)) {
+			if (0 == Libsocket.closeSocket (ref socket)) {
+				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
 				case ErrorCodes.EBADF:
 					throw new System.IO.IOException ("Socket descriptor invalid");
 				case ErrorCodes.EIO:

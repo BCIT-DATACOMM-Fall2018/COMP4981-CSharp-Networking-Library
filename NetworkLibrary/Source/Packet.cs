@@ -27,9 +27,9 @@ namespace NetworkLibrary
 	{
 		public const int DEFAULT_SIZE = 1024;
 
-		public uint Length { get; private set; }
+		public byte[] Data { get;  set; }
 
-		public byte[] Data { get; private set; }
+		public ulong Length {get {return  (ulong)Data.Length;}}
 
 
 		/// ----------------------------------------------
@@ -50,7 +50,6 @@ namespace NetworkLibrary
 		public Packet ()
 		{
 			Data = new byte[DEFAULT_SIZE];
-			Length = 0;
 		}
 
 		/// ----------------------------------------------
@@ -71,8 +70,8 @@ namespace NetworkLibrary
 		public Packet (int size)
 		{
 			Data = new byte[size];
-			Length = 0;
 		}
+			
 	}
 }
 

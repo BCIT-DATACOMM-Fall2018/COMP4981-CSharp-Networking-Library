@@ -50,8 +50,8 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		public TCPSocket () : base()
 		{
-			if (CWrapper.Libsocket.initSocketTCP (socket) == 0) {
-				switch ((ErrorCodes)Libsocket.getSocketError (socket)) {
+			if (CWrapper.Libsocket.initSocketTCP (ref socket) == 0) {
+				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
 				case ErrorCodes.EACCES:
 					throw new System.IO.IOException ("Permission to create the socket was denied");
 				case ErrorCodes.ENOMEM:
@@ -77,7 +77,7 @@ namespace NetworkLibrary
 		/// 	   	pointer. Only intended to be used by the Accept
 		/// 	   	function
 		/// ----------------------------------------------
-		protected TCPSocket (Int32 socket)
+		protected TCPSocket (SocketStruct socket)
 		{
 			this.socket = socket;
 		}
@@ -104,8 +104,8 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		public void Connect (Destination destination)
 		{
-			if (0 == Libsocket.connectPort (socket, destination)) {
-				switch ((ErrorCodes)Libsocket.getSocketError (socket)) {
+			if (0 == Libsocket.connectPort (ref socket, ref destination)) {
+				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
 				case ErrorCodes.EADDRNOTAVAIL:
 					throw new System.IO.IOException ("The specified address is not availiable from the local machine");
 				case ErrorCodes.EBADF:
@@ -155,8 +155,8 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		public void Send (Packet packet)
 		{
-			if (0 == Libsocket.sendDataTCP (socket, ref packet.Data [0], packet.Length)) {
-				switch ((ErrorCodes)Libsocket.getSocketError (socket)) {
+			if (0 == Libsocket.sendDataTCP (ref socket, ref packet.Data [0], packet.Length)) {
+				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
 				case ErrorCodes.EBADF:
 					throw new System.IO.IOException ("An invalid socket descriptor was specified");
 				case ErrorCodes.ENOTSOCK:
@@ -189,8 +189,8 @@ namespace NetworkLibrary
 		public Packet Receive ()
 		{
 			Packet packet = new Packet ();
-			if (0 == Libsocket.recvData (socket, ref packet.Data [0], (ulong)packet.Data.Length)) {
-				switch ((ErrorCodes)Libsocket.getSocketError (socket)) {
+			if (0 == Libsocket.recvDataTCP (ref socket,ref packet.Data [0], (uint)packet.Data.Length)) {
+				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
 				case ErrorCodes.EBADF:
 					throw new System.IO.IOException ("An invalid socket descriptor was specified");
 				case ErrorCodes.ECONNREFUSED:
@@ -225,12 +225,12 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		public TCPSocket Accept ()
 		{
-			Int32 acceptSocket = Libsocket.acceptClient (socket);
+			Int32 acceptSocket = Libsocket.acceptClient (ref socket);
 			if (0 == acceptSocket) {
 				throw new OutOfMemoryException ("No memory availiable to create socket");
 			}
 			if (-1 == acceptSocket) {
-				switch ((ErrorCodes)Libsocket.getSocketError (socket)) {
+				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
 				case ErrorCodes.EBADF:
 					throw new System.IO.IOException ("An invalid socket descriptor was specified");
 				case ErrorCodes.EINVAL:
@@ -241,7 +241,7 @@ namespace NetworkLibrary
 					throw new System.IO.IOException ("Firewall rules forbid connection");
 				}
 			}
-			return new TCPSocket (acceptSocket);
+			return new TCPSocket (new SocketStruct(acceptSocket));
 		}
 	}
 }

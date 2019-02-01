@@ -10,25 +10,23 @@ namespace NetworkLibrary.CWrapper
 	/// PROGRAM: NetworkLibrary
 	///
 	/// UDP and TCP FUNCTIONS:
-	/// 			public static extern Int32 createSocket ()
-	/// 			public static extern Int32 initSocket (Int32 socket)
-	/// 			public static extern Int32 closeSocket (Int32 socket)
-	/// 			public static extern void freeSocket (Int32 socket)
+	/// 			public static extern Int32 initSocket (ref SocketStruct socket)
+	/// 			public static extern Int32 closeSocket (ref SocketStruct socket)
 	///
 	/// UDP FUNCTIONS:
-	/// 			public static extern Int32 initSocket (Int32 socket)
-	/// 			public static extern Int32 sendData (Int32 socket, Destination dest, ref byte data, UInt64 dataLength)
-	/// 			public static extern Int32 recvData (Int32 socket, ref byte dataBuffer, UInt64 dataBufferLength)
+	/// 			public static extern Int32 initSocket (ref SocketStruct socket)
+	/// 			public static extern Int32 sendData (ref SocketStruct socket, Destination dest, ref byte data, UInt64 dataLength)
+	/// 			public static extern Int32 recvData (ref SocketStruct socket, ref byte dataBuffer, UInt64 dataBufferLength)
 	///
 	/// TCP FUNCTIONS:
-	/// 			public static extern Int32 initSocketTCP (Int32 socket)
-	/// 			public static extern Int32 connectPort (Int32 socket, Destination dest)
-	/// 			public static extern Int32 acceptClient (Int32 socket)
-	/// 			public static extern Int32 sendDataTCP (Int32 socket, ref byte data, UInt64 dataBufferSize)
-	/// 			public static extern Int32 recvDataTCP (Int32 socket, ref byte dataBuffer, UInt32 packetSize)
+	/// 			public static extern Int32 initSocketTCP (ref SocketStruct socket)
+	/// 			public static extern Int32 connectPort (ref SocketStruct socket, Destination dest)
+	/// 			public static extern Int32 acceptClient (ref SocketStruct socket)
+	/// 			public static extern Int32 sendDataTCP (ref SocketStruct socket, ref byte data, UInt64 dataBufferSize)
+	/// 			public static extern Int32 recvDataTCP (ref SocketStruct socket, ref byte dataBuffer, UInt32 packetSize)
 	///
 	/// OTHER FUNCTIONS:
-	/// 			public static extern Int32 getSocketError (Int32 socket)
+	/// 			public static extern Int32 getSocketError (ref SocketStruct socket)
 	///
 	/// DATE: 		January 28th, 2018
 	///
@@ -42,40 +40,21 @@ namespace NetworkLibrary.CWrapper
 	/// ----------------------------------------------
 	public class Libsocket
 	{
-		/// ----------------------------------------------
-		/// FUNCTION:	createSocket
-		/// 
-		/// DATE:		January 28th, 2018
-		/// 
-		/// REVISIONS:	
-		/// 
-		/// DESIGNER:	Cameron Roberts
-		/// 
-		/// PROGRAMMER:	Cameron Roberts
-		/// 
-		/// INTERFACE: 	public static extern Int32 createSocket (void)
-		/// 
-		/// RETURNS: 	A socket pointer to be passed into other Libsocket functions
-		/// 
-		/// NOTES:		This function is used to allocate memory for the underlying
-		/// 			struct used to store the socket.
-		/// ----------------------------------------------
-		[DllImport ("libsocket.so")]
-		public static extern Int32 createSocket ();
 
 		/// ----------------------------------------------
 		/// FUNCTION:	initSocket
 		/// 
 		/// DATE:		January 28th, 2018
 		/// 
-		/// REVISIONS:	
+		/// REVISIONS:	January 31st, 2019
+		/// 				-Changed to accept a SocketStruct instead of an Int32
 		/// 
 		/// DESIGNER:	Cameron Roberts
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public static extern Int32 initSocket (Int32 socket)
-		/// 				Int32 socket: A socket pointer obtained by calling createSocket
+		/// INTERFACE: 	public static extern Int32 initSocket (ref SocketStruct socket)
+		/// 				ref SocketStruct socket: A SocketStruct to initialize
 		/// 
 		/// RETURNS: 	On success 1 is returned. On error 0 is returned and getSocketError
 		/// 			should be called with the socket pointer to get the error code.
@@ -83,21 +62,22 @@ namespace NetworkLibrary.CWrapper
 		/// NOTES:		This function is used to initialize the socket as a UDP socket.
 		/// ----------------------------------------------
 		[DllImport ("libsocket.so")]
-		public static extern Int32 initSocket (Int32 socket);
+		public static extern Int32 initSocket (ref SocketStruct socket);
 
 		/// ----------------------------------------------
 		/// FUNCTION:	sendData
 		/// 
 		/// DATE:		January 28th, 2018
 		/// 
-		/// REVISIONS:	
+		/// REVISIONS:	January 31st, 2019
+		/// 				-Changed to accept a SocketStruct instead of an Int32
 		/// 
 		/// DESIGNER:	Cameron Roberts
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public static extern Int32 sendData (Int32 socket, Destination dest, ref byte data, UInt64 dataLength)
-		/// 				Int32 socket: A socket pointer obtained by calling createSocket.
+		/// INTERFACE: 	public static extern Int32 sendData (ref SocketStruct socket, Destination dest, ref byte data, UInt64 dataLength)
+		/// 				ref SocketStruct socket: A socket struct to send data through.
 		/// 				Destination dest: A Destination object containing the address and
 		/// 								  port to send data to.
 		/// 				ref byte data: The first byte in a byte array containing the data to
@@ -110,21 +90,22 @@ namespace NetworkLibrary.CWrapper
 		/// NOTES:		This function is used to send data through a UDP socket.
 		/// ----------------------------------------------
 		[DllImport ("libsocket.so")]
-		public static extern Int32 sendData (Int32 socket, Destination dest, ref byte data, UInt64 dataLength);
+		public static extern Int32 sendData (ref SocketStruct socket, ref Destination dest, ref byte data, UInt64 dataLength);
 
 		/// ----------------------------------------------
 		/// FUNCTION:	recvData
 		/// 
 		/// DATE:		January 28th, 2018
 		/// 
-		/// REVISIONS:	
+		/// REVISIONS:	January 31st, 2019
+		/// 				-Changed to accept a SocketStruct instead of an Int32
 		/// 
 		/// DESIGNER:	Cameron Roberts
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public static extern Int32 recvData (Int32 socket, ref byte data, UInt64 dataLength)
-		/// 				Int32 socket: A socket pointer obtained by calling createSocket.
+		/// INTERFACE: 	public static extern Int32 recvData (ref SocketStruct socket, ref byte data, UInt64 dataLength)
+		/// 				ref SocketStruct socket: A SocketStruct to receive data from.
 		/// 				ref byte data: The first byte in a byte that data will be written to.
 		/// 				UInt64 dataLength: The length of the buffer.
 		/// 
@@ -135,21 +116,22 @@ namespace NetworkLibrary.CWrapper
 		/// NOTES:		This function is used to receive data from a UDP socket
 		/// ----------------------------------------------
 		[DllImport ("libsocket.so")]
-		public static extern Int32 recvData (Int32 socket, ref byte dataBuffer, UInt64 dataBufferLength);
+		public static extern Int32 recvData (ref SocketStruct socket, ref Destination dest, ref byte dataBuffer, UInt64 dataBufferLength);
 
 		/// ----------------------------------------------
 		/// FUNCTION:	closeSocket
 		/// 
 		/// DATE:		January 28th, 2018
 		/// 
-		/// REVISIONS:	
+		/// REVISIONS:	January 31st, 2019
+		/// 				-Changed to accept a SocketStruct instead of an Int32
 		/// 
 		/// DESIGNER:	Cameron Roberts
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public static extern Int32 closeSocket (Int32 socket)
-		/// 				Int32 socket: A socket pointer obtained by calling createSocket.
+		/// INTERFACE: 	public static extern Int32 closeSocket (ref SocketStruct socket)
+		/// 				ref SocketStruct socket: A SocketStruct to close the socket descriptor of.
 		/// 
 		/// RETURNS: 	On success 1 is returned. On error 0 is returned and getSocketError
 		/// 			should be called with the socket pointer to get the error code.
@@ -158,43 +140,22 @@ namespace NetworkLibrary.CWrapper
 		/// 			called once your done with the socket but before calling freeSocket.
 		/// ----------------------------------------------
 		[DllImport ("libsocket.so")]
-		public static extern Int32 closeSocket (Int32 socket);
-
-		/// ----------------------------------------------
-		/// FUNCTION:	freeSocket
-		/// 
-		/// DATE:		January 28th, 2018
-		/// 
-		/// REVISIONS:	
-		/// 
-		/// DESIGNER:	Cameron Roberts
-		/// 
-		/// PROGRAMMER:	Cameron Roberts
-		/// 
-		/// INTERFACE: 	public static extern void sendData (Int32 socket)
-		/// 				Int32 socket: A socket pointer obtained by calling createSocket.
-		/// 
-		/// RETURNS: 	void.
-		/// 
-		/// NOTES:		This function is used to free the underlying struct used to store
-		/// 			a socket.
-		/// ----------------------------------------------
-		[DllImport ("libsocket.so")]
-		public static extern void freeSocket (Int32 socket);
+		public static extern Int32 closeSocket (ref SocketStruct socket);
 
 		/// ----------------------------------------------
 		/// FUNCTION:	initSocket
 		/// 
 		/// DATE:		January 28th, 2018
 		/// 
-		/// REVISIONS:	
+		/// REVISIONS:	January 31st, 2019
+		/// 				-Changed to accept a SocketStruct instead of an Int32
 		/// 
 		/// DESIGNER:	Simon Wu
 		/// 
 		/// PROGRAMMER:	Simon Wu, Cameron Roberts
 		/// 
-		/// INTERFACE: 	public static extern Int32 initSocket (Int32 socket)
-		/// 				Int32 socket: A socket pointer obtained by calling createSocket
+		/// INTERFACE: 	public static extern Int32 initSocket (ref SocketStruct socket)
+		/// 				ref SocketStruct socket: A SocketStruct to initialize
 		/// 
 		/// RETURNS: 	On success 1 is returned. On error 0 is returned and getSocketError
 		/// 			should be called with the socket pointer to get the error code.
@@ -202,21 +163,22 @@ namespace NetworkLibrary.CWrapper
 		/// NOTES:		This function is used to initialize the socket as a TCP socket.
 		/// ----------------------------------------------
 		[DllImport ("libsocket.so")]
-		public static extern Int32 initSocketTCP (Int32 socket);
+		public static extern Int32 initSocketTCP (ref SocketStruct socket);
 
 		/// ----------------------------------------------
 		/// FUNCTION:	bindPort
 		/// 
 		/// DATE:		January 28th, 2018
 		/// 
-		/// REVISIONS:	
+		/// REVISIONS:	January 31st, 2019
+		/// 				-Changed to accept a SocketStruct instead of an Int32
 		/// 
 		/// DESIGNER:	Simon Wu, Cameron Roberts
 		/// 
 		/// PROGRAMMER:	Simon Wu, Cameron Roberts
 		/// 
-		/// INTERFACE: 	public static extern Int32 bindPort (Int32 socket, UInt16 port)
-		/// 				Int32 socket: A socket pointer obtained by calling createSocket
+		/// INTERFACE: 	public static extern Int32 bindPort (ref SocketStruct socket, UInt16 port)
+		/// 				ref SocketStruct socket: A SocketStruct to bind
 		/// 				Uint16 port: A port number in network byte order
 		/// 
 		/// RETURNS: 	On success 1 is returned. On error 0 is returned and getSocketError
@@ -227,21 +189,22 @@ namespace NetworkLibrary.CWrapper
 		/// 			socket.
 		/// ----------------------------------------------
 		[DllImport ("libsocket.so")]
-		public static extern Int32 bindPort (Int32 socket, UInt16 port);
+		public static extern Int32 bindPort (ref SocketStruct socket, UInt16 port);
 
 		/// ----------------------------------------------
 		/// FUNCTION:	connectPort
 		/// 
 		/// DATE:		January 28th, 2018
 		/// 
-		/// REVISIONS:	
+		/// REVISIONS:	January 31st, 2019
+		/// 				-Changed to accept a SocketStruct instead of an Int32
 		/// 
 		/// DESIGNER:	Simon Wu
 		/// 
 		/// PROGRAMMER:	Simon Wu, Cameron Roberts
 		/// 
-		/// INTERFACE: 	public static extern Int32 connectPort (Int32 socket, Destination dest)
-		/// 				Int32 socket: A socket pointer obtained by calling createSocket
+		/// INTERFACE: 	public static extern Int32 connectPort (ref SocketStruct socket, Destination dest)
+		/// 				ref SocketStruct socket: A SocketStruct to connect to a remote hose
 		/// 				Destination dest: A Destination object containing the address
 		/// 								  and port to connect to.
 		/// 
@@ -251,44 +214,46 @@ namespace NetworkLibrary.CWrapper
 		/// NOTES:		This function is used to connect a TCP socket to an accepting TCP socket
 		/// ----------------------------------------------
 		[DllImport ("libsocket.so")]
-		public static extern Int32 connectPort (Int32 socket, Destination dest);
+		public static extern Int32 connectPort (ref SocketStruct socket,ref  Destination dest);
 
 		/// ----------------------------------------------
 		/// FUNCTION:	acceptClient
 		/// 
 		/// DATE:		January 28th, 2018
 		/// 
-		/// REVISIONS:	
+		/// REVISIONS:	January 31st, 2019
+		/// 				-Changed to accept a SocketStruct instead of an Int32
 		/// 
 		/// DESIGNER:	Simon Wu
 		/// 
 		/// PROGRAMMER:	Simon Wu, Cameron Roberts
 		/// 
-		/// INTERFACE: 	public static extern Int32 connectPort (Int32 socket)
-		/// 				Int32 socket: A socket pointer obtained by calling createSocket
+		/// INTERFACE: 	public static extern Int32 connectPort (ref SocketStruct socket)
+		/// 				ref SocketStruct socket: A socket pointer obtained by calling createSocket
 		/// 
-		/// RETURNS: 	On sucess a pointer to a newly created socketStruct is returned.
+		/// RETURNS: 	On sucess a socket descriptor is returned.
 		/// 			On error 0 is returned and getSocketError should be called with
 		/// 			the socket pointer to get the error code.
 		/// 
 		/// NOTES:		This function is used to accept a new TCP connection on a socket.
 		/// ----------------------------------------------
 		[DllImport ("libsocket.so")]
-		public static extern Int32 acceptClient (Int32 socket);
+		public static extern Int32 acceptClient (ref SocketStruct socket);
 
 		/// ----------------------------------------------
 		/// FUNCTION:	sendDataTCP
 		/// 
 		/// DATE:		January 28th, 2018
 		/// 
-		/// REVISIONS:	
+		/// REVISIONS:	January 31st, 2019
+		/// 				-Changed to accept a SocketStruct instead of an Int32
 		/// 
 		/// DESIGNER:	Simon Wu
 		/// 
 		/// PROGRAMMER:	Simon Wu, Cameron Roberts
 		/// 
-		/// INTERFACE: 	public static extern Int32 sendDataTCP (Int32 socket, ref byte data, UInt64 dataLength)
-		/// 				Int32 socket: A socket pointer obtained by calling createSocket.
+		/// INTERFACE: 	public static extern Int32 sendDataTCP (ref SocketStruct socket, ref byte data, UInt64 dataLength)
+		/// 				ref SocketStruct socket: A SocketStruct to send data through.
 		/// 				ref byte data: The first byte in a byte array containing the data to
 		/// 							   be sent.
 		/// 				UInt64 dataBufferSize: The length of the data to be sent.
@@ -299,21 +264,22 @@ namespace NetworkLibrary.CWrapper
 		/// NOTES:		This function is used to send data through a TCP socket.
 		/// ----------------------------------------------
 		[DllImport ("libsocket.so")]
-		public static extern Int32 sendDataTCP (Int32 socket, ref byte data, UInt64 dataBufferSize);
+		public static extern Int32 sendDataTCP (ref SocketStruct socket, ref byte data, UInt64 dataBufferSize);
 
 		/// ----------------------------------------------
 		/// FUNCTION:	recvDataTCP
 		/// 
 		/// DATE:		January 28th, 2018
 		/// 
-		/// REVISIONS:	
+		/// REVISIONS:	January 31st, 2019
+		/// 				-Changed to accept a SocketStruct instead of an Int32
 		/// 
 		/// DESIGNER:	Simon Wu
 		/// 
 		/// PROGRAMMER:	Simon Wu, Cameron Roberts
 		/// 
-		/// INTERFACE: 	public static extern Int32 recvDataTCP (Int32 socket, ref byte data, UInt64 dataLength)
-		/// 				Int32 socket: A socket pointer obtained by calling createSocket.
+		/// INTERFACE: 	public static extern Int32 recvDataTCP (ref SocketStruct socket, ref byte data, UInt64 dataLength)
+		/// 				Int32 socket: A SocketStruct to receive data from
 		/// 				ref byte data: The first byte in a byte that data will be written to.
 		/// 				UInt64 dataLength: The length of the buffer.
 		/// 
@@ -324,21 +290,22 @@ namespace NetworkLibrary.CWrapper
 		/// NOTES:		This function is used to receive data from a UDP socket
 		/// ----------------------------------------------
 		[DllImport ("libsocket.so")]
-		public static extern Int32 recvDataTCP (Int32 socket, ref byte dataBuffer, UInt32 packetSize);
+		public static extern Int32 recvDataTCP (ref SocketStruct socket, ref byte dataBuffer, UInt32 packetSize);
 
 		/// ----------------------------------------------
 		/// FUNCTION:	getSocketError
 		/// 
 		/// DATE:		January 28th, 2018
 		/// 
-		/// REVISIONS:	
+		/// REVISIONS:	January 31st, 2019
+		/// 				-Changed to accept a SocketStruct instead of an Int32
 		/// 
 		/// DESIGNER:	Cameron Roberts
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public static extern Int32 recvDataTCP (Int32 socket)
-		/// 				Int32 socket: A socket pointer obtained by calling createSocket.
+		/// INTERFACE: 	public static extern Int32 recvDataTCP (ref SocketStruct socket)
+		/// 				ref SocketStruct socket: A SocketStruct to check the error of.
 		/// 
 		/// RETURNS: 	The last error code associated with the socket
 		/// 
@@ -347,7 +314,7 @@ namespace NetworkLibrary.CWrapper
 		/// 			function indicates that an error has occurred.
 		/// ----------------------------------------------
 		[DllImport ("libsocket.so")]
-		public static extern Int32 getSocketError (Int32 socket);
+		public static extern Int32 getSocketError (ref SocketStruct socket);
 
 	}
 }

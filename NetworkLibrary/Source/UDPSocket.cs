@@ -28,6 +28,9 @@ namespace NetworkLibrary
 	public class UDPSocket : Socket
 	{
 
+		public Destination LastReceivedFrom {get { return _lastReceivedFrom; } set {_lastReceivedFrom = value;}}
+		private Destination _lastReceivedFrom;
+
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: UDPSocket
 		/// 
@@ -45,8 +48,9 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		public UDPSocket () : base()
 		{
-			if (CWrapper.Libsocket.initSocket (socket) == 0) {
-				switch ((ErrorCodes)Libsocket.getSocketError (socket)) {
+			_lastReceivedFrom = new Destination ();
+			if (CWrapper.Libsocket.initSocket (ref socket) == 0) {
+				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
 				case ErrorCodes.EACCES:
 					throw new System.IO.IOException ("Permission to create the socket was denied");
 				case ErrorCodes.ENOMEM:
@@ -80,8 +84,8 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		public void Send (Packet packet, Destination destination)
 		{
-			if (0 == Libsocket.sendData (socket, destination, ref packet.Data [0], packet.Length)) {
-				switch ((ErrorCodes)Libsocket.getSocketError (socket)) {
+			if (0 == Libsocket.sendData (ref socket, ref destination, ref packet.Data [0], packet.Length)) {
+				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
 				case ErrorCodes.EBADF:
 					throw new System.IO.IOException ("An invalid socket descriptor was specified");
 				case ErrorCodes.EMSGSIZE:
@@ -114,8 +118,8 @@ namespace NetworkLibrary
 		public Packet Receive ()
 		{
 			Packet packet = new Packet ();
-			if (0 == Libsocket.recvData (socket, ref packet.Data [0], (ulong)packet.Data.Length)) {
-				switch ((ErrorCodes)Libsocket.getSocketError (socket)) {
+			if (0 == Libsocket.recvData (ref socket, ref _lastReceivedFrom ,ref packet.Data [0], (ulong)packet.Data.Length)) {
+				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
 				case ErrorCodes.EBADF:
 					throw new System.IO.IOException ("An invalid socket descriptor was specified");
 				case ErrorCodes.ECONNREFUSED:
