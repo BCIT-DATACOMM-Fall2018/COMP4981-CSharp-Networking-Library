@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 
 namespace NetworkLibrary.CWrapper
@@ -40,28 +39,27 @@ namespace NetworkLibrary.CWrapper
 	/// ----------------------------------------------
 	public class Libsocket
 	{
-
-		/// ----------------------------------------------
-		/// FUNCTION:	initSocket
-		/// 
-		/// DATE:		January 28th, 2018
-		/// 
-		/// REVISIONS:	January 31st, 2019
-		/// 				-Changed to accept a SocketStruct instead of an Int32
-		/// 
-		/// DESIGNER:	Cameron Roberts
-		/// 
-		/// PROGRAMMER:	Cameron Roberts
-		/// 
-		/// INTERFACE: 	public static extern Int32 initSocket (ref SocketStruct socket)
-		/// 				ref SocketStruct socket: A SocketStruct to initialize
-		/// 
-		/// RETURNS: 	On success 1 is returned. On error 0 is returned and getSocketError
-		/// 			should be called with the socket pointer to get the error code.
-		/// 
-		/// NOTES:		This function is used to initialize the socket as a UDP socket.
-		/// ----------------------------------------------
-		[DllImport ("libsocket.so")]
+        /// ----------------------------------------------
+        /// FUNCTION:	initSocket
+        /// 
+        /// DATE:		January 28th, 2018
+        /// 
+        /// REVISIONS:	January 31st, 2019
+        /// 				-Changed to accept a SocketStruct instead of an Int32
+        /// 
+        /// DESIGNER:	Cameron Roberts
+        /// 
+        /// PROGRAMMER:	Cameron Roberts
+        /// 
+        /// INTERFACE: 	public static extern Int32 initSocket (ref SocketStruct socket)
+        /// 				ref SocketStruct socket: A SocketStruct to initialize
+        /// 
+        /// RETURNS: 	On success 1 is returned. On error 0 is returned and getSocketError
+        /// 			should be called with the socket pointer to get the error code.
+        /// 
+        /// NOTES:		This function is used to initialize the socket as a UDP socket.
+        /// ----------------------------------------------
+        [DllImport ("libsocket")]
 		public static extern Int32 initSocket (ref SocketStruct socket);
 
 		/// ----------------------------------------------
@@ -89,7 +87,7 @@ namespace NetworkLibrary.CWrapper
 		/// 
 		/// NOTES:		This function is used to send data through a UDP socket.
 		/// ----------------------------------------------
-		[DllImport ("libsocket.so")]
+		[DllImport ("libsocket")]
 		public static extern Int32 sendData (ref SocketStruct socket, ref Destination dest, ref byte data, UInt64 dataLength);
 
 		/// ----------------------------------------------
@@ -115,7 +113,7 @@ namespace NetworkLibrary.CWrapper
 		/// 
 		/// NOTES:		This function is used to receive data from a UDP socket
 		/// ----------------------------------------------
-		[DllImport ("libsocket.so")]
+		[DllImport ("libsocket")]
 		public static extern Int32 recvData (ref SocketStruct socket, ref Destination dest, ref byte dataBuffer, UInt64 dataBufferLength);
 
 		/// ----------------------------------------------
@@ -139,7 +137,7 @@ namespace NetworkLibrary.CWrapper
 		/// NOTES:		This function is used to close a socket. This function should be
 		/// 			called once your done with the socket but before calling freeSocket.
 		/// ----------------------------------------------
-		[DllImport ("libsocket.so")]
+		[DllImport ("libsocket")]
 		public static extern Int32 closeSocket (ref SocketStruct socket);
 
 		/// ----------------------------------------------
@@ -162,7 +160,7 @@ namespace NetworkLibrary.CWrapper
 		/// 
 		/// NOTES:		This function is used to initialize the socket as a TCP socket.
 		/// ----------------------------------------------
-		[DllImport ("libsocket.so")]
+		[DllImport ("libsocket")]
 		public static extern Int32 initSocketTCP (ref SocketStruct socket);
 
 		/// ----------------------------------------------
@@ -188,7 +186,7 @@ namespace NetworkLibrary.CWrapper
 		/// 			function must be called before attemping to send or receive on the
 		/// 			socket.
 		/// ----------------------------------------------
-		[DllImport ("libsocket.so")]
+		[DllImport ("libsocket")]
 		public static extern Int32 bindPort (ref SocketStruct socket, UInt16 port);
 
 		/// ----------------------------------------------
@@ -213,7 +211,7 @@ namespace NetworkLibrary.CWrapper
 		/// 
 		/// NOTES:		This function is used to connect a TCP socket to an accepting TCP socket
 		/// ----------------------------------------------
-		[DllImport ("libsocket.so")]
+		[DllImport ("libsocket")]
 		public static extern Int32 connectPort (ref SocketStruct socket,ref  Destination dest);
 
 		/// ----------------------------------------------
@@ -237,7 +235,7 @@ namespace NetworkLibrary.CWrapper
 		/// 
 		/// NOTES:		This function is used to accept a new TCP connection on a socket.
 		/// ----------------------------------------------
-		[DllImport ("libsocket.so")]
+		[DllImport ("libsocket")]
 		public static extern Int32 acceptClient (ref SocketStruct socket);
 
 		/// ----------------------------------------------
@@ -263,7 +261,7 @@ namespace NetworkLibrary.CWrapper
 		/// 
 		/// NOTES:		This function is used to send data through a TCP socket.
 		/// ----------------------------------------------
-		[DllImport ("libsocket.so")]
+		[DllImport ("libsocket")]
 		public static extern Int32 sendDataTCP (ref SocketStruct socket, ref byte data, UInt64 dataBufferSize);
 
 		/// ----------------------------------------------
@@ -289,7 +287,7 @@ namespace NetworkLibrary.CWrapper
 		/// 
 		/// NOTES:		This function is used to receive data from a UDP socket
 		/// ----------------------------------------------
-		[DllImport ("libsocket.so")]
+		[DllImport ("libsocket")]
 		public static extern Int32 recvDataTCP (ref SocketStruct socket, ref byte dataBuffer, UInt32 packetSize);
 
 		/// ----------------------------------------------
@@ -313,7 +311,7 @@ namespace NetworkLibrary.CWrapper
 		/// 			This function should only be called immediatly after a Libsocket
 		/// 			function indicates that an error has occurred.
 		/// ----------------------------------------------
-		[DllImport ("libsocket.so")]
+		[DllImport ("libsocket")]
 		public static extern Int32 getSocketError (ref SocketStruct socket);
 
 	}
