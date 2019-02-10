@@ -156,7 +156,7 @@ namespace NetworkLibrary
 
 			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
 			// check that this unreliable information is new
-			if (seqNumber >= CurrentAck) {
+			if (seqNumber >= CurrentAck -1) {
 				// extract unreliable elements from packet
 				foreach (var id in expectedUnreliableIds) {
 					unreliableElements.Add (messageFactory.CreateUpdateElement(id, bitStream));
