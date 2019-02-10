@@ -29,8 +29,10 @@ namespace NetworkLibrary
 	/// ----------------------------------------------
 	public class ReliableUDPConnection
 	{
-
+		private const int MAXIMUM_RELIABLE_BITS = 1024 * 8;
 		private const int BUFFER_SIZE = 1024;
+		private const int RESEND_TIMER = 3;
+		private const int BYTE_SIZE = 8;
 
 		private MessageElement[] MessageBuffer { get; set; }
 
@@ -87,29 +89,47 @@ namespace NetworkLibrary
 
 			int currentPacket = MessageIndex;
 
+
+			int neededBits = 0;
+			// Calculate bits needed for unreliable elements
+			foreach (var element in unreliableElements) {
+				neededBits += element.Bits ();
+			}
+				
+			int reliableBits = 0;
 			var packetReliableElements = new List<MessageElement> ();
 			bool resending = false;
 			for (int i = LastKnownWanted; i != MessageIndex; i++) {
 				if (resending || MessageTimer [i % BUFFER_SIZE] == 0) {
+					if ((reliableBits + MessageBuffer [i % BUFFER_SIZE].Bits () + MessageBuffer [i % BUFFER_SIZE].GetIndicator ().Bits()) > MAXIMUM_RELIABLE_BITS) {
+						break;
+					}
+					reliableBits += MessageBuffer [i % BUFFER_SIZE].Bits ();
+					reliableBits += MessageBuffer [i % BUFFER_SIZE].GetIndicator().Bits ();
 					packetReliableElements.Add (MessageBuffer [i % BUFFER_SIZE]);
-					MessageTimer [i % BUFFER_SIZE] = 3;
+					MessageTimer [i % BUFFER_SIZE] = RESEND_TIMER;
 					resending = true;
 				} else {
 					MessageTimer [i % BUFFER_SIZE]--;
 				}
 			}
 
-			//TODO Create packet of the needed size
-			Packet packet = new Packet ();
-			BitStream bitStream = new BitStream (packet.Data);
+			neededBits += reliableBits;
+
 
 			// get header data
 			int seqNumber = MessageIndex;
 			int ack = CurrentAck;
 			int reliableCount = packetReliableElements.Count;
-
 			// put packet header information into packet
 			PacketHeaderElement header = new PacketHeaderElement (seqNumber, ack, reliableCount);
+			neededBits += header.Bits ();
+
+
+			//TODO Create packet of the needed size
+			Packet packet = new Packet ((neededBits-1)/BYTE_SIZE+1);
+			BitStream bitStream = new BitStream (packet.Data);
+
 			header.WriteTo (bitStream);
 
 			// pack unreliable elements into packet

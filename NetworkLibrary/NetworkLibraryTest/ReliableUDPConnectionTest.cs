@@ -154,6 +154,19 @@ namespace NetworkLibraryTest
 			UnpackedPacket unpacked2 = conn2.ProcessPacket (packet, new ElementId[] { ElementId.HealthElement });
 			Assert.AreEqual (unpacked2.UnreliableElements.Count, 1);
 		}
+
+		[Test ()]
+		public void VariablePacketSize ()
+		{
+			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
+			unreliableElements.Add (new HealthElement (10, 10));
+
+			ReliableUDPConnection conn = new ReliableUDPConnection ();
+
+			Packet packet = conn.CreatePacket (unreliableElements);
+			Assert.AreEqual (packet.Length, 6);
+		}
+
 	}
 }
 
