@@ -63,9 +63,9 @@ namespace NetworkLibrary
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public Packet CreatePacket (List<UpdateElement> unreliableElements, List<UpdateElement> reliableElements)
+		/// INTERFACE: 	public Packet CreatePacket (List<UpdateElement> unreliableElements, List<UpdateElement> reliableElements = null)
 		/// 				List<UpdateElement> unreliableElements: A list of unreliable elements to add to the packet.
-		/// 				List<UpdateElement> reliableElements: A list of reliable elements to add to the message buffer.
+		/// 				List<UpdateElement> reliableElements: A list of reliable elements to add to the message buffer. Optional parameter.
 		/// 
 		/// RETURNS: 	A Packet object to be consumed to another ReliableUDPConnection
 		/// 
@@ -73,12 +73,14 @@ namespace NetworkLibrary
 		/// 			that will resend them after a certain amount of packet creations if they have 
 		/// 			not been acknowledged by an consumed packet.
 		/// ----------------------------------------------
-		public Packet CreatePacket (List<UpdateElement> unreliableElements, List<UpdateElement> reliableElements)
+		public Packet CreatePacket (List<UpdateElement> unreliableElements, List<UpdateElement> reliableElements = null)
 		{
-			foreach (var element in reliableElements) {
-				MessageBuffer [MessageIndex % BUFFER_SIZE] = element;
-				MessageTimer [MessageIndex % BUFFER_SIZE] = 0;
-				MessageIndex++;
+			if (reliableElements != null) {
+				foreach (var element in reliableElements) {
+					MessageBuffer [MessageIndex % BUFFER_SIZE] = element;
+					MessageTimer [MessageIndex % BUFFER_SIZE] = 0;
+					MessageIndex++;
+				}
 			}
 
 			int currentPacket = MessageIndex;
