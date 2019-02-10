@@ -15,7 +15,7 @@ namespace NetworkLibrary
 	/// FUNCTIONS:	public Packet CreatePacket (List<UpdateElement> unreliableElements, List<UpdateElement> reliableElements)
 	///				public UnpackedPacket ProcessPacket (Packet packet)
 	/// 
-	/// DATE: 		January 28th, 2018
+	/// DATE: 		January 28th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -55,9 +55,11 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// FUNCTION:	CreatePacket
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
-		/// REVISIONS:	
+		/// REVISIONS:	February 9th, 2019
+		/// 				- Changed the reliableElements parameter to be optional and
+		/// 				  have a default value of null.
 		/// 
 		/// DESIGNER:	Cameron Roberts
 		/// 
@@ -128,9 +130,13 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// FUNCTION:	ProcessPacket
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
-		/// REVISIONS:	
+		/// REVISIONS:	February 9th, 2019
+		/// 				- Change the check that the unreliable element is new to fix an error where packets
+		/// 				  with no reliable elements would always be discarded.
+		/// 					Before: if(seqNumber >= CurrentAck)
+		/// 					After: if(seqNumber >= CurrentAck -1)
 		/// 
 		/// DESIGNER:	Cameron Roberts
 		/// 

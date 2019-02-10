@@ -103,6 +103,29 @@ namespace NetworkLibrary.MessageElements
 		}
 
 		/// ----------------------------------------------
+		/// FUNCTION:	Bits
+		/// 
+		/// DATE:		February 10th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public int Bits ()
+		/// 
+		/// RETURNS: 	The number of bits needed to store an
+		/// 			ElementIndicatorElement
+		/// 
+		/// NOTES:		Returns the number of bits needed to store
+		/// 			an ElementIndicatorElement
+		/// ----------------------------------------------
+		public override int Bits(){
+			return INDICATOR_BITS;
+		}
+
+		/// ----------------------------------------------
 		/// FUNCTION:	Serialize
 		/// 
 		/// DATE:		January 28th, 2018

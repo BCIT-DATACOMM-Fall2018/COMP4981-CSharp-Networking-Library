@@ -95,6 +95,28 @@ namespace NetworkLibrary.MessageElements
 		public abstract ElementIndicatorElement GetIndicator ();
 
 		/// ----------------------------------------------
+		/// FUNCTION:	Bits
+		/// 
+		/// DATE:		February 10th, 2018
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public abstract int Bits ()
+		/// 
+		/// RETURNS: 	The number of bits needed to store the serialized version
+		/// 			of the message element.
+		/// 
+		/// NOTES:		A function to be implemented by concrete subclasses. 
+		/// 			Returns the number of bits needed to store the element
+		/// 			when it is serialized.
+		/// ----------------------------------------------
+		public abstract int Bits();
+
+		/// ----------------------------------------------
 		/// FUNCTION:	WriteTo
 		/// 
 		/// DATE:		January 28th, 2018
