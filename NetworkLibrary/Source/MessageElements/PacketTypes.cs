@@ -17,13 +17,11 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// NOTES:	
 	/// ----------------------------------------------
-	public enum ElementId : int
+	public enum PacketType : int
 	{
-		MessageElement = 0,
-		ElementIndicatorElement,
-		PacketHeaderElement,
-		HealthElement,
-		ClientIDElement
+		GameplayPacket = 0,
+		RequestPacket,
+		ConfirmationPacket
 	}
 }
 

@@ -3,19 +3,19 @@
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: ElementIndicatorElement - A MessageElement to store connection information in a packet
+	/// Class: ClientIDElement - A MessageElement to store a clients ID in a packet
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public PacketHeaderElement (int seqNumber, int ackNumber, int reliableElements)
-	/// 				public PacketHeaderElement (BitStream bitStream)
+	/// CONSTRUCTORS:	public ClientIDElement (int clientID)
+	/// 				public ClientIDElement (BitStream bitStream)
 	/// 
 	/// FUNCTIONS:	public override PacketHeaderElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
 	/// 			protected override void Deserialize (BitStream bitstream)
 	/// 			protected override void Validate ()
 	/// 
-	/// DATE: 		January 28th, 2018
+	/// DATE: 		February 12th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -23,30 +23,21 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// PROGRAMMER: Cameron Roberts
 	///
-	/// NOTES:		This ElementIndicatorElement is used to indentify reliable 
-	/// 			MessageElements placed after it in a Packet.
+	/// NOTES:		This ClientIDElement is used to indentify the 
+	/// 			player who sent a packet.
 	/// ----------------------------------------------
-	public class PacketHeaderElement : MessageElement
+	public class ClientIDElement : MessageElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.PacketHeaderElement);
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.ClientIDElement);
 
-		private const int TYPE_BITS = 4;
-		private const int SEQ_BITS = 10;
-		private const int ACK_BITS = 10;
-		private const int RELIABLE_BITS = 10;
+		public const int CLIENT_ID_BITS = 5;
 
-		public PacketType Type { get; private set; }
-
-		public int SeqNumber { get; private set; }
-
-		public int AckNumber { get; private set; }
-
-		public int ReliableElements { get; private set; }
+		public int ClientID { get; private set; }
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: PacketHeaderElement
+		/// CONSTRUCTOR: ClientIDElement
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -54,22 +45,19 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public PacketHeaderElement (int seqNumber, int ackNumber, int reliableElements)
+		/// INTERFACE: 	public ClientIDElement (int clientID)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public PacketHeaderElement (PacketType type, int seqNumber, int ackNumber, int reliableElements)
+		public ClientIDElement (int clientID)
 		{
-			Type = type;
-			SeqNumber = seqNumber;
-			AckNumber = ackNumber;
-			ReliableElements = reliableElements;
+			ClientID = clientID;
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: PacketHeaderElement
+		/// CONSTRUCTOR: ClientIDElement
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -80,17 +68,17 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public PacketHeaderElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		PacketHeaderElement by deserializing it 
+		/// 		ClientIDElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public PacketHeaderElement (BitStream bitStream) : base (bitStream)
+		public ClientIDElement (BitStream bitStream) : base (bitStream)
 		{
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	GetIndicator
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -100,10 +88,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a PacketHeaderElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a ClientIDElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a PacketHeaderElement when 
+		/// 			to reconstruct a ClientIDElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -114,7 +102,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// FUNCTION:	Bits
 		/// 
-		/// DATE:		February 10th, 2018
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -125,20 +113,19 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public int Bits ()
 		/// 
 		/// RETURNS: 	The number of bits needed to store a
-		/// 			PacketHeaderElement
+		/// 			ClientIDElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			a PacketHeaderElement
+		/// 			a ClientIDElement
 		/// ----------------------------------------------
-		public override int Bits ()
-		{
-			return SEQ_BITS + ACK_BITS + RELIABLE_BITS + TYPE_BITS;
+		public override int Bits(){
+			return CLIENT_ID_BITS;
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Serialize
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -151,20 +138,17 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			PacketHeaderElement to a BitStream.
+		/// 			ClientIDElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
-			bitStream.Write ((int)Type, 0, TYPE_BITS);
-			bitStream.Write (SeqNumber, 0, SEQ_BITS);
-			bitStream.Write	(AckNumber, 0, ACK_BITS);
-			bitStream.Write	(ReliableElements, 0, RELIABLE_BITS);
+			bitStream.Write (ClientID, 0, CLIENT_ID_BITS);
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Deserialize
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -177,20 +161,17 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			PacketHeaderElement from a BitStream.
+		/// 			ClientIDElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
-			Type = (PacketType)bitstream.ReadNext (TYPE_BITS);
-			SeqNumber = bitstream.ReadNext (SEQ_BITS);
-			AckNumber = bitstream.ReadNext (ACK_BITS);
-			ReliableElements = bitstream.ReadNext (RELIABLE_BITS);
+			ClientID = bitstream.ReadNext (CLIENT_ID_BITS);
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Validate
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -203,7 +184,7 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			PacketHeaderElement.
+		/// 			ClientIDElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{

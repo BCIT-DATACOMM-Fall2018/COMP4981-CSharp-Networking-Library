@@ -18,7 +18,7 @@ namespace NetworkLibraryTest
 			unreliableElements.Add (new HealthElement (10, 10));
 			reliableElements.Add (new HealthElement (10, 10));
 
-			ReliableUDPConnection conn = new ReliableUDPConnection ();
+			ReliableUDPConnection conn = new ReliableUDPConnection (1);
 
 			conn.CreatePacket (unreliableElements, reliableElements);
 			conn.CreatePacket (unreliableElements, reliableElements);
@@ -35,7 +35,7 @@ namespace NetworkLibraryTest
 			unreliableElements.Add (new HealthElement (10, 10));
 			reliableElements.Add (new HealthElement (10, 10));
 
-			ReliableUDPConnection conn = new ReliableUDPConnection ();
+			ReliableUDPConnection conn = new ReliableUDPConnection (1);
 			Packet packet = conn.CreatePacket (unreliableElements, reliableElements);
 			UnpackedPacket unpacked = conn.ProcessPacket (packet, new ElementId[] { ElementId.HealthElement });
 
@@ -52,7 +52,7 @@ namespace NetworkLibraryTest
 			unreliableElements.Add (new HealthElement (10, 10));
 			reliableElements.Add (new HealthElement (10, 10));
 
-			ReliableUDPConnection conn = new ReliableUDPConnection ();
+			ReliableUDPConnection conn = new ReliableUDPConnection (1);
 			Packet packet = conn.CreatePacket (unreliableElements, reliableElements);
 			UnpackedPacket unpacked = conn.ProcessPacket (packet, new ElementId[] { ElementId.HealthElement });
 
@@ -70,8 +70,8 @@ namespace NetworkLibraryTest
 			unreliableElements.Add (new HealthElement (10, 10));
 			reliableElements.Add (new HealthElement (10, 10));
 
-			ReliableUDPConnection conn = new ReliableUDPConnection ();
-			ReliableUDPConnection conn2 = new ReliableUDPConnection ();
+			ReliableUDPConnection conn = new ReliableUDPConnection (1);
+			ReliableUDPConnection conn2 = new ReliableUDPConnection (1);
 
 			Packet packet = conn.CreatePacket (unreliableElements, reliableElements);
 			Packet packet2 = conn.CreatePacket (unreliableElements, reliableElements);
@@ -90,8 +90,8 @@ namespace NetworkLibraryTest
 			unreliableElements.Add (new HealthElement (10, 10));
 			reliableElements.Add (new HealthElement (10, 10));
 
-			ReliableUDPConnection conn = new ReliableUDPConnection ();
-			ReliableUDPConnection conn2 = new ReliableUDPConnection ();
+			ReliableUDPConnection conn = new ReliableUDPConnection (1);
+			ReliableUDPConnection conn2 = new ReliableUDPConnection (1);
 
 			Packet packet = conn.CreatePacket (unreliableElements, reliableElements);
 			conn2.ProcessPacket (packet, new ElementId[] { ElementId.HealthElement });
@@ -109,8 +109,8 @@ namespace NetworkLibraryTest
 			unreliableElements.Add (new HealthElement (10, 10));
 			reliableElements.Add (new HealthElement (10, 10));
 
-			ReliableUDPConnection conn = new ReliableUDPConnection ();
-			ReliableUDPConnection conn2 = new ReliableUDPConnection ();
+			ReliableUDPConnection conn = new ReliableUDPConnection (1);
+			ReliableUDPConnection conn2 = new ReliableUDPConnection (1);
 
 			conn.CreatePacket (unreliableElements, reliableElements);
 			conn.CreatePacket (unreliableElements, reliableElements);
@@ -133,8 +133,8 @@ namespace NetworkLibraryTest
 			reliableElements.Add (new HealthElement (9, 1));
 			reliableElements.Add (new HealthElement (2, 3));
 
-			ReliableUDPConnection conn = new ReliableUDPConnection ();
-			ReliableUDPConnection conn2 = new ReliableUDPConnection ();
+			ReliableUDPConnection conn = new ReliableUDPConnection (1);
+			ReliableUDPConnection conn2 = new ReliableUDPConnection (1);
 
 			Packet packet = conn.CreatePacket (unreliableElements, reliableElements);
 			UnpackedPacket unpacked2 = conn2.ProcessPacket (packet, new ElementId[] { ElementId.HealthElement });
@@ -147,8 +147,8 @@ namespace NetworkLibraryTest
 			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
 			unreliableElements.Add (new HealthElement (10, 10));
 
-			ReliableUDPConnection conn = new ReliableUDPConnection ();
-			ReliableUDPConnection conn2 = new ReliableUDPConnection ();
+			ReliableUDPConnection conn = new ReliableUDPConnection (1);
+			ReliableUDPConnection conn2 = new ReliableUDPConnection (1);
 
 			Packet packet = conn.CreatePacket (unreliableElements);
 			UnpackedPacket unpacked2 = conn2.ProcessPacket (packet, new ElementId[] { ElementId.HealthElement });
@@ -161,10 +161,24 @@ namespace NetworkLibraryTest
 			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
 			unreliableElements.Add (new HealthElement (10, 10));
 
-			ReliableUDPConnection conn = new ReliableUDPConnection ();
+			ReliableUDPConnection conn = new ReliableUDPConnection (1);
 
 			Packet packet = conn.CreatePacket (unreliableElements);
-			Assert.AreEqual (packet.Length, 6);
+			Assert.AreEqual (packet.Length, 7);
+		}
+
+		[Test ()]
+		public void GetPlayerID ()
+		{
+			int playerID = 5;
+			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
+			unreliableElements.Add (new HealthElement (10, 10));
+
+			ReliableUDPConnection conn = new ReliableUDPConnection (playerID);
+
+			Packet packet = conn.CreatePacket (unreliableElements);
+			int extractedPlayerID = ReliableUDPConnection.GetPlayerID(packet);
+			Assert.AreEqual (playerID, extractedPlayerID);
 		}
 
 	}

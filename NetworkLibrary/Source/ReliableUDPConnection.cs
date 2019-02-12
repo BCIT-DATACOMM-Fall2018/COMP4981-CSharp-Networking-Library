@@ -33,6 +33,7 @@ namespace NetworkLibrary
 		private const int BUFFER_SIZE = 1024;
 		private const int RESEND_TIMER = 3;
 		private const int BYTE_SIZE = 8;
+		private readonly ClientIDElement ClientID;
 
 		private MessageElement[] MessageBuffer { get; set; }
 
@@ -46,8 +47,9 @@ namespace NetworkLibrary
 
 		private MessageFactory messageFactory;
 
-		public ReliableUDPConnection ()
+		public ReliableUDPConnection (int clientID)
 		{
+			ClientID = new ClientIDElement (clientID);
 			MessageBuffer = new MessageElement[BUFFER_SIZE];
 			MessageTimer = new int[BUFFER_SIZE];
 			CurrentAck = 1;
@@ -101,11 +103,11 @@ namespace NetworkLibrary
 			bool resending = false;
 			for (int i = LastKnownWanted; i != MessageIndex; i++) {
 				if (resending || MessageTimer [i % BUFFER_SIZE] == 0) {
-					if ((reliableBits + MessageBuffer [i % BUFFER_SIZE].Bits () + MessageBuffer [i % BUFFER_SIZE].GetIndicator ().Bits()) > MAXIMUM_RELIABLE_BITS) {
+					if ((reliableBits + MessageBuffer [i % BUFFER_SIZE].Bits () + MessageBuffer [i % BUFFER_SIZE].GetIndicator ().Bits ()) > MAXIMUM_RELIABLE_BITS) {
 						break;
 					}
 					reliableBits += MessageBuffer [i % BUFFER_SIZE].Bits ();
-					reliableBits += MessageBuffer [i % BUFFER_SIZE].GetIndicator().Bits ();
+					reliableBits += MessageBuffer [i % BUFFER_SIZE].GetIndicator ().Bits ();
 					packetReliableElements.Add (MessageBuffer [i % BUFFER_SIZE]);
 					MessageTimer [i % BUFFER_SIZE] = RESEND_TIMER;
 					resending = true;
@@ -122,15 +124,15 @@ namespace NetworkLibrary
 			int ack = CurrentAck;
 			int reliableCount = packetReliableElements.Count;
 			// put packet header information into packet
-			PacketHeaderElement header = new PacketHeaderElement (seqNumber, ack, reliableCount);
+			PacketHeaderElement header = new PacketHeaderElement (PacketType.GameplayPacket, seqNumber, ack, reliableCount);
 			neededBits += header.Bits ();
-
+			neededBits += ClientID.Bits ();
 
 			//TODO Create packet of the needed size
-			Packet packet = new Packet ((neededBits-1)/BYTE_SIZE+1);
+			Packet packet = new Packet ((neededBits - 1) / BYTE_SIZE + 1);
 			BitStream bitStream = new BitStream (packet.Data);
-
 			header.WriteTo (bitStream);
+			ClientID.WriteTo (bitStream);
 
 			// pack unreliable elements into packet
 			foreach (var element in unreliableElements) {
@@ -173,7 +175,13 @@ namespace NetworkLibrary
 		public UnpackedPacket ProcessPacket (Packet packet, ElementId[] expectedUnreliableIds)
 		{
 			BitStream bitStream = new BitStream (packet.Data);
+
 			PacketHeaderElement header = new PacketHeaderElement (bitStream);
+			if (header.Type != PacketType.GameplayPacket) {
+				throw new ArgumentException ("Attempted to process non gameplay packet as a gameplay packet.");
+			}
+
+			ClientIDElement packetClientID = new ClientIDElement (bitStream);
 
 			// read packet header info
 			int seqNumber = header.SeqNumber;
@@ -182,10 +190,10 @@ namespace NetworkLibrary
 
 			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
 			// check that this unreliable information is new
-			if (seqNumber >= CurrentAck -1) {
+			if (seqNumber >= CurrentAck - 1) {
 				// extract unreliable elements from packet
 				foreach (var id in expectedUnreliableIds) {
-					unreliableElements.Add (messageFactory.CreateUpdateElement(id, bitStream));
+					unreliableElements.Add (messageFactory.CreateUpdateElement (id, bitStream));
 				}
 			}
 			
@@ -202,6 +210,48 @@ namespace NetworkLibrary
 				CurrentAck += reliableCount;
 			}
 			return new UnpackedPacket (unreliableElements, reliableElements);
+		}
+
+		public static int GetPlayerID (Packet packet)
+		{
+			BitStream bitStream = new BitStream (packet.Data);
+			PacketHeaderElement header = new PacketHeaderElement (bitStream);
+			ClientIDElement packetClientID = new ClientIDElement (bitStream);
+			return packetClientID.ClientID;
+		}
+
+		public static PacketType GetPacketType (Packet packet)
+		{
+			BitStream bitStream = new BitStream (packet.Data);
+			PacketHeaderElement header = new PacketHeaderElement (bitStream);
+			return header.Type;
+		}
+
+		public static Packet CreateRequestPacket ()
+		{
+			int neededBits = 0;
+			PacketHeaderElement header = new PacketHeaderElement (PacketType.RequestPacket, 0, 0, 0);
+			neededBits += header.Bits ();
+			Packet packet = new Packet (neededBits);
+
+			BitStream bitStream = new BitStream (packet.Data);
+			header.WriteTo (bitStream);
+
+			return packet;
+		}
+
+		public static Packet CreateConfirmationPacket(int clientID){
+			int neededBits = 0;
+			PacketHeaderElement header = new PacketHeaderElement (PacketType.ConfirmationPacket, 0, 0, 0);
+			ClientIDElement clientIdElement = new ClientIDElement(clientID);
+			neededBits += header.Bits ();
+			neededBits += clientIdElement.Bits ();
+			Packet packet = new Packet (neededBits);
+
+			BitStream bitStream = new BitStream (packet.Data);
+			header.WriteTo (bitStream);
+			clientIdElement.WriteTo (bitStream);
+			return packet;
 		}
 	}
 }
