@@ -212,6 +212,24 @@ namespace NetworkLibrary
 			return new UnpackedPacket (unreliableElements, reliableElements);
 		}
 
+		/// ----------------------------------------------
+		/// FUNCTION:	GetPlayerID
+		/// 
+		/// DATE:		January 12th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public static int GetPlayerID (Packet packet)
+		/// 				Packet packet: The packet to retrieve a player ID from
+		/// 
+		/// RETURNS: 	An integer representing a player ID
+		/// 
+		/// NOTES:		
+		/// ----------------------------------------------
 		public static int GetPlayerID (Packet packet)
 		{
 			BitStream bitStream = new BitStream (packet.Data);
@@ -220,6 +238,24 @@ namespace NetworkLibrary
 			return packetClientID.ClientID;
 		}
 
+		/// ----------------------------------------------
+		/// FUNCTION:	GetPacketType
+		/// 
+		/// DATE:		January 12th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public static PacketType GetPacketType (Packet packet)
+		/// 				Packet packet: The packet to retrieve type information from
+		/// 
+		/// RETURNS: 	A PacketType
+		/// 
+		/// NOTES:		
+		/// ----------------------------------------------
 		public static PacketType GetPacketType (Packet packet)
 		{
 			BitStream bitStream = new BitStream (packet.Data);
@@ -227,6 +263,23 @@ namespace NetworkLibrary
 			return header.Type;
 		}
 
+		/// ----------------------------------------------
+		/// FUNCTION:	CreateRequestPacket
+		/// 
+		/// DATE:		January 12th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public static Packet CreateRequestPacket ()
+		/// 
+		/// RETURNS: 	A request Packet
+		/// 
+		/// NOTES:		Creates a Packet to send to a server to initiate a connection
+		/// ----------------------------------------------
 		public static Packet CreateRequestPacket ()
 		{
 			int neededBits = 0;
@@ -240,6 +293,24 @@ namespace NetworkLibrary
 			return packet;
 		}
 
+		/// ----------------------------------------------
+		/// FUNCTION:	CreateConfirmationPacket
+		/// 
+		/// DATE:		January 12th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public static Packet CreateConfirmationPacket(int clientID)
+		/// 				int clientID: The client ID to be placed in the packet
+		/// 
+		/// RETURNS: 	A response Packet
+		/// 
+		/// NOTES:		Creates a Packet used to respond to a client request.
+		/// ----------------------------------------------
 		public static Packet CreateConfirmationPacket(int clientID){
 			int neededBits = 0;
 			PacketHeaderElement header = new PacketHeaderElement (PacketType.ConfirmationPacket, 0, 0, 0);
