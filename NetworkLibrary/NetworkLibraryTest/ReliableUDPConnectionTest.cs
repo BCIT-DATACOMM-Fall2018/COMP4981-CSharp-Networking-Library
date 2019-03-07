@@ -78,7 +78,7 @@ namespace NetworkLibraryTest
 			conn2.ProcessPacket (packet, new ElementId[] { ElementId.HealthElement });
 			Assert.AreEqual (conn2.CurrentAck, 1);
 			conn2.ProcessPacket (packet2, new ElementId[] { ElementId.HealthElement });
-			Assert.AreEqual (conn2.CurrentAck, 1);
+			Assert.AreEqual (conn2.CurrentAck, 2);
 		}
 
 		[Test ()]
