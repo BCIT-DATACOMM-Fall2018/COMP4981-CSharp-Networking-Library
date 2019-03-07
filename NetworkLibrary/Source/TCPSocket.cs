@@ -52,10 +52,12 @@ namespace NetworkLibrary
 		{
 			if (CWrapper.Libsocket.initSocketTCP (ref socket) == 0) {
 				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
-				case ErrorCodes.EACCES:
+				case ErrorCodes.ERR_PERMISSION:
 					throw new System.IO.IOException ("Permission to create the socket was denied");
-				case ErrorCodes.ENOMEM:
+				case ErrorCodes.ERR_NOMEMORY:
 					throw new System.OutOfMemoryException ("Out of memory to create socket");
+				case ErrorCodes.ERR_UNKNOWN:
+					throw new System.Exception ("Unkown error occured while trying to initialize socket");
 				}
 			}
 		}
@@ -106,30 +108,20 @@ namespace NetworkLibrary
 		{
 			if (0 == Libsocket.connectPort (ref socket, ref destination)) {
 				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
-				case ErrorCodes.EADDRNOTAVAIL:
+				case ErrorCodes.ERR_ADDRNOTAVAIL:
 					throw new System.IO.IOException ("The specified address is not availiable from the local machine");
-				case ErrorCodes.EBADF:
-					throw new System.IO.IOException ("An invalid socket descriptor was specified");
-				case ErrorCodes.ECONNREFUSED:
+				case ErrorCodes.ERR_BADSOCK:
+					throw new System.IO.IOException ("Socket operation attempted on non-socket");
+				case ErrorCodes.ERR_CONREFUSED:
 					throw new InvalidOperationException ("The target address was not listening for connections or refused the connection request");
-				case ErrorCodes.EISCONN:
-					throw new InvalidOperationException ("The specified socket is already connected");
-				case ErrorCodes.ENETUNREACH:
-					throw new System.IO.IOException ("Network unreachable");
-				case ErrorCodes.ENOTSOCK:
-					throw new InvalidOperationException ("Socket operation attempted on non socket");
-				case ErrorCodes.ECONNRESET:
+				case ErrorCodes.ERR_DESTUNREACH:
+					throw new System.IO.IOException ("Destination could not be reached");
+				case ErrorCodes.ERR_CONRESET:
 					throw new System.IO.IOException ("Remote host reset the connection request");
-				case ErrorCodes.EHOSTUNREACH:
-					throw new System.IO.IOException ("Destination host could not be reached");
-				case ErrorCodes.ENETDOWN:
-					throw new System.IO.IOException ("The local network interface used to reach the destination is down");
-				case ErrorCodes.EOPNOTSUPP:
-					throw new InvalidOperationException ("The socket is listening and cannot be connected");
-				case ErrorCodes.EADDRINUSE:
-					throw new System.IO.IOException ("Address is already in use");
-				case ErrorCodes.EINVAL:
-					throw new InvalidOperationException ("Address is invalid");
+				case ErrorCodes.ERR_ILLEGALOP:
+					throw new InvalidOperationException ("Illegal socket operation attempted");
+				case ErrorCodes.ERR_UNKNOWN:
+					throw new Exception ("Unknown exception occured trying create TCP connection");
 				}
 			}
 		}
@@ -157,14 +149,14 @@ namespace NetworkLibrary
 		{
 			if (0 == Libsocket.sendDataTCP (ref socket, ref packet.Data [0], packet.Length)) {
 				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
-				case ErrorCodes.EBADF:
-					throw new System.IO.IOException ("An invalid socket descriptor was specified");
-				case ErrorCodes.ENOTSOCK:
+				case ErrorCodes.ERR_BADSOCK:
 					throw new InvalidOperationException ("Socket operation attempted on non socket");
-				case ErrorCodes.ENOTCONN:
+				case ErrorCodes.ERR_ILLEGALOP:
 					throw new InvalidOperationException ("The socket is not connected");
-				case ErrorCodes.ENOMEM:
+				case ErrorCodes.ERR_NOMEMORY:
 					throw new OutOfMemoryException ("No memory availiable");
+				case ErrorCodes.ERR_UNKNOWN:
+					throw new Exception ("Unknown exception occured trying send TCP data");
 				}
 			}
 		}
@@ -191,16 +183,16 @@ namespace NetworkLibrary
 			Packet packet = new Packet ();
 			if (0 == Libsocket.recvDataTCP (ref socket,ref packet.Data [0], (uint)packet.Data.Length)) {
 				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
-				case ErrorCodes.EBADF:
-					throw new System.IO.IOException ("An invalid socket descriptor was specified");
-				case ErrorCodes.ECONNREFUSED:
+				case ErrorCodes.ERR_CONREFUSED:
 					throw new InvalidOperationException ("A remote host refused to allow the network connection");
-				case ErrorCodes.ENOTSOCK:
+				case ErrorCodes.ERR_BADSOCK:
 					throw new InvalidOperationException ("Socket operation attempted on non socket");
-				case ErrorCodes.ENOMEM:
+				case ErrorCodes.ERR_NOMEMORY:
 					throw new OutOfMemoryException ("No memory availiable");
-				case ErrorCodes.ENOTCONN:
+				case ErrorCodes.ERR_ILLEGALOP:
 					throw new InvalidOperationException ("The socket has not been connected");
+				case ErrorCodes.ERR_UNKNOWN:
+					throw new Exception ("Unknown exception occured trying receive TCP data");
 				}
 			}
 			return packet;
@@ -231,14 +223,14 @@ namespace NetworkLibrary
 			}
 			if (-1 == acceptSocket) {
 				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
-				case ErrorCodes.EBADF:
-					throw new System.IO.IOException ("An invalid socket descriptor was specified");
-				case ErrorCodes.EINVAL:
+				case ErrorCodes.ERR_ILLEGALOP:
 					throw new InvalidOperationException ("Socket is not listening for connections");
-				case ErrorCodes.ENOTSOCK:
+				case ErrorCodes.ERR_BADSOCK:
 					throw new InvalidOperationException ("Socket operation attempted on non socket");
-				case ErrorCodes.EPERM:
+				case ErrorCodes.ERR_PERMISSION:
 					throw new System.IO.IOException ("Firewall rules forbid connection");
+				case ErrorCodes.ERR_UNKNOWN:
+					throw new Exception ("Unknown exception occured trying accept TCP connection");
 				}
 			}
 			return new TCPSocket (new SocketStruct(acceptSocket));

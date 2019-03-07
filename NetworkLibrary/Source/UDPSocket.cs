@@ -51,10 +51,12 @@ namespace NetworkLibrary
 			_lastReceivedFrom = new Destination ();
 			if (CWrapper.Libsocket.initSocket (ref socket) == 0) {
 				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
-				case ErrorCodes.EACCES:
+				case ErrorCodes.ERR_PERMISSION:
 					throw new System.IO.IOException ("Permission to create the socket was denied");
-				case ErrorCodes.ENOMEM:
+				case ErrorCodes.ERR_NOMEMORY:
 					throw new System.OutOfMemoryException ("Out of memory to create socket");
+				case ErrorCodes.ERR_UNKNOWN:
+					throw new Exception ("Unknown exception occured trying to initialize UDP socket");
 				}
 			}
 		}
@@ -86,14 +88,15 @@ namespace NetworkLibrary
 		{
 			if (0 == Libsocket.sendData (ref socket, ref destination, ref packet.Data [0], packet.Length)) {
 				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
-				case ErrorCodes.EBADF:
-					throw new System.IO.IOException ("An invalid socket descriptor was specified");
-				case ErrorCodes.EMSGSIZE:
-					throw new InvalidOperationException ("Message is too large to be sent");
-				case ErrorCodes.ENOTSOCK:
+				case ErrorCodes.ERR_ILLEGALOP:
+					throw new InvalidOperationException ("Illegal operation attempted");
+				case ErrorCodes.ERR_BADSOCK:
 					throw new InvalidOperationException ("Socket operation attempted on non socket");
-				case ErrorCodes.ENOMEM:
+				case ErrorCodes.ERR_NOMEMORY:
 					throw new OutOfMemoryException ("No memory availiable");
+				case ErrorCodes.ERR_UNKNOWN:
+					throw new Exception ("Unknown exception occured trying to send UDP data");
+
 				}
 			}
 		}
@@ -120,14 +123,14 @@ namespace NetworkLibrary
 			Packet packet = new Packet ();
 			if (0 == Libsocket.recvData (ref socket, ref _lastReceivedFrom ,ref packet.Data [0], (ulong)packet.Data.Length)) {
 				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
-				case ErrorCodes.EBADF:
-					throw new System.IO.IOException ("An invalid socket descriptor was specified");
-				case ErrorCodes.ECONNREFUSED:
+				case ErrorCodes.ERR_CONREFUSED:
 					throw new InvalidOperationException ("A remote host refused to allow the network connection\n");
-				case ErrorCodes.ENOTSOCK:
+				case ErrorCodes.ERR_BADSOCK:
 					throw new InvalidOperationException ("Socket operation attempted on non socket");
-				case ErrorCodes.ENOMEM:
+				case ErrorCodes.ERR_NOMEMORY:
 					throw new OutOfMemoryException ("No memory availiable");
+				case ErrorCodes.ERR_UNKNOWN:
+					throw new Exception ("Unknown exception occured trying to receive UDP data");
 				}
 			}
 			return packet;

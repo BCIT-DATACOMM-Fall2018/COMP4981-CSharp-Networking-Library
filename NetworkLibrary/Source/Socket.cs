@@ -70,14 +70,16 @@ namespace NetworkLibrary
 		{
 			if (0 == Libsocket.bindPort (ref socket, port)) {
 				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
-				case ErrorCodes.EACCES:
+				case ErrorCodes.ERR_PERMISSION:
 					throw new System.Security.SecurityException ("Insufficient permission to bind port");
-				case ErrorCodes.EADDRINUSE:
+				case ErrorCodes.ERR_ADDRINUSE:
 					throw new System.IO.IOException ("Port is already in use or out of ephemeral ports");
-				case ErrorCodes.EINVAL:
+				case ErrorCodes.ERR_ILLEGALOP:
 					throw new InvalidOperationException ("Socket is already bound or the given address was invalid");
-				case ErrorCodes.ENOTSOCK:
+				case ErrorCodes.ERR_BADSOCK:
 					throw new InvalidOperationException ("Socket operation attempted on non socket");
+				case ErrorCodes.ERR_UNKNOWN:
+					throw new Exception ("An unknown error occured while binding the socket to a port");
 				}
 			}
 		}
@@ -104,10 +106,10 @@ namespace NetworkLibrary
 		{
 			if (0 == Libsocket.closeSocket (ref socket)) {
 				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
-				case ErrorCodes.EBADF:
+				case ErrorCodes.ERR_BADSOCK:
 					throw new System.IO.IOException ("Socket descriptor invalid");
-				case ErrorCodes.EIO:
-					throw new System.IO.IOException ("Error occurred while attempting to close socket");
+				case ErrorCodes.ERR_UNKNOWN:
+					throw new Exception ("Error occurred while attempting to close socket");
 				}
 			}
 		}
