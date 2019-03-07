@@ -52,7 +52,6 @@ namespace NetworkLibrary
 			ClientID = new ClientIDElement (clientID);
 			MessageBuffer = new MessageElement[BUFFER_SIZE];
 			MessageTimer = new int[BUFFER_SIZE];
-			CurrentAck = 1;
 			messageFactory = new MessageFactory ();
 		}
 
@@ -120,9 +119,10 @@ namespace NetworkLibrary
 
 
 			// get header data
-			int seqNumber = MessageIndex;
 			int ack = CurrentAck;
 			int reliableCount = packetReliableElements.Count;
+			int seqNumber = LastKnownWanted -1 + reliableCount;
+
 			// put packet header information into packet
 			PacketHeaderElement header = new PacketHeaderElement (PacketType.GameplayPacket, seqNumber, ack, reliableCount);
 			neededBits += header.Bits ();
@@ -188,9 +188,11 @@ namespace NetworkLibrary
 			int ackNumber = header.AckNumber;
 			int	reliableCount = header.ReliableElements;
 
+			LastKnownWanted = ackNumber;
+
 			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
 			// check that this unreliable information is new
-			if (seqNumber >= CurrentAck - 1) {
+			if (seqNumber >= CurrentAck) {
 				// extract unreliable elements from packet
 				foreach (var id in expectedUnreliableIds) {
 					unreliableElements.Add (messageFactory.CreateUpdateElement (id, bitStream));

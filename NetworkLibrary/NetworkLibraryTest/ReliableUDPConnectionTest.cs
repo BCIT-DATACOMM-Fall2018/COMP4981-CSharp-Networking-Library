@@ -76,9 +76,9 @@ namespace NetworkLibraryTest
 			Packet packet = conn.CreatePacket (unreliableElements, reliableElements);
 			Packet packet2 = conn.CreatePacket (unreliableElements, reliableElements);
 			conn2.ProcessPacket (packet, new ElementId[] { ElementId.HealthElement });
-			Assert.AreEqual (conn2.CurrentAck, 2);
+			Assert.AreEqual (conn2.CurrentAck, 1);
 			conn2.ProcessPacket (packet2, new ElementId[] { ElementId.HealthElement });
-			Assert.AreEqual (conn2.CurrentAck, 3);
+			Assert.AreEqual (conn2.CurrentAck, 1);
 		}
 
 		[Test ()]
@@ -95,9 +95,9 @@ namespace NetworkLibraryTest
 
 			Packet packet = conn.CreatePacket (unreliableElements, reliableElements);
 			conn2.ProcessPacket (packet, new ElementId[] { ElementId.HealthElement });
-			Assert.AreEqual (conn2.CurrentAck, 2);
+			Assert.AreEqual (conn2.CurrentAck, 1);
 			conn2.ProcessPacket (packet, new ElementId[] { ElementId.HealthElement });
-			Assert.AreNotEqual (conn2.CurrentAck, 3);
+			Assert.AreNotEqual (conn2.CurrentAck, 2);
 		}
 
 		[Test ()]
@@ -180,7 +180,6 @@ namespace NetworkLibraryTest
 			int extractedPlayerID = ReliableUDPConnection.GetPlayerID(packet);
 			Assert.AreEqual (playerID, extractedPlayerID);
 		}
-
 	}
 }
 
