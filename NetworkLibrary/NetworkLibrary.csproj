@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8DCD2172-BE62-4752-BC93-4370D2E0B1A9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>NetworkLibrary</RootNamespace>
+    <AssemblyName>NetworkLibrary</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Externalconsole>true</Externalconsole>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Source\BitStream.cs" />
+    <Compile Include="Source\Destination.cs" />
+    <Compile Include="Source\Packet.cs" />
+    <Compile Include="Source\ReliableUDPConnection.cs" />
+    <Compile Include="Source\TCPSocket.cs" />
+    <Compile Include="Source\UDPSocket.cs" />
+    <Compile Include="Source\UnpackedPacket.cs" />
+    <Compile Include="Source\CWrapper\ErrorCodes.cs" />
+    <Compile Include="Source\CWrapper\Libsocket.cs" />
+    <Compile Include="Source\MessageElements\ElementIndicatorElement.cs" />
+    <Compile Include="Source\MessageElements\HealthElement.cs" />
+    <Compile Include="Source\MessageElements\MessageElement.cs" />
+    <Compile Include="Source\MessageElements\PacketHeaderElement.cs" />
+    <Compile Include="Source\MessageElements\ElementId.cs" />
+    <Compile Include="Source\MessageElements\UpdateElement.cs" />
+    <Compile Include="Source\MessageElements\MessageFactory.cs" />
+    <Compile Include="Source\IStateMessageBridge.cs" />
+    <Compile Include="Source\Socket.cs" />
+    <Compile Include="Source\CWrapper\SocketStruct.cs" />
+    <Compile Include="Source\MessageElements\ClientIDElement.cs" />
+    <Compile Include="Source\MessageElements\PacketTypes.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Source\" />
+    <Folder Include="Source\CWrapper\" />
+    <Folder Include="Source\MessageElements\" />
+  </ItemGroup>
+</Project>
