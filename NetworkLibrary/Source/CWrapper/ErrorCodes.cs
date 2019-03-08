@@ -28,7 +28,8 @@ namespace NetworkLibrary.CWrapper
 		ERR_BADSOCK,
 		ERR_CONRESET,
 		ERR_PERMISSION,
-		ERR_ADDRNOTAVAIL
+		ERR_ADDRNOTAVAIL,
+		ERR_TIMEOUT
 	}
 }
 

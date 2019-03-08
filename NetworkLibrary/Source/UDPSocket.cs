@@ -28,7 +28,8 @@ namespace NetworkLibrary
 	public class UDPSocket : Socket
 	{
 
-		public Destination LastReceivedFrom {get { return _lastReceivedFrom; } set {_lastReceivedFrom = value;}}
+		public Destination LastReceivedFrom { get { return _lastReceivedFrom; } set { _lastReceivedFrom = value; } }
+
 		private Destination _lastReceivedFrom;
 
 		/// ----------------------------------------------
@@ -42,11 +43,14 @@ namespace NetworkLibrary
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public TCPSocket ()
+		/// INTERFACE: 	public TCPSocket (int timeout = DEFAULT_TIMEOUT)
+		/// 				int timeout: A timeout to place on socket send and receive
+		/// 							 operations. Defaults to DEFAULT_TIMEOUT. A 
+		/// 							 timeout of 0 means no timeout.
 		/// 
 		/// NOTES: 	Creates a new UDP socket.
 		/// ----------------------------------------------
-		public UDPSocket () : base()
+		public UDPSocket (int timeout = DEFAULT_TIMEOUT) : base ()
 		{
 			_lastReceivedFrom = new Destination ();
 			if (CWrapper.Libsocket.initSocket (ref socket) == 0) {
@@ -57,6 +61,18 @@ namespace NetworkLibrary
 					throw new System.OutOfMemoryException ("Out of memory to create socket");
 				case ErrorCodes.ERR_UNKNOWN:
 					throw new Exception ("Unknown exception occured trying to initialize UDP socket");
+				}
+			}
+			if (timeout != 0) {
+				if (Libsocket.attachTimeout (ref socket, timeout) == 0) {
+					switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
+					case ErrorCodes.ERR_BADSOCK:
+						throw new InvalidOperationException ("Socket operation attempted on non socket");
+					case ErrorCodes.ERR_ILLEGALOP:
+						throw new InvalidOperationException ("Illegal operation attempted");
+					case ErrorCodes.ERR_UNKNOWN:
+						throw new System.Exception ("Unkown error occured while trying to set socket timeout");
+					}
 				}
 			}
 		}
@@ -96,7 +112,8 @@ namespace NetworkLibrary
 					throw new OutOfMemoryException ("No memory availiable");
 				case ErrorCodes.ERR_UNKNOWN:
 					throw new Exception ("Unknown exception occured trying to send UDP data");
-
+				case ErrorCodes.ERR_TIMEOUT:
+					throw new TimeoutException ("Timeout while attempting to send data");
 				}
 			}
 		}
@@ -121,7 +138,7 @@ namespace NetworkLibrary
 		public Packet Receive ()
 		{
 			Packet packet = new Packet ();
-			if (0 == Libsocket.recvData (ref socket, ref _lastReceivedFrom ,ref packet.Data [0], (ulong)packet.Data.Length)) {
+			if (-1 == Libsocket.recvData (ref socket, ref _lastReceivedFrom, ref packet.Data [0], (ulong)packet.Data.Length)) {
 				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
 				case ErrorCodes.ERR_CONREFUSED:
 					throw new InvalidOperationException ("A remote host refused to allow the network connection\n");
@@ -131,6 +148,8 @@ namespace NetworkLibrary
 					throw new OutOfMemoryException ("No memory availiable");
 				case ErrorCodes.ERR_UNKNOWN:
 					throw new Exception ("Unknown exception occured trying to receive UDP data");
+				case ErrorCodes.ERR_TIMEOUT:
+					throw new TimeoutException ("Timeout while attempting to receive data");
 				}
 			}
 			return packet;

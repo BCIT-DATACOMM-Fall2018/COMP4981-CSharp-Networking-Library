@@ -26,6 +26,7 @@ namespace NetworkLibrary
 	public abstract class Socket
 	{
 		protected SocketStruct socket;
+		protected const int DEFAULT_TIMEOUT = 5;
 
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: Socket

@@ -44,11 +44,14 @@ namespace NetworkLibrary
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public TCPSocket ()
+		/// INTERFACE: 	public TCPSocket (int timeout = DEFAULT_TIMEOUT)
+		/// 				int timeout: A timeout to place on socket send, receive, and connect
+		/// 							 operations. Defaults to DEFAULT_TIMEOUT. A timeout of 0
+		/// 							 means no timeout.
 		/// 
 		/// NOTES: 	Creates a new TCP socket.
 		/// ----------------------------------------------
-		public TCPSocket () : base()
+		public TCPSocket (int timeout = DEFAULT_TIMEOUT) : base()
 		{
 			if (CWrapper.Libsocket.initSocketTCP (ref socket) == 0) {
 				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
@@ -58,6 +61,18 @@ namespace NetworkLibrary
 					throw new System.OutOfMemoryException ("Out of memory to create socket");
 				case ErrorCodes.ERR_UNKNOWN:
 					throw new System.Exception ("Unkown error occured while trying to initialize socket");
+				}
+			}
+			if (timeout != 0) {
+				if (Libsocket.attachTimeout (ref socket, timeout) == 0) {
+					switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
+					case ErrorCodes.ERR_BADSOCK:
+						throw new InvalidOperationException ("Socket operation attempted on non socket");
+					case ErrorCodes.ERR_ILLEGALOP:
+						throw new InvalidOperationException ("Illegal operation attempted");
+					case ErrorCodes.ERR_UNKNOWN:
+						throw new System.Exception ("Unkown error occured while trying to set socket timeout");
+					}
 				}
 			}
 		}
@@ -111,7 +126,7 @@ namespace NetworkLibrary
 				case ErrorCodes.ERR_ADDRNOTAVAIL:
 					throw new System.IO.IOException ("The specified address is not availiable from the local machine");
 				case ErrorCodes.ERR_BADSOCK:
-					throw new System.IO.IOException ("Socket operation attempted on non-socket");
+					throw new InvalidOperationException ("Socket operation attempted on non socket");
 				case ErrorCodes.ERR_CONREFUSED:
 					throw new InvalidOperationException ("The target address was not listening for connections or refused the connection request");
 				case ErrorCodes.ERR_DESTUNREACH:
@@ -122,6 +137,8 @@ namespace NetworkLibrary
 					throw new InvalidOperationException ("Illegal socket operation attempted");
 				case ErrorCodes.ERR_UNKNOWN:
 					throw new Exception ("Unknown exception occured trying create TCP connection");
+				case ErrorCodes.ERR_TIMEOUT:
+					throw new TimeoutException ("Timeout while attempting to connect");
 				}
 			}
 		}
@@ -157,6 +174,8 @@ namespace NetworkLibrary
 					throw new OutOfMemoryException ("No memory availiable");
 				case ErrorCodes.ERR_UNKNOWN:
 					throw new Exception ("Unknown exception occured trying send TCP data");
+				case ErrorCodes.ERR_TIMEOUT:
+					throw new TimeoutException ("Timeout while attempting to send data");
 				}
 			}
 		}
@@ -181,7 +200,7 @@ namespace NetworkLibrary
 		public Packet Receive ()
 		{
 			Packet packet = new Packet ();
-			if (0 == Libsocket.recvDataTCP (ref socket,ref packet.Data [0], (uint)packet.Data.Length)) {
+			if (-1 == Libsocket.recvDataTCP (ref socket,ref packet.Data [0], (uint)packet.Data.Length)) {
 				switch ((ErrorCodes)Libsocket.getSocketError (ref socket)) {
 				case ErrorCodes.ERR_CONREFUSED:
 					throw new InvalidOperationException ("A remote host refused to allow the network connection");
@@ -193,6 +212,8 @@ namespace NetworkLibrary
 					throw new InvalidOperationException ("The socket has not been connected");
 				case ErrorCodes.ERR_UNKNOWN:
 					throw new Exception ("Unknown exception occured trying receive TCP data");
+				case ErrorCodes.ERR_TIMEOUT:
+					throw new TimeoutException ("Timeout while attempting to receive data");
 				}
 			}
 			return packet;

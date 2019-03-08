@@ -314,6 +314,32 @@ namespace NetworkLibrary.CWrapper
 		[DllImport ("libsocket")]
 		public static extern Int32 getSocketError (ref SocketStruct socket);
 
+		/// ----------------------------------------------
+		/// FUNCTION:	attachTimeout
+		/// 
+		/// DATE:		January 28th, 2018
+		/// 
+		/// REVISIONS:
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public static extern Int32 attachTimeout (ref SocketStruct socket, Int32 waitDuration)
+		/// 				ref SocketStruct socket: A SocketStruct to attach a timeout to.
+		/// 				Int32 waitDuration: The timeout to add to the socket in seconds.
+		/// 
+		/// RETURNS: 	On sucess 1 is returned.
+		/// 			On error 0 is returned and getSocketError should be called with
+		/// 			the socket pointer to get the error code.
+		/// 
+		/// NOTES:		This function adds a timeout to a socket. Only the recv, send, and connect functions
+		/// 			will timeout.
+		/// ----------------------------------------------
+		[DllImport ("libsocket")]
+		public static extern Int32 attachTimeout (ref SocketStruct socket, Int32 waitDuration);
+
+
 	}
 }
 
