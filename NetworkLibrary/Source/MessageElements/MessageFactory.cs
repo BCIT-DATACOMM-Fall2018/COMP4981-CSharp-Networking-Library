@@ -74,8 +74,20 @@ namespace NetworkLibrary.MessageElements
 				return new PacketHeaderElement (bitStream);
 			case ElementId.HealthElement:
 				return new HealthElement (bitStream);
+			case ElementId.ClientIDElement:
+				return new ClientIDElement (bitStream);
+			case ElementId.PositionElement:
+				return new PositionElement (bitStream);
+			case ElementId.CollisionElement:
+				return new CollisionElement (bitStream);
+			case ElementId.TargetedAbilityElement:
+				return new TargetedAbilityElement (bitStream);
+			case ElementId.AreaAbilityElement:
+				return new AreaAbilityElement (bitStream);
+			case ElementId.SpawnElement:
+				return new SpawnElement (bitStream);
 			default:
-				throw new InvalidOperationException ();
+				throw new InvalidOperationException ("Attempted to create a MessageElement with an invalid ID");
 			}
 		}
 
@@ -104,8 +116,18 @@ namespace NetworkLibrary.MessageElements
 			switch (id) {
 			case ElementId.HealthElement:
 				return new HealthElement (bitStream);
+			case ElementId.PositionElement:
+				return new PositionElement (bitStream);
+			case ElementId.CollisionElement:
+				return new CollisionElement (bitStream);
+			case ElementId.TargetedAbilityElement:
+				return new TargetedAbilityElement (bitStream);
+			case ElementId.AreaAbilityElement:
+				return new AreaAbilityElement (bitStream);
+			case ElementId.SpawnElement:
+				return new SpawnElement (bitStream);
 			default:
-				throw new InvalidOperationException ();
+				throw new InvalidOperationException ("Attempted to create a UpdateElement with an invalid ID");
 			}
 		}
 	}
