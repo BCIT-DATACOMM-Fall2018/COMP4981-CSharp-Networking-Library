@@ -137,7 +137,7 @@ namespace NetworkLibrary.MessageElements
 		/// 			a SpawnElement
 		/// ----------------------------------------------
 		public override int Bits(){
-			return ACTORTYPE_BITS + ACTORID_MAX + X_BITS + Y_BITS;
+			return ACTORTYPE_BITS + ACTORID_BITS + X_BITS + Y_BITS;
 		}
 
 		/// ----------------------------------------------
@@ -236,7 +236,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			if ((int)ActorType > ACTORTYPE_BITS || ActorId > ACTORID_MAX || X > X_MAX || Y > Y_MAX) {
+			if ((int)ActorType > ACTORTYPE_MAX || ActorId > ACTORID_MAX || X > X_MAX || Y > Y_MAX) {
 				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
 			}
 		}

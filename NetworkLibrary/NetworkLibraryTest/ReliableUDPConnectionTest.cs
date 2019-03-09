@@ -53,8 +53,10 @@ namespace NetworkLibraryTest
 			reliableElements.Add (new SpawnElement (ActorType.Player, 1, 0, 0));
 
 			ReliableUDPConnection conn = new ReliableUDPConnection (1);
+			ReliableUDPConnection conn2 = new ReliableUDPConnection (2);
+
 			Packet packet = conn.CreatePacket (unreliableElements, reliableElements);
-			UnpackedPacket unpacked = conn.ProcessPacket (packet, new ElementId[] { ElementId.HealthElement });
+			UnpackedPacket unpacked = conn2.ProcessPacket (packet, new ElementId[] { ElementId.HealthElement });
 
 			Assert.AreEqual (reliableElements.Count, unpacked.ReliableElements.Count);
 
