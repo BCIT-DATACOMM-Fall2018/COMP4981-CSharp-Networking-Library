@@ -51,7 +51,14 @@
     <Compile Include="Source\Socket.cs" />
     <Compile Include="Source\CWrapper\SocketStruct.cs" />
     <Compile Include="Source\MessageElements\ClientIDElement.cs" />
-    <Compile Include="Source\MessageElements\PacketTypes.cs" />
+    <Compile Include="Source\AbilityType.cs" />
+    <Compile Include="Source\ActorType.cs" />
+    <Compile Include="Source\MessageElements\PacketType.cs" />
+    <Compile Include="Source\MessageElements\PositionElement.cs" />
+    <Compile Include="Source\MessageElements\CollisionElement.cs" />
+    <Compile Include="Source\MessageElements\TargetedAbilityElement.cs" />
+    <Compile Include="Source\MessageElements\AreaAbilityElement.cs" />
+    <Compile Include="Source\MessageElements\SpawnElement.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

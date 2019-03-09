@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NetworkLibrary.MessageElements
+namespace NetworkLibrary
 {
 	/// ----------------------------------------------
 	/// Enum: 	ElementId - An enum to store MessageElement IDs
@@ -17,18 +17,9 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// NOTES:	
 	/// ----------------------------------------------
-	public enum ElementId : int
+	public enum AbilityType : int
 	{
-		MessageElement = 0,
-		ElementIndicatorElement,
-		PacketHeaderElement,
-		HealthElement,
-		ClientIDElement,
-		PositionElement,
-		CollisionElement,
-		TargetedAbilityElement,
-		AreaAbilityElement,
-		SpawnElement
+		Placeholder = 0
 	}
 }
 

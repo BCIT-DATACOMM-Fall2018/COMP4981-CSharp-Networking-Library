@@ -3,19 +3,20 @@
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: ElementIndicatorElement - A MessageElement to store connection information in a packet
+	/// Class: TargetedAbilityElement - A UpdateElement to denote an ability use
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public PacketHeaderElement (int seqNumber, int ackNumber, int reliableElements)
-	/// 				public PacketHeaderElement (BitStream bitStream)
+	/// CONSTRUCTORS:	public TargetedAbilityElement (int actorId, AbilityType abilityId, int targetId)
+	/// 				public TargetedAbilityElement (BitStream bitstream)
 	/// 
-	/// FUNCTIONS:	public override PacketHeaderElement GetIndicator ()
+	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
 	/// 			protected override void Deserialize (BitStream bitstream)
+	/// 			public override void UpdateState (IStateMessageBridge bridge)
 	/// 			protected override void Validate ()
 	/// 
-	/// DATE: 		January 28th, 2019
+	/// DATE: 		March 8th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -23,30 +24,30 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// PROGRAMMER: Cameron Roberts
 	///
-	/// NOTES:		This ElementIndicatorElement is used to indentify reliable 
-	/// 			MessageElements placed after it in a Packet.
+	/// NOTES:		
 	/// ----------------------------------------------
-	public class PacketHeaderElement : MessageElement
+	public class TargetedAbilityElement : UpdateElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.PacketHeaderElement);
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.TargetedAbilityElement);
 
-		private const int TYPE_BITS = 4;
-		private const int SEQ_BITS = 10;
-		private const int ACK_BITS = 10;
-		private const int RELIABLE_BITS = 10;
+		private const int ACTORID_MAX = 255;
+		private const int ABILITYID_MAX = 127;
+		private const int TARGETID_MAX = 255;
 
-		public PacketType Type { get; private set; }
+		private static readonly int ACTORID_BITS = RequiredBits (ACTORID_MAX);
+		private static readonly int ABILITYID_BITS = RequiredBits (ABILITYID_MAX);
+		private static readonly int TARGETID_BITS = RequiredBits (TARGETID_MAX);
 
-		public int SeqNumber { get; private set; }
+		public int ActorId { get; private set; }
 
-		public int AckNumber { get; private set; }
+		public AbilityType AbilityId { get; private set; }
 
-		public int ReliableElements { get; private set; }
+		public int TargetId { get; private set; }
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: PacketHeaderElement
+		/// CONSTRUCTOR: TargetedAbilityElement
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -54,22 +55,21 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public PacketHeaderElement (int seqNumber, int ackNumber, int reliableElements)
+		/// INTERFACE: 	public TargetedAbilityElement (int actorId, AbilityType abilityId, int targetId)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public PacketHeaderElement (PacketType type, int seqNumber, int ackNumber, int reliableElements)
+		public TargetedAbilityElement (int actorId, AbilityType abilityId, int targetId)
 		{
-			Type = type;
-			SeqNumber = seqNumber;
-			AckNumber = ackNumber;
-			ReliableElements = reliableElements;
+			ActorId = actorId;
+			AbilityId = abilityId;
+			TargetId = targetId;
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: PacketHeaderElement
+		/// CONSTRUCTOR: TargetedAbilityElement
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -77,20 +77,20 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public PacketHeaderElement (BitStream bitstream)
+		/// INTERFACE: 	public HealthElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		PacketHeaderElement by deserializing it 
+		/// 		TargetedAbilityElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public PacketHeaderElement (BitStream bitStream) : base (bitStream)
+		public TargetedAbilityElement (BitStream bitstream) : base (bitstream)
 		{
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	GetIndicator
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -100,10 +100,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a PacketHeaderElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a TargetedAbilityElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a PacketHeaderElement when 
+		/// 			to reconstruct a TargetedAbilityElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -114,7 +114,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// FUNCTION:	Bits
 		/// 
-		/// DATE:		February 10th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -125,20 +125,20 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public int Bits ()
 		/// 
 		/// RETURNS: 	The number of bits needed to store a
-		/// 			PacketHeaderElement
+		/// 			TargetedAbilityElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			a PacketHeaderElement
+		/// 			a TargetedAbilityElement
 		/// ----------------------------------------------
 		public override int Bits ()
 		{
-			return SEQ_BITS + ACK_BITS + RELIABLE_BITS + TYPE_BITS;
+			return ACTORID_BITS + ABILITYID_BITS + TARGETID_BITS;
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Serialize
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -151,20 +151,19 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			PacketHeaderElement to a BitStream.
+		/// 			TargetedAbilityElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
-			bitStream.Write ((int)Type, 0, TYPE_BITS);
-			bitStream.Write (SeqNumber, 0, SEQ_BITS);
-			bitStream.Write	(AckNumber, 0, ACK_BITS);
-			bitStream.Write	(ReliableElements, 0, RELIABLE_BITS);
+			bitStream.Write	(ActorId, 0, ACTORID_BITS);
+			bitStream.Write ((int)AbilityId, 0, ABILITYID_BITS);
+			bitStream.Write	(TargetId, 0, TARGETID_BITS);
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Deserialize
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -177,20 +176,43 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			PacketHeaderElement from a BitStream.
+		/// 			TargetedAbilityElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
-			Type = (PacketType)bitstream.ReadNext (TYPE_BITS);
-			SeqNumber = bitstream.ReadNext (SEQ_BITS);
-			AckNumber = bitstream.ReadNext (ACK_BITS);
-			ReliableElements = bitstream.ReadNext (RELIABLE_BITS);
+			ActorId = bitstream.ReadNext (ACTORID_BITS);
+			AbilityId = (AbilityType)bitstream.ReadNext (ABILITYID_BITS);
+			TargetId = bitstream.ReadNext (TARGETID_BITS);
+
+		}
+
+		/// ----------------------------------------------
+		/// FUNCTION:	UpdateState
+		/// 
+		/// DATE:		March 8th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public override void UpdateState (IStateMessageBridge bridge)
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		Contains logic needed to update the game state through
+		/// 			the use of a IStateMessageBridge.
+		/// ----------------------------------------------
+		public override void UpdateState (IStateMessageBridge bridge)
+		{
+			bridge.UseTargetedAbility (ActorId, AbilityId, TargetId);
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Validate
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -203,10 +225,13 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			PacketHeaderElement.
+		/// 			TargetedAbilityElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
+			if ( ActorId > ACTORID_MAX || (int)AbilityId > ABILITYID_MAX || TargetId > TARGETID_MAX) {
+				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
+			}
 		}
 	}
 }

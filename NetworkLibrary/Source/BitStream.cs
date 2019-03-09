@@ -17,7 +17,7 @@ namespace NetworkLibrary
 	/// 			public int ReadNext (int bits)
 	/// 			private static int GetBits (int data, int offset, int bits)
 	/// 
-	/// DATE: 		January 28th, 2018
+	/// DATE: 		January 28th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -39,7 +39,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: Bitstream
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -61,7 +61,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// FUNCTION:	Write
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -105,7 +105,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// FUNCTION:	Read
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -153,7 +153,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// FUNCTION:	ReadNext
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -183,7 +183,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// FUNCTION:	GetBits
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 

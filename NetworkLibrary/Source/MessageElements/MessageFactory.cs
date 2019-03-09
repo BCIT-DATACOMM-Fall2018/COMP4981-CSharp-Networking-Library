@@ -13,7 +13,7 @@ namespace NetworkLibrary.MessageElements
 	/// FUNCTIONS:	public MessageElement CreateMessageElement (ElementId id, BitStream bitStream)
 	///				public UpdateElement CreateUpdateElement (ElementId id, BitStream bitStream)
 	/// 
-	/// DATE: 		January 28th, 2018
+	/// DATE: 		January 28th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -29,7 +29,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: Bitstream
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -48,7 +48,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// FUNCTION:	CreateMessageElement
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -82,7 +82,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// FUNCTION:	CreateMessageElement
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 

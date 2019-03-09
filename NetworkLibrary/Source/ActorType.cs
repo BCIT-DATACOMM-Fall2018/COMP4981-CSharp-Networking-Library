@@ -1,13 +1,14 @@
 ﻿using System;
 
-namespace NetworkLibrary.MessageElements
+namespace NetworkLibrary
 {
 	/// ----------------------------------------------
-	/// Enum: 	ElementId - An enum to store MessageElement IDs
+	/// Enum: 	ActorType - An enum to communitcate types of actors
+	/// 					between the client and server programs.
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// DATE: 		January 28th, 2018
+	/// DATE: 		March 8th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -17,11 +18,11 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// NOTES:	
 	/// ----------------------------------------------
-	public enum PacketType : int
+	public enum ActorType : int
 	{
-		GameplayPacket = 0,
-		RequestPacket,
-		ConfirmationPacket
+		Player = 0,
+		AlliedPlayer,
+		EnemyPlayer
 	}
 }
 

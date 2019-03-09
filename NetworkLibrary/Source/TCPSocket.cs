@@ -16,7 +16,7 @@ namespace NetworkLibrary
 	/// 			public Packet Receive ()
 	/// 			public TCPSocket Accept ()
 	/// 
-	/// DATE: 		January 28th, 2018
+	/// DATE: 		January 28th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -36,7 +36,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: TCPSocket
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -80,7 +80,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: TCPSocket
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -102,7 +102,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// FUNCTION:	Connect
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -146,7 +146,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// FUNCTION:	Send
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -183,7 +183,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// FUNCTION:	Receive
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -222,7 +222,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// FUNCTION:	Accept
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 

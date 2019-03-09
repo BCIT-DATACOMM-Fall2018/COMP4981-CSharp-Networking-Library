@@ -3,19 +3,20 @@
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: ElementIndicatorElement - A MessageElement to store connection information in a packet
+	/// Class: CollisionElement - A UpdateElement to denote a collision
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public PacketHeaderElement (int seqNumber, int ackNumber, int reliableElements)
-	/// 				public PacketHeaderElement (BitStream bitStream)
+	/// CONSTRUCTORS:	public CollisionElement (AbilityType abilityId, int actorHitId, int actorCastId)
+	/// 				public CollisionElement (BitStream bitstream)
 	/// 
-	/// FUNCTIONS:	public override PacketHeaderElement GetIndicator ()
+	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
 	/// 			protected override void Deserialize (BitStream bitstream)
+	/// 			public override void UpdateState (IStateMessageBridge bridge)
 	/// 			protected override void Validate ()
 	/// 
-	/// DATE: 		January 28th, 2019
+	/// DATE: 		March 8th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -23,30 +24,31 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// PROGRAMMER: Cameron Roberts
 	///
-	/// NOTES:		This ElementIndicatorElement is used to indentify reliable 
-	/// 			MessageElements placed after it in a Packet.
+	/// NOTES:		
 	/// ----------------------------------------------
-	public class PacketHeaderElement : MessageElement
+	public class CollisionElement : UpdateElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.PacketHeaderElement);
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.CollisionElement);
 
-		private const int TYPE_BITS = 4;
-		private const int SEQ_BITS = 10;
-		private const int ACK_BITS = 10;
-		private const int RELIABLE_BITS = 10;
+		private const int ABILITYID_MAX = 127;
+		private const int ACTORHITID_MAX = 255;
+		private const int ACTORCASTID_MAX = 255;
 
-		public PacketType Type { get; private set; }
+		private static readonly int ABILITYID_BITS = RequiredBits (ABILITYID_MAX);
+		private static readonly int ACTORHITID_BITS = RequiredBits (ACTORHITID_MAX);
+		private static readonly int ACTORCASTID_BITS = RequiredBits (ACTORCASTID_MAX);
 
-		public int SeqNumber { get; private set; }
 
-		public int AckNumber { get; private set; }
+		public AbilityType AbilityId { get; private set; }
 
-		public int ReliableElements { get; private set; }
+		public int ActorHitId { get; private set; }
+
+		public int ActorCastId { get; private set; }
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: PacketHeaderElement
+		/// CONSTRUCTOR: CollisionElement
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -54,22 +56,21 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public PacketHeaderElement (int seqNumber, int ackNumber, int reliableElements)
+		/// INTERFACE: 	public CollisionElement (AbilityType abilityId, int actorHitId, int actorCastId)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public PacketHeaderElement (PacketType type, int seqNumber, int ackNumber, int reliableElements)
+		public CollisionElement (AbilityType abilityId, int actorHitId, int actorCastId)
 		{
-			Type = type;
-			SeqNumber = seqNumber;
-			AckNumber = ackNumber;
-			ReliableElements = reliableElements;
+			AbilityId = abilityId;
+			ActorHitId = actorHitId;
+			ActorCastId = actorCastId;
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: PacketHeaderElement
+		/// CONSTRUCTOR: CollisionElement
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -77,20 +78,20 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public PacketHeaderElement (BitStream bitstream)
+		/// INTERFACE: 	public HealthElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		PacketHeaderElement by deserializing it 
+		/// 		CollisionElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public PacketHeaderElement (BitStream bitStream) : base (bitStream)
+		public CollisionElement (BitStream bitstream) : base (bitstream)
 		{
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	GetIndicator
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -100,10 +101,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a PacketHeaderElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a CollisionElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a PacketHeaderElement when 
+		/// 			to reconstruct a CollisionElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -114,7 +115,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// FUNCTION:	Bits
 		/// 
-		/// DATE:		February 10th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -125,20 +126,20 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public int Bits ()
 		/// 
 		/// RETURNS: 	The number of bits needed to store a
-		/// 			PacketHeaderElement
+		/// 			CollisionElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			a PacketHeaderElement
+		/// 			a CollisionElement
 		/// ----------------------------------------------
 		public override int Bits ()
 		{
-			return SEQ_BITS + ACK_BITS + RELIABLE_BITS + TYPE_BITS;
+			return ABILITYID_BITS + ACTORHITID_BITS + ACTORCASTID_BITS;
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Serialize
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -151,20 +152,19 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			PacketHeaderElement to a BitStream.
+		/// 			CollisionElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
-			bitStream.Write ((int)Type, 0, TYPE_BITS);
-			bitStream.Write (SeqNumber, 0, SEQ_BITS);
-			bitStream.Write	(AckNumber, 0, ACK_BITS);
-			bitStream.Write	(ReliableElements, 0, RELIABLE_BITS);
+			bitStream.Write ((int)AbilityId, 0, ABILITYID_BITS);
+			bitStream.Write	(ActorHitId, 0, ACTORHITID_BITS);
+			bitStream.Write	(ActorCastId, 0, ACTORCASTID_BITS);
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Deserialize
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -177,20 +177,43 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			PacketHeaderElement from a BitStream.
+		/// 			CollisionElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
-			Type = (PacketType)bitstream.ReadNext (TYPE_BITS);
-			SeqNumber = bitstream.ReadNext (SEQ_BITS);
-			AckNumber = bitstream.ReadNext (ACK_BITS);
-			ReliableElements = bitstream.ReadNext (RELIABLE_BITS);
+			AbilityId = (AbilityType)bitstream.ReadNext (ABILITYID_BITS);
+			ActorHitId = bitstream.ReadNext (ACTORHITID_MAX);
+			ActorCastId = bitstream.ReadNext (ACTORCASTID_MAX);
+
+		}
+
+		/// ----------------------------------------------
+		/// FUNCTION:	UpdateState
+		/// 
+		/// DATE:		March 8th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public override void UpdateState (IStateMessageBridge bridge)
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		Contains logic needed to update the game state through
+		/// 			the use of a IStateMessageBridge.
+		/// ----------------------------------------------
+		public override void UpdateState (IStateMessageBridge bridge)
+		{
+			bridge.ProcessCollision (AbilityId, ActorHitId, ActorCastId);
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Validate
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -203,10 +226,13 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			PacketHeaderElement.
+		/// 			CollisionElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
+			if ((int)AbilityId > ABILITYID_MAX || ActorHitId > ACTORHITID_MAX || ActorCastId > ACTORCASTID_MAX) {
+				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
+			}
 		}
 	}
 }

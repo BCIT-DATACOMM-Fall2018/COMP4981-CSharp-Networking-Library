@@ -13,7 +13,7 @@ namespace NetworkLibrary
 	/// FUNCTIONS:	public void Bind (ushort port = 0)
 	/// 			public void Close ()
 	/// 
-	/// DATE: 		January 28th, 2018
+	/// DATE: 		January 28th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -31,7 +31,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: Socket
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -51,7 +51,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// FUNCTION:	Bind
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -89,7 +89,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// FUNCTION:	Close
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
