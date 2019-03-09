@@ -137,7 +137,7 @@ namespace NetworkLibrary.MessageElements
 		/// 			a SpawnElement
 		/// ----------------------------------------------
 		public override int Bits(){
-			return ACTORTYPE_BITS + X_BITS + Y_BITS;
+			return ACTORTYPE_BITS + ACTORID_MAX + X_BITS + Y_BITS;
 		}
 
 		/// ----------------------------------------------
