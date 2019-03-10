@@ -7,7 +7,7 @@ namespace NetworkLibrary.MessageElements
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public PositionElement (int actorId, int x, int y)
+	/// CONSTRUCTORS:	public PositionElement (int actorId, int x, int z)
 	/// 				public PositionElement (BitStream bitstream)
 	/// 
 	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
@@ -56,7 +56,7 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public PositionElement (int actorId, int x, int y)
+		/// INTERFACE: 	public PositionElement (int actorId, int x, int z)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------

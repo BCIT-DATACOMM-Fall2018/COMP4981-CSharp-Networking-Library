@@ -7,7 +7,7 @@ namespace NetworkLibrary.MessageElements
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public SpawnElement (ActorType actorType, int actorId, int x, int y)
+	/// CONSTRUCTORS:	public SpawnElement (ActorType actorType, int actorId, int x, int z)
 	/// 				public SpawnElement (BitStream bitstream)
 	/// 
 	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
@@ -33,12 +33,12 @@ namespace NetworkLibrary.MessageElements
 		private const int ACTORTYPE_MAX = 31;
 		private const int ACTORID_MAX = 255;
 		private const int X_MAX = 255;
-		private const int Y_MAX = 255;
+		private const int Z_MAX = 255;
 
 		private static readonly int ACTORTYPE_BITS = RequiredBits (ACTORTYPE_MAX);
 		private static readonly int ACTORID_BITS = RequiredBits (ACTORID_MAX);
 		private static readonly int X_BITS = RequiredBits (X_MAX);
-		private static readonly int Y_BITS = RequiredBits (Y_MAX);
+		private static readonly int Z_BITS = RequiredBits (Z_MAX);
 
 
 		public ActorType ActorType { get; private set; }
@@ -47,7 +47,7 @@ namespace NetworkLibrary.MessageElements
 
 		public int X { get; private set; }
 
-		public int Y { get; private set; }
+		public int Z { get; private set; }
 
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: SpawnElement
@@ -64,12 +64,12 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public SpawnElement (ActorType actorType, int actorId, int x, int y)
+		public SpawnElement (ActorType actorType, int actorId, int x, int z)
 		{
 			ActorType = actorType;
 			ActorId = actorId;
 			X = x;
-			Y = y;
+			Z = z;
 		}
 
 		/// ----------------------------------------------
@@ -137,7 +137,7 @@ namespace NetworkLibrary.MessageElements
 		/// 			a SpawnElement
 		/// ----------------------------------------------
 		public override int Bits(){
-			return ACTORTYPE_BITS + ACTORID_BITS + X_BITS + Y_BITS;
+			return ACTORTYPE_BITS + ACTORID_BITS + X_BITS + Z_BITS;
 		}
 
 		/// ----------------------------------------------
@@ -163,7 +163,7 @@ namespace NetworkLibrary.MessageElements
 			bitStream.Write ((int)ActorType, 0, ACTORTYPE_BITS);
 			bitStream.Write (ActorId, 0, ACTORID_BITS);
 			bitStream.Write	(X, 0, X_BITS);
-			bitStream.Write	(Y, 0, Y_BITS);
+			bitStream.Write	(Z, 0, Z_BITS);
 		}
 
 		/// ----------------------------------------------
@@ -189,7 +189,7 @@ namespace NetworkLibrary.MessageElements
 			ActorType = (ActorType)bitstream.ReadNext (ACTORTYPE_BITS);
 			ActorId = bitstream.ReadNext (ACTORID_BITS);
 			X = bitstream.ReadNext (X_BITS);
-			Y = bitstream.ReadNext (Y_BITS);
+			Z = bitstream.ReadNext (Z_BITS);
 
 		}
 
@@ -213,7 +213,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override void UpdateState (IStateMessageBridge bridge)
 		{
-			bridge.SpawnActor (ActorType, ActorId, X, Y);
+			bridge.SpawnActor (ActorType, ActorId, X, Z);
 		}
 
 		/// ----------------------------------------------
@@ -236,7 +236,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			if ((int)ActorType > ACTORTYPE_MAX || ActorId > ACTORID_MAX || X > X_MAX || Y > Y_MAX) {
+			if ((int)ActorType > ACTORTYPE_MAX || ActorId > ACTORID_MAX || X > X_MAX || Z > Z_MAX) {
 				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
 			}
 		}

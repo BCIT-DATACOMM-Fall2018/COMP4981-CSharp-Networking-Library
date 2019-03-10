@@ -7,7 +7,7 @@ namespace NetworkLibrary.MessageElements
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public AreaAbilityElement (int actorId, AbilityType abilityId, int x, int y)
+	/// CONSTRUCTORS:	public AreaAbilityElement (int actorId, AbilityType abilityId, int x, int z)
 	/// 				public AreaAbilityElement (BitStream bitstream)
 	/// 
 	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
@@ -33,12 +33,12 @@ namespace NetworkLibrary.MessageElements
 		private const int ACTORID_MAX = 255;
 		private const int ABILITYID_MAX = 127;
 		private const int X_MAX = 255;
-		private const int Y_MAX = 255;
+		private const int Z_MAX = 255;
 
 		private static readonly int ACTORID_BITS = RequiredBits (ACTORID_MAX);
 		private static readonly int ABILITYID_BITS = RequiredBits (ABILITYID_MAX);
 		private static readonly int X_BITS = RequiredBits (X_MAX);
-		private static readonly int Y_BITS = RequiredBits (Y_MAX);
+		private static readonly int Z_BITS = RequiredBits (Z_MAX);
 
 		public int ActorId { get; private set; }
 
@@ -46,7 +46,7 @@ namespace NetworkLibrary.MessageElements
 
 		public int X { get; private set; }
 
-		public int Y { get; private set; }
+		public int Z { get; private set; }
 
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: AreaAbilityElement
@@ -59,16 +59,16 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public AreaAbilityElement (int actorId, AbilityType abilityId, int x, int y)
+		/// INTERFACE: 	public AreaAbilityElement (int actorId, AbilityType abilityId, int x, int z)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public AreaAbilityElement (int actorId, AbilityType abilityId, int x, int y)
+		public AreaAbilityElement (int actorId, AbilityType abilityId, int x, int z)
 		{
 			ActorId = actorId;
 			AbilityId = abilityId;
 			X = x;
-			Y = y;
+			Z = z;
 		}
 
 		/// ----------------------------------------------
@@ -137,7 +137,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override int Bits ()
 		{
-			return ACTORID_BITS + ABILITYID_BITS + X_BITS + Y_BITS;
+			return ACTORID_BITS + ABILITYID_BITS + X_BITS + Z_BITS;
 		}
 
 		/// ----------------------------------------------
@@ -163,7 +163,7 @@ namespace NetworkLibrary.MessageElements
 			bitStream.Write	(ActorId, 0, ACTORID_BITS);
 			bitStream.Write ((int)AbilityId, 0, ABILITYID_BITS);
 			bitStream.Write	(X, 0, X_BITS);
-			bitStream.Write	(Y, 0, Y_BITS);
+			bitStream.Write	(Z, 0, Z_BITS);
 		}
 
 		/// ----------------------------------------------
@@ -189,7 +189,7 @@ namespace NetworkLibrary.MessageElements
 			ActorId = bitstream.ReadNext (ACTORID_BITS);
 			AbilityId = (AbilityType)bitstream.ReadNext (ABILITYID_BITS);
 			X = bitstream.ReadNext (X_BITS);
-			Y = bitstream.ReadNext (Y_BITS);
+			Z = bitstream.ReadNext (Z_BITS);
 
 		}
 
@@ -213,7 +213,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override void UpdateState (IStateMessageBridge bridge)
 		{
-			bridge.UseAreaAbility (ActorId, AbilityId, X, Y);
+			bridge.UseAreaAbility (ActorId, AbilityId, X, Z);
 		}
 
 		/// ----------------------------------------------
@@ -236,7 +236,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			if ( ActorId > ACTORID_MAX || (int)AbilityId > ABILITYID_MAX || X > X_MAX || Y > Y_MAX) {
+			if ( ActorId > ACTORID_MAX || (int)AbilityId > ABILITYID_MAX || X > X_MAX || Z > Z_MAX) {
 				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
 			}
 		}

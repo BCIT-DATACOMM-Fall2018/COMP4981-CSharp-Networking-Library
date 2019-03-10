@@ -39,7 +39,7 @@ namespace NetworkLibraryTest
 			Assert.AreEqual (element.ActorId, element2.ActorId);
 			Assert.AreEqual (element.ActorType, element2.ActorType);
 			Assert.AreEqual (element.X, element2.X);
-			Assert.AreEqual (element.Y, element2.Y);
+			Assert.AreEqual (element.Z, element2.Z);
 
 		}
 
