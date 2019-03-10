@@ -32,21 +32,21 @@ namespace NetworkLibrary.MessageElements
 
 		private const int ACTORID_MAX = 255;
 		private const int ABILITYID_MAX = 127;
-		private const int X_MAX = 255;
-		private const int Z_MAX = 255;
+		private const float X_MAX = 255;
+		private const float Z_MAX = 255;
 
 		private static readonly int ACTORID_BITS = RequiredBits (ACTORID_MAX);
 		private static readonly int ABILITYID_BITS = RequiredBits (ABILITYID_MAX);
-		private static readonly int X_BITS = RequiredBits (X_MAX);
-		private static readonly int Z_BITS = RequiredBits (Z_MAX);
+		private static readonly int X_BITS = sizeof (float)*BitStream.BYTE_SIZE;
+		private static readonly int Z_BITS = sizeof (float)*BitStream.BYTE_SIZE;
 
 		public int ActorId { get; private set; }
 
 		public AbilityType AbilityId { get; private set; }
 
-		public int X { get; private set; }
+		public float X { get; private set; }
 
-		public int Z { get; private set; }
+		public float Z { get; private set; }
 
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: AreaAbilityElement
@@ -63,7 +63,7 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public AreaAbilityElement (int actorId, AbilityType abilityId, int x, int z)
+		public AreaAbilityElement (int actorId, AbilityType abilityId, float x, float z)
 		{
 			ActorId = actorId;
 			AbilityId = abilityId;
@@ -162,8 +162,14 @@ namespace NetworkLibrary.MessageElements
 		{
 			bitStream.Write	(ActorId, 0, ACTORID_BITS);
 			bitStream.Write ((int)AbilityId, 0, ABILITYID_BITS);
-			bitStream.Write	(X, 0, X_BITS);
-			bitStream.Write	(Z, 0, Z_BITS);
+			byte[] bytes = BitConverter.GetBytes (X);
+			foreach (var item in bytes) {
+				bitStream.Write (item, 0, BitStream.BYTE_SIZE);
+			}
+			bytes = BitConverter.GetBytes (Z);
+			foreach (var item in bytes) {
+				bitStream.Write (item, 0, BitStream.BYTE_SIZE);
+			}
 		}
 
 		/// ----------------------------------------------
@@ -188,9 +194,16 @@ namespace NetworkLibrary.MessageElements
 		{
 			ActorId = bitstream.ReadNext (ACTORID_BITS);
 			AbilityId = (AbilityType)bitstream.ReadNext (ABILITYID_BITS);
-			X = bitstream.ReadNext (X_BITS);
-			Z = bitstream.ReadNext (Z_BITS);
-
+			byte[] bytes = new byte[sizeof(float)];
+			for (int i = 0; i < sizeof(float); i++) {
+				bytes [i] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
+			}
+			X = BitConverter.ToSingle (bytes, 0);
+			bytes = new byte[sizeof(float)];
+			for (int i = 0; i < sizeof(float); i++) {
+				bytes [i] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
+			}
+			Z = BitConverter.ToSingle (bytes, 0);
 		}
 
 		/// ----------------------------------------------

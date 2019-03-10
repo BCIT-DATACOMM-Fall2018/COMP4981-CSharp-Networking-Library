@@ -37,11 +37,11 @@ namespace NetworkLibrary
 
 		void UseTargetedAbility (int actorId, AbilityType abilityId, int targetId);
 
-		void UseAreaAbility (int actorId, AbilityType abilityId, int x, int z);
+		void UseAreaAbility (int actorId, AbilityType abilityId, float x, float z);
 
 		void ProcessCollision(AbilityType abilityId, int actorHitId, int actorCastId);
 
-		void SpawnActor(ActorType actorType, int ActorId, int x, int z);
+		void SpawnActor(ActorType actorType, int ActorId, float x, float z);
 	}
 }
 
