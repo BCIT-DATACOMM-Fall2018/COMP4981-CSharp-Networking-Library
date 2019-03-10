@@ -32,18 +32,18 @@ namespace NetworkLibrary.MessageElements
 
 		private const int ACTORID_MAX = 127;
 		private const float X_MAX = 255;
-		private const float Y_MAX = 255;
+		private const float Z_MAX = 255;
 
 		private static readonly int ACTORID_BITS = RequiredBits (ACTORID_MAX);
 		private static readonly int X_BITS = sizeof (float)*BitStream.BYTE_SIZE;
-		private static readonly int Y_BITS = sizeof (float)*BitStream.BYTE_SIZE;
+		private static readonly int Z_BITS = sizeof (float)*BitStream.BYTE_SIZE;
 
 
 		public int ActorId { get; private set; }
 
 		public float X { get; private set; }
 
-		public float Y { get; private set; }
+		public float Z { get; private set; }
 
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: PositionElement
@@ -60,11 +60,11 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public PositionElement (int actorId, float x, float y)
+		public PositionElement (int actorId, float x, float z)
 		{
 			ActorId = actorId;
 			X = x;
-			Y = y;
+			Z = z;
 		}
 
 		/// ----------------------------------------------
@@ -132,7 +132,7 @@ namespace NetworkLibrary.MessageElements
 		/// 			a PositionElement
 		/// ----------------------------------------------
 		public override int Bits(){
-			return ACTORID_BITS + X_BITS + Y_BITS;
+			return ACTORID_BITS + X_BITS + Z_BITS;
 		}
 
 		/// ----------------------------------------------
@@ -160,7 +160,7 @@ namespace NetworkLibrary.MessageElements
 			foreach (var item in bytes) {
 				bitStream.Write (item, 0, BitStream.BYTE_SIZE);
 			}
-			bytes = BitConverter.GetBytes (Y);
+			bytes = BitConverter.GetBytes (Z);
 			foreach (var item in bytes) {
 				bitStream.Write (item, 0, BitStream.BYTE_SIZE);
 			}
@@ -196,7 +196,7 @@ namespace NetworkLibrary.MessageElements
 			for (int i = 0; i < sizeof(float); i++) {
 				bytes [i] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
 			}
-			Y = BitConverter.ToSingle (bytes, 0);
+			Z = BitConverter.ToSingle (bytes, 0);
 
 		}
 
@@ -220,7 +220,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override void UpdateState (IStateMessageBridge bridge)
 		{
-			bridge.UpdateActorPosition (ActorId, X, Y);
+			bridge.UpdateActorPosition (ActorId, X, Z);
 		}
 
 		/// ----------------------------------------------
@@ -243,7 +243,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			if (ActorId > ACTORID_MAX || X > X_MAX || Y > Y_MAX) {
+			if (ActorId > ACTORID_MAX || X > X_MAX || Z > Z_MAX) {
 				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
 			}
 		}
