@@ -31,19 +31,19 @@ namespace NetworkLibrary.MessageElements
 		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.PositionElement);
 
 		private const int ACTORID_MAX = 127;
-		private const int X_MAX = 255;
-		private const int Y_MAX = 255;
+		private const float X_MAX = 255;
+		private const float Y_MAX = 255;
 
 		private static readonly int ACTORID_BITS = RequiredBits (ACTORID_MAX);
-		private static readonly int X_BITS = RequiredBits (X_MAX);
-		private static readonly int Y_BITS = RequiredBits (Y_MAX);
+		private static readonly int X_BITS = sizeof (float)*BitStream.BYTE_SIZE;
+		private static readonly int Y_BITS = sizeof (float)*BitStream.BYTE_SIZE;
 
 
 		public int ActorId { get; private set; }
 
-		public int X { get; private set; }
+		public float X { get; private set; }
 
-		public int Y { get; private set; }
+		public float Y { get; private set; }
 
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: PositionElement
@@ -60,7 +60,7 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public PositionElement (int actorId, int x, int y)
+		public PositionElement (int actorId, float x, float y)
 		{
 			ActorId = actorId;
 			X = x;
@@ -156,8 +156,14 @@ namespace NetworkLibrary.MessageElements
 		protected override void Serialize (BitStream bitStream)
 		{
 			bitStream.Write (ActorId, 0, ACTORID_BITS);
-			bitStream.Write	(X, 0, X_BITS);
-			bitStream.Write	(Y, 0, Y_BITS);
+			byte[] bytes = BitConverter.GetBytes (X);
+			foreach (var item in bytes) {
+				bitStream.Write (item, 0, BitStream.BYTE_SIZE);
+			}
+			bytes = BitConverter.GetBytes (Y);
+			foreach (var item in bytes) {
+				bitStream.Write (item, 0, BitStream.BYTE_SIZE);
+			}
 		}
 
 		/// ----------------------------------------------
@@ -181,8 +187,16 @@ namespace NetworkLibrary.MessageElements
 		protected override void Deserialize (BitStream bitstream)
 		{
 			ActorId = bitstream.ReadNext (ACTORID_BITS);
-			X = bitstream.ReadNext (X_BITS);
-			Y = bitstream.ReadNext (Y_BITS);
+			byte[] bytes = new byte[sizeof(float)];
+			for (int i = 0; i < sizeof(float); i++) {
+				bytes [i] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
+			}
+			X = BitConverter.ToSingle (bytes, 0);
+			bytes = new byte[sizeof(float)];
+			for (int i = 0; i < sizeof(float); i++) {
+				bytes [i] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
+			}
+			Y = BitConverter.ToSingle (bytes, 0);
 
 		}
 

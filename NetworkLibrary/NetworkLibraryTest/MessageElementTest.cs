@@ -48,7 +48,7 @@ namespace NetworkLibraryTest
 		{
 			byte[] bytes = new byte[1024];
 
-			PositionElement element = new PositionElement (1,0,0);
+			PositionElement element = new PositionElement (1,18.298F,-10.4F);
 			BitStream bitstream = new BitStream (bytes);
 			element.WriteTo (bitstream);
 
