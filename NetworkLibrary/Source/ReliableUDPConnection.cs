@@ -81,7 +81,14 @@ namespace NetworkLibrary
 		public Packet CreatePacket (List<UpdateElement> unreliableElements, List<UpdateElement> reliableElements = null)
 		{
 			if (reliableElements != null) {
+				for (int i = 1; i <= reliableElements.Count; i++) {
+					if ((MessageIndex + i) % BUFFER_SIZE == LastKnownWanted % BUFFER_SIZE) {
+						Console.WriteLine ("no space :(");
+						throw new InsufficientMemoryException ("Not enough space to add reliable elements to buffer");
+					}
+				}
 				foreach (var element in reliableElements) {
+					Console.WriteLine ("Addedreliable element to queue");
 					MessageBuffer [MessageIndex % BUFFER_SIZE] = element;
 					MessageTimer [MessageIndex % BUFFER_SIZE] = 0;
 					MessageIndex++;

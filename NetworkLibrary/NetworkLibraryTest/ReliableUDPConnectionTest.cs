@@ -182,6 +182,47 @@ namespace NetworkLibraryTest
 			int extractedPlayerID = ReliableUDPConnection.GetPlayerID(packet);
 			Assert.AreEqual (playerID, extractedPlayerID);
 		}
+
+		[Test ()]
+		public void OverfillMessageBuffer ()
+		{
+			int playerID = 5;
+			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
+			unreliableElements.Add (new HealthElement (10, 10));
+			List<UpdateElement> reliableElements = new List<UpdateElement> ();
+			reliableElements.Add (new HealthElement (10, 10));
+
+
+			ReliableUDPConnection conn = new ReliableUDPConnection (playerID);
+
+			Assert.Throws<InsufficientMemoryException> (() => {
+				for (int i = 0; i < 4000; i++) {
+					Packet packet = conn.CreatePacket (unreliableElements, reliableElements);
+				}
+			});
+		}
+
+		[Test ()]
+		public void ReliableElementCatchUp ()
+		{
+			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
+			unreliableElements.Add (new HealthElement (10, 10));
+			List<UpdateElement> reliableElements = new List<UpdateElement> ();
+			reliableElements.Add (new HealthElement (10, 10));
+
+			ReliableUDPConnection conn = new ReliableUDPConnection (1);
+			ReliableUDPConnection conn2 = new ReliableUDPConnection (2);
+
+			UnpackedPacket unpacked;
+			Packet packet = conn.CreatePacket (unreliableElements, reliableElements);
+			for (int i = 0; i < 5; i++) {
+				packet = conn.CreatePacket (unreliableElements, reliableElements);
+				unpacked = conn2.ProcessPacket (packet, new ElementId[] { ElementId.HealthElement });
+			}
+
+			Assert.AreEqual (conn2.CurrentAck, 6);
+
+		}
 	}
 }
 
