@@ -44,6 +44,23 @@ namespace NetworkLibraryTest
 		}
 
 		[Test ()]
+		public void SerializePositionElement ()
+		{
+			byte[] bytes = new byte[1024];
+
+			PositionElement element = new PositionElement (1,0,0);
+			BitStream bitstream = new BitStream (bytes);
+			element.WriteTo (bitstream);
+
+			PositionElement element2 = new PositionElement (bitstream);
+
+			Assert.AreEqual (element.ActorId, element2.ActorId);
+			Assert.AreEqual (element.X, element2.X);
+			Assert.AreEqual (element.Y, element2.Y);
+
+		}
+
+		[Test ()]
 		public void RequiredBitsTest ()
 		{
 			int bitsNeeded = MessageElement.RequiredBits (25);

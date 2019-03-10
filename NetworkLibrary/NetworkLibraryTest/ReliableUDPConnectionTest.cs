@@ -33,11 +33,11 @@ namespace NetworkLibraryTest
 			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
 			List<UpdateElement> reliableElements = new List<UpdateElement> ();
 			unreliableElements.Add (new HealthElement (10, 10));
-			reliableElements.Add (new HealthElement (10, 10));
+			unreliableElements.Add (new PositionElement (1,10, 10));
 
 			ReliableUDPConnection conn = new ReliableUDPConnection (1);
-			Packet packet = conn.CreatePacket (unreliableElements, reliableElements);
-			UnpackedPacket unpacked = conn.ProcessPacket (packet, new ElementId[] { ElementId.HealthElement });
+			Packet packet = conn.CreatePacket (unreliableElements);
+			UnpackedPacket unpacked = conn.ProcessPacket (packet, new ElementId[] { ElementId.HealthElement, ElementId.PositionElement });
 
 			Assert.AreEqual (unreliableElements.Count, unpacked.UnreliableElements.Count);
 

@@ -127,7 +127,7 @@ namespace NetworkLibrary.MessageElements
 			case ElementId.SpawnElement:
 				return new SpawnElement (bitStream);
 			default:
-				throw new InvalidOperationException ("Attempted to create a UpdateElement with an invalid ID");
+				throw new InvalidOperationException ("Attempted to create a UpdateElement with an invalid ID: " + id);
 			}
 		}
 	}

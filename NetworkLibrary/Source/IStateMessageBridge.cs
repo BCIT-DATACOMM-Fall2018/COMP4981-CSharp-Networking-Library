@@ -31,7 +31,7 @@ namespace NetworkLibrary
 	public interface IStateMessageBridge
 	{
 
-		void UpdateActorPosition (int actorId, double x, double y);
+		void UpdateActorPosition (int actorId, float x, float y);
 
 		void UpdateActorHealth (int actorId, int newHealth);
 
