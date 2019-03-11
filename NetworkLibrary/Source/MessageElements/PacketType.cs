@@ -21,7 +21,8 @@ namespace NetworkLibrary.MessageElements
 	{
 		GameplayPacket = 0,
 		RequestPacket,
-		ConfirmationPacket
+		ConfirmationPacket,
+		HeartbeatPacket
 	}
 }
 
