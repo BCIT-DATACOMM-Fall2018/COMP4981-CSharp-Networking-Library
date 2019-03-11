@@ -86,6 +86,8 @@ namespace NetworkLibrary.MessageElements
 				return new AreaAbilityElement (bitStream);
 			case ElementId.SpawnElement:
 				return new SpawnElement (bitStream);
+			case ElementId.MovementElement:
+				return new PositionElement (bitStream);
 			default:
 				throw new InvalidOperationException ("Attempted to create a MessageElement with an invalid ID");
 			}
@@ -126,6 +128,8 @@ namespace NetworkLibrary.MessageElements
 				return new AreaAbilityElement (bitStream);
 			case ElementId.SpawnElement:
 				return new SpawnElement (bitStream);
+			case ElementId.MovementElement:
+				return new MovementElement (bitStream);
 			default:
 				throw new InvalidOperationException ("Attempted to create a UpdateElement with an invalid ID: " + id);
 			}

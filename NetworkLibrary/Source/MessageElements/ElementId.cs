@@ -28,7 +28,8 @@ namespace NetworkLibrary.MessageElements
 		CollisionElement,
 		TargetedAbilityElement,
 		AreaAbilityElement,
-		SpawnElement
+		SpawnElement,
+		MovementElement
 	}
 }
 

@@ -42,6 +42,9 @@ namespace NetworkLibrary
 		void ProcessCollision(AbilityType abilityId, int actorHitId, int actorCastId);
 
 		void SpawnActor(ActorType actorType, int ActorId, float x, float z);
+
+		void SetActorMovement(int actorId, float x, float z, float targetX, float targetZ);
+
 	}
 }
 
