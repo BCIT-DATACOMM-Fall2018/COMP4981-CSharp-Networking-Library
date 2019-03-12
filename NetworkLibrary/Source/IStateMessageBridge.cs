@@ -47,6 +47,8 @@ namespace NetworkLibrary
 
 		void SetReady(int clientId, bool ready);
 
+		void StartGame(int playerNum);
+
 	}
 }
 

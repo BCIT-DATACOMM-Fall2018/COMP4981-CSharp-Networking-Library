@@ -90,6 +90,8 @@ namespace NetworkLibrary.MessageElements
 				return new PositionElement (bitStream);
 			case ElementId.ReadyElement:
 				return new ReadyElement (bitStream);
+			case ElementId.GameStartElement:
+				return new GameStartElement (bitStream);
 			default:
 				throw new InvalidOperationException ("Attempted to create a MessageElement with an invalid ID");
 			}
@@ -132,6 +134,10 @@ namespace NetworkLibrary.MessageElements
 				return new SpawnElement (bitStream);
 			case ElementId.MovementElement:
 				return new MovementElement (bitStream);
+			case ElementId.ReadyElement:
+				return new ReadyElement (bitStream);
+			case ElementId.GameStartElement:
+				return new GameStartElement (bitStream);
 			default:
 				throw new InvalidOperationException ("Attempted to create a UpdateElement with an invalid ID: " + id);
 			}

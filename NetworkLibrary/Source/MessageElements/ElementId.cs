@@ -30,7 +30,8 @@ namespace NetworkLibrary.MessageElements
 		AreaAbilityElement,
 		SpawnElement,
 		MovementElement,
-		ReadyElement
+		ReadyElement,
+		GameStartElement
 	}
 }
 

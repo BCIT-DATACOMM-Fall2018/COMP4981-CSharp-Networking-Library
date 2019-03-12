@@ -3,12 +3,12 @@
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: ReadyElement - A UpdateElement to indicate ready status
+	/// Class: GameStartElement - A UpdateElement to indicate ready status
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public ReadyElement (int actorId, int health)
-	/// 				public ReadyElement (BitStream bitstream)
+	/// CONSTRUCTORS:	public GameStartElement (int actorId, int health)
+	/// 				public GameStartElement (BitStream bitstream)
 	/// 
 	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
@@ -26,21 +26,17 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// NOTES:		
 	/// ----------------------------------------------
-	public class ReadyElement : UpdateElement
+	public class GameStartElement : UpdateElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.ReadyElement);
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.GameStartElement);
 
-		private const int READY_MAX = 1;
-		private const int CLIENTID_MAX = 127;
-		private static readonly int READY_BITS = RequiredBits (READY_MAX);
-		private static readonly int CLIENTID_BITS = RequiredBits (CLIENTID_MAX);
+		private const int PLAYERNUM_MAX = 127;
+		private static readonly int PLAYERNUM_BITS = RequiredBits (PLAYERNUM_MAX);
 
-		public bool Ready { get; private set; }
-
-		public int ClientId { get; private set; }
+		public int PlayerNum { get; private set; }
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: ReadyElement
+		/// CONSTRUCTOR: GameStartElement
 		/// 
 		/// DATE:		January 28th, 2019
 		/// 
@@ -50,18 +46,17 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public ReadyElement (int actorId, int health)
+		/// INTERFACE: 	public GameStartElement (int actorId, int health)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public ReadyElement (bool ready, int clientId)
+		public GameStartElement (int playerNum)
 		{
-			Ready = ready;
-			ClientId = clientId;
+			PlayerNum = playerNum;
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: ReadyElement
+		/// CONSTRUCTOR: GameStartElement
 		/// 
 		/// DATE:		January 28th, 2019
 		/// 
@@ -71,13 +66,13 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public ReadyElement (BitStream bitstream)
+		/// INTERFACE: 	public GameStartElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		ReadyElement by deserializing it 
+		/// 		GameStartElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public ReadyElement (BitStream bitstream) : base (bitstream)
+		public GameStartElement (BitStream bitstream) : base (bitstream)
 		{
 		}
 
@@ -94,10 +89,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a ReadyElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a GameStartElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a ReadyElement when 
+		/// 			to reconstruct a GameStartElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -119,14 +114,14 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public int Bits ()
 		/// 
 		/// RETURNS: 	The number of bits needed to store a
-		/// 			ReadyElement
+		/// 			GameStartElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			a ReadyElement
+		/// 			a GameStartElement
 		/// ----------------------------------------------
 		public override int Bits ()
 		{
-			return READY_BITS + CLIENTID_BITS;
+			return PLAYERNUM_BITS;
 		}
 
 		/// ----------------------------------------------
@@ -145,12 +140,11 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			ReadyElement to a BitStream.
+		/// 			GameStartElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
-			bitStream.Write (Ready ? 1 : 0, 0, READY_BITS);
-			bitStream.Write (ClientId, 0, CLIENTID_BITS);
+			bitStream.Write (PlayerNum, 0, PLAYERNUM_BITS);
 		}
 
 		/// ----------------------------------------------
@@ -169,12 +163,11 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			ReadyElement from a BitStream.
+		/// 			GameStartElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
-			Ready = bitstream.ReadNext (READY_BITS) == 1 ? true:false;
-			ClientId = bitstream.ReadNext (CLIENTID_BITS);
+			PlayerNum = bitstream.ReadNext (PLAYERNUM_BITS);
 
 		}
 
@@ -198,7 +191,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override void UpdateState (IStateMessageBridge bridge)
 		{
-			bridge.SetReady (ClientId, Ready);
+			bridge.StartGame (PlayerNum);
 		}
 
 		/// ----------------------------------------------
@@ -217,11 +210,11 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			ReadyElement.
+		/// 			GameStartElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			if (ClientId > CLIENTID_MAX) {
+			if (PlayerNum > PLAYERNUM_MAX) {
 				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
 			}
 		}
