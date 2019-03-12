@@ -294,7 +294,7 @@ namespace NetworkLibrary
 			int neededBits = 0;
 			PacketHeaderElement header = new PacketHeaderElement (PacketType.RequestPacket, 0, 0, 0);
 			neededBits += header.Bits ();
-			Packet packet = new Packet (neededBits);
+			Packet packet = new Packet ((neededBits - 1) / BYTE_SIZE + 1);
 
 			BitStream bitStream = new BitStream (packet.Data);
 			header.WriteTo (bitStream);
@@ -326,12 +326,20 @@ namespace NetworkLibrary
 			ClientIDElement clientIdElement = new ClientIDElement(clientID);
 			neededBits += header.Bits ();
 			neededBits += clientIdElement.Bits ();
-			Packet packet = new Packet (neededBits);
+			Packet packet = new Packet ((neededBits - 1) / BYTE_SIZE + 1);
 
 			BitStream bitStream = new BitStream (packet.Data);
 			header.WriteTo (bitStream);
 			clientIdElement.WriteTo (bitStream);
 			return packet;
+		}
+
+		public static int GetClientIdFromConfirmationPacket(Packet packet){
+			BitStream bitStream = new BitStream (packet.Data);
+			PacketHeaderElement header = new PacketHeaderElement (bitStream);
+			ClientIDElement idElement = new ClientIDElement (bitStream);
+			return idElement.ClientID;
+
 		}
 	}
 }
