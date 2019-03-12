@@ -108,7 +108,7 @@ namespace NetworkLibrary
 			var packetReliableElements = new List<MessageElement> ();
 			bool resending = false;
 			int indexOfLastMessage = LastKnownWanted-1;
-			for (int i = LastKnownWanted; i != MessageIndex; i++) {
+			for (int i = LastKnownWanted; i % BUFFER_SIZE != MessageIndex % BUFFER_SIZE; i++) {
 				if (resending || MessageTimer [i % BUFFER_SIZE] == 0) {
 					if ((reliableBits + MessageBuffer [i % BUFFER_SIZE].Bits () + MessageBuffer [i % BUFFER_SIZE].GetIndicator ().Bits ()) > MAXIMUM_RELIABLE_BITS) {
 						break;
@@ -128,9 +128,9 @@ namespace NetworkLibrary
 
 
 			// get header data
-			int ack = CurrentAck;
+			int ack = CurrentAck % BUFFER_SIZE;
 			int reliableCount = packetReliableElements.Count;
-			int seqNumber = indexOfLastMessage;
+			int seqNumber = indexOfLastMessage % BUFFER_SIZE;
 
 			// put packet header information into packet
 			PacketHeaderElement header = new PacketHeaderElement (packetType, seqNumber, ack, reliableCount);
@@ -200,17 +200,15 @@ namespace NetworkLibrary
 			LastKnownWanted = ackNumber;
 
 			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
-			// check that this unreliable information is new
-			if (seqNumber >= CurrentAck -1) {
-				// extract unreliable elements from packet
-				foreach (var id in expectedUnreliableIds) {
-					unreliableElements.Add (messageFactory.CreateUpdateElement (id, bitStream));
-				}
+			// extract unreliable elements from packet
+			foreach (var id in expectedUnreliableIds) {
+				unreliableElements.Add (messageFactory.CreateUpdateElement (id, bitStream));
 			}
+
 			
 			List<UpdateElement> reliableElements = new List<UpdateElement> ();
 			// reliable elements were not missed
-			if (CurrentAck + reliableCount - 1 == seqNumber) {
+			if (CurrentAck % BUFFER_SIZE + reliableCount - 1 == seqNumber) {
 				// extract reliable elements from packet
 				for (int i = 0; i < reliableCount; i++) {
 					// get element indicator
