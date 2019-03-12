@@ -186,7 +186,7 @@ namespace NetworkLibrary
 			BitStream bitStream = new BitStream (packet.Data);
 
 			PacketHeaderElement header = new PacketHeaderElement (bitStream);
-			if (header.Type != PacketType.GameplayPacket) {
+			if (header.Type != PacketType.GameplayPacket || header.Type != PacketType.HeartbeatPacket) {
 				throw new ArgumentException ("Attempted to process non gameplay packet as a gameplay packet.");
 			}
 

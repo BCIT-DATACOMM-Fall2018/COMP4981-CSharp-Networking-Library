@@ -60,6 +60,7 @@
     <Compile Include="Source\MessageElements\AreaAbilityElement.cs" />
     <Compile Include="Source\MessageElements\SpawnElement.cs" />
     <Compile Include="Source\MessageElements\MovementElement.cs" />
+    <Compile Include="Source\MessageElements\ReadyElement.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

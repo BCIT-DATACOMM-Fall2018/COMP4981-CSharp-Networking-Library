@@ -88,6 +88,8 @@ namespace NetworkLibrary.MessageElements
 				return new SpawnElement (bitStream);
 			case ElementId.MovementElement:
 				return new PositionElement (bitStream);
+			case ElementId.ReadyElement:
+				return new ReadyElement (bitStream);
 			default:
 				throw new InvalidOperationException ("Attempted to create a MessageElement with an invalid ID");
 			}
