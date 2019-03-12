@@ -26,14 +26,18 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// NOTES:		
 	/// ----------------------------------------------
-	public class ReadyElement : MessageElement
+	public class ReadyElement : UpdateElement
 	{
 		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.ReadyElement);
 
 		private const int READY_MAX = 1;
+		private const int CLIENTID_MAX = 127;
 		private static readonly int READY_BITS = RequiredBits (READY_MAX);
+		private static readonly int CLIENTID_BITS = RequiredBits (CLIENTID_MAX);
 
 		public bool Ready { get; private set; }
+
+		public int ClientId { get; private set; }
 
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: ReadyElement
@@ -50,9 +54,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public ReadyElement (bool ready)
+		public ReadyElement (bool ready, int clientId)
 		{
 			Ready = ready;
+			ClientId = clientId;
 		}
 
 		/// ----------------------------------------------
@@ -145,6 +150,7 @@ namespace NetworkLibrary.MessageElements
 		protected override void Serialize (BitStream bitStream)
 		{
 			bitStream.Write (Ready ? 1 : 0, 0, READY_BITS);
+			bitStream.Write (ClientId, 0, CLIENTID_BITS);
 		}
 
 		/// ----------------------------------------------
@@ -168,7 +174,31 @@ namespace NetworkLibrary.MessageElements
 		protected override void Deserialize (BitStream bitstream)
 		{
 			Ready = bitstream.ReadNext (READY_BITS) == 1 ? true:false;
+			ClientId = bitstream.ReadNext (CLIENTID_BITS);
 
+		}
+
+		/// ----------------------------------------------
+		/// FUNCTION:	UpdateState
+		/// 
+		/// DATE:		January 28th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public override void UpdateState (IStateMessageBridge bridge)
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		Contains logic needed to update the game state through
+		/// 			the use of a IStateMessageBridge.
+		/// ----------------------------------------------
+		public override void UpdateState (IStateMessageBridge bridge)
+		{
+			bridge.SetReady (ClientId, Ready);
 		}
 
 		/// ----------------------------------------------
@@ -191,6 +221,9 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
+			if (ClientId > CLIENTID_MAX) {
+				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
+			}
 		}
 	}
 }

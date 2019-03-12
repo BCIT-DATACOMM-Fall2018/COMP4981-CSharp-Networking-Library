@@ -45,6 +45,8 @@ namespace NetworkLibrary
 
 		void SetActorMovement(int actorId, float x, float z, float targetX, float targetZ);
 
+		void SetReady(int clientId, bool ready);
+
 	}
 }
 

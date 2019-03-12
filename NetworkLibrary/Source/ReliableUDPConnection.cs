@@ -78,7 +78,7 @@ namespace NetworkLibrary
 		/// 			that will resend them after a certain amount of packet creations if they have 
 		/// 			not been acknowledged by an consumed packet.
 		/// ----------------------------------------------
-		public Packet CreatePacket (List<UpdateElement> unreliableElements, List<UpdateElement> reliableElements = null)
+		public Packet CreatePacket (List<UpdateElement> unreliableElements, List<UpdateElement> reliableElements = null, PacketType packetType = PacketType.GameplayPacket)
 		{
 			if (reliableElements != null) {
 				for (int i = 1; i <= reliableElements.Count; i++) {
@@ -133,7 +133,7 @@ namespace NetworkLibrary
 			int seqNumber = indexOfLastMessage;
 
 			// put packet header information into packet
-			PacketHeaderElement header = new PacketHeaderElement (PacketType.GameplayPacket, seqNumber, ack, reliableCount);
+			PacketHeaderElement header = new PacketHeaderElement (packetType, seqNumber, ack, reliableCount);
 			neededBits += header.Bits ();
 			neededBits += ClientID.Bits ();
 
@@ -186,7 +186,7 @@ namespace NetworkLibrary
 			BitStream bitStream = new BitStream (packet.Data);
 
 			PacketHeaderElement header = new PacketHeaderElement (bitStream);
-			if (header.Type != PacketType.GameplayPacket || header.Type != PacketType.HeartbeatPacket) {
+			if (header.Type != PacketType.GameplayPacket && header.Type != PacketType.HeartbeatPacket) {
 				throw new ArgumentException ("Attempted to process non gameplay packet as a gameplay packet.");
 			}
 
