@@ -31,8 +31,8 @@ namespace NetworkLibrary.MessageElements
 		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.PositionElement);
 
 		private const int ACTORID_MAX = 127;
-		private const float X_MAX = 255;
-		private const float Z_MAX = 255;
+		private const float X_MAX = 500;
+		private const float Z_MAX = 500;
 
 		private static readonly int ACTORID_BITS = RequiredBits (ACTORID_MAX);
 		private static readonly int X_BITS = sizeof (float)*BitStream.BYTE_SIZE;

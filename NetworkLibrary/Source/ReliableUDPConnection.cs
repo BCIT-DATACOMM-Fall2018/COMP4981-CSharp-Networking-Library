@@ -205,19 +205,31 @@ namespace NetworkLibrary
 				unreliableElements.Add (messageFactory.CreateUpdateElement (id, bitStream));
 			}
 
-			
 			List<UpdateElement> reliableElements = new List<UpdateElement> ();
-			// reliable elements were not missed
-			if (CurrentAck % BUFFER_SIZE + reliableCount - 1 == seqNumber) {
-				// extract reliable elements from packet
-				for (int i = 0; i < reliableCount; i++) {
-					// get element indicator
-					ElementIndicatorElement indicatorElement = new ElementIndicatorElement (bitStream);
-					// use indicator to create message and call its update state function;
-					reliableElements.Add (messageFactory.CreateUpdateElement (indicatorElement.ElementIndicator, bitStream));
+			try{
+				// reliable elements were not missed
+				if (CurrentAck % BUFFER_SIZE + reliableCount - 1 == seqNumber) {
+					// extract reliable elements from packet
+					for (int i = 0; i < reliableCount; i++) {
+						// get element indicator
+						ElementIndicatorElement indicatorElement = new ElementIndicatorElement (bitStream);
+						// use indicator to create message and call its update state function;
+						reliableElements.Add (messageFactory.CreateUpdateElement (indicatorElement.ElementIndicator, bitStream));
+					}
+					CurrentAck += reliableCount;
 				}
-				CurrentAck += reliableCount;
+			} catch (InvalidOperationException e){ 
+				string packetData = "";
+				for (int i = 0; i < packet.Data.Length; i++) {
+					packetData += packet.Data[i].ToString("x4") + " ";
+				}
+				string expectedIds = "[";
+				for (int i = 0; i < expectedUnreliableIds.Length; i++) {
+					expectedIds += expectedUnreliableIds [i] + ", ";
+				}
+				throw new InvalidOperationException (e.Message + "Packet Data: " + packetData + ", Expected unreliableElements: " + expectedIds);
 			}
+
 			return new UnpackedPacket (unreliableElements, reliableElements);
 		}
 
