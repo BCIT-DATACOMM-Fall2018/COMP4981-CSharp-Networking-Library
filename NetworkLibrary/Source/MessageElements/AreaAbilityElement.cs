@@ -32,8 +32,8 @@ namespace NetworkLibrary.MessageElements
 
 		private const int ACTORID_MAX = 255;
 		private const int ABILITYID_MAX = 127;
-		private const float X_MAX = 255;
-		private const float Z_MAX = 255;
+		private const float X_MAX = 500;
+		private const float Z_MAX = 500;
 
 		private static readonly int ACTORID_BITS = RequiredBits (ACTORID_MAX);
 		private static readonly int ABILITYID_BITS = RequiredBits (ABILITYID_MAX);
