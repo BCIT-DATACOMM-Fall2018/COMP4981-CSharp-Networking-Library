@@ -61,6 +61,23 @@ namespace NetworkLibraryTest
 		}
 
 		[Test ()]
+		public void SerializeCollisionElement ()
+		{
+			byte[] bytes = new byte[1024];
+
+			CollisionElement element = new CollisionElement (0,7,7);
+			BitStream bitstream = new BitStream (bytes);
+			element.WriteTo (bitstream);
+
+			CollisionElement element2 = new CollisionElement (bitstream);
+
+			Assert.AreEqual (element.AbilityId, element2.AbilityId);
+			Assert.AreEqual (element.ActorCastId, element2.ActorCastId);
+			Assert.AreEqual (element.ActorHitId, element2.ActorHitId);
+
+		}
+
+		[Test ()]
 		public void RequiredBitsTest ()
 		{
 			int bitsNeeded = MessageElement.RequiredBits (25);
@@ -68,6 +85,8 @@ namespace NetworkLibraryTest
 			Assert.AreEqual (bitsNeeded, 5);
 
 		}
+
+
 	
 	}
 }

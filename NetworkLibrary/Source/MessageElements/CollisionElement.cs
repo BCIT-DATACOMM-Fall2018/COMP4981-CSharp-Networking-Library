@@ -182,8 +182,8 @@ namespace NetworkLibrary.MessageElements
 		protected override void Deserialize (BitStream bitstream)
 		{
 			AbilityId = (AbilityType)bitstream.ReadNext (ABILITYID_BITS);
-			ActorHitId = bitstream.ReadNext (ACTORHITID_MAX);
-			ActorCastId = bitstream.ReadNext (ACTORCASTID_MAX);
+			ActorHitId = bitstream.ReadNext (ACTORHITID_BITS);
+			ActorCastId = bitstream.ReadNext (ACTORCASTID_BITS);
 
 		}
 

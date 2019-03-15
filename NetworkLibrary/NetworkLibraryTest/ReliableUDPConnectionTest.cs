@@ -17,7 +17,6 @@ namespace NetworkLibraryTest
 			List<UpdateElement> reliableElements = new List<UpdateElement> ();
 			unreliableElements.Add (new HealthElement (10, 10));
 			reliableElements.Add (new SpawnElement (ActorType.Player, 1, 0, 0));
-
 			ReliableUDPConnection conn = new ReliableUDPConnection (1);
 
 			conn.CreatePacket (unreliableElements, reliableElements);
