@@ -24,9 +24,6 @@ namespace NetworkLibrary
 	/// 			to update the game state without knowledge of how the state
 	/// 			is implemented and stored so they can be used on both the client
 	/// 			and server.
-	/// 
-	/// 			The functions in the interface are placeholders and will change
-	/// 			in the future.
 	/// ----------------------------------------------
 	public interface IStateMessageBridge
 	{
