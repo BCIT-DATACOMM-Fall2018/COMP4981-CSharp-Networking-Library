@@ -19,7 +19,10 @@ namespace NetworkLibrary
 	/// ----------------------------------------------
 	public enum AbilityType : int
 	{
-		Placeholder = 0
+		TestProjectile = 0,
+		TestTargeted,
+		TestTargetedHoming,
+		TestAreaOfEffect
 	}
 }
 

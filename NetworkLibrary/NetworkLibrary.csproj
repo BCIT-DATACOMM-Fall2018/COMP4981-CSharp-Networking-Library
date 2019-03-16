@@ -62,6 +62,7 @@
     <Compile Include="Source\MessageElements\MovementElement.cs" />
     <Compile Include="Source\MessageElements\ReadyElement.cs" />
     <Compile Include="Source\MessageElements\GameStartElement.cs" />
+    <Compile Include="Source\AbilityInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
