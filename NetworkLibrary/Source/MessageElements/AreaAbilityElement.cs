@@ -34,11 +34,13 @@ namespace NetworkLibrary.MessageElements
 		private const int ABILITYID_MAX = 127;
 		private const float X_MAX = 500;
 		private const float Z_MAX = 500;
+		private const int COLLISIONID_MAX = 255;
 
 		private static readonly int ACTORID_BITS = RequiredBits (ACTORID_MAX);
 		private static readonly int ABILITYID_BITS = RequiredBits (ABILITYID_MAX);
 		private static readonly int X_BITS = sizeof (float)*BitStream.BYTE_SIZE;
 		private static readonly int Z_BITS = sizeof (float)*BitStream.BYTE_SIZE;
+		private static readonly int COLLISIONID_BITS = RequiredBits (COLLISIONID_MAX);
 
 		public int ActorId { get; private set; }
 
@@ -47,6 +49,8 @@ namespace NetworkLibrary.MessageElements
 		public float X { get; private set; }
 
 		public float Z { get; private set; }
+
+		public int CollisionId { get; private set; }
 
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: AreaAbilityElement
@@ -63,12 +67,13 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public AreaAbilityElement (int actorId, AbilityType abilityId, float x, float z)
+		public AreaAbilityElement (int actorId, AbilityType abilityId, float x, float z, int collisionId = 0)
 		{
 			ActorId = actorId;
 			AbilityId = abilityId;
 			X = x;
 			Z = z;
+			CollisionId = collisionId;
 		}
 
 		/// ----------------------------------------------
@@ -137,7 +142,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override int Bits ()
 		{
-			return ACTORID_BITS + ABILITYID_BITS + X_BITS + Z_BITS;
+			return ACTORID_BITS + ABILITYID_BITS + X_BITS + Z_BITS + COLLISIONID_BITS;
 		}
 
 		/// ----------------------------------------------
@@ -170,6 +175,7 @@ namespace NetworkLibrary.MessageElements
 			foreach (var item in bytes) {
 				bitStream.Write (item, 0, BitStream.BYTE_SIZE);
 			}
+			bitStream.Write	(CollisionId, 0, COLLISIONID_BITS);
 		}
 
 		/// ----------------------------------------------
@@ -204,6 +210,7 @@ namespace NetworkLibrary.MessageElements
 				bytes [i] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
 			}
 			Z = BitConverter.ToSingle (bytes, 0);
+			CollisionId = bitstream.ReadNext (COLLISIONID_BITS);
 		}
 
 		/// ----------------------------------------------
@@ -226,7 +233,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override void UpdateState (IStateMessageBridge bridge)
 		{
-			bridge.UseAreaAbility (ActorId, AbilityId, X, Z);
+			bridge.UseAreaAbility (ActorId, AbilityId, X, Z, CollisionId);
 		}
 
 		/// ----------------------------------------------
@@ -249,7 +256,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			if ( ActorId > ACTORID_MAX || (int)AbilityId > ABILITYID_MAX || X > X_MAX || Z > Z_MAX) {
+			if ( ActorId > ACTORID_MAX || (int)AbilityId > ABILITYID_MAX || X > X_MAX || Z > Z_MAX || CollisionId > COLLISIONID_MAX) {
 				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
 			}
 		}

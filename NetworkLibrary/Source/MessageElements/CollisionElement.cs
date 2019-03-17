@@ -33,10 +33,12 @@ namespace NetworkLibrary.MessageElements
 		private const int ABILITYID_MAX = 127;
 		private const int ACTORHITID_MAX = 255;
 		private const int ACTORCASTID_MAX = 255;
+		private const int COLLISIONID_MAX = 255;
 
 		private static readonly int ABILITYID_BITS = RequiredBits (ABILITYID_MAX);
 		private static readonly int ACTORHITID_BITS = RequiredBits (ACTORHITID_MAX);
 		private static readonly int ACTORCASTID_BITS = RequiredBits (ACTORCASTID_MAX);
+		private static readonly int COLLISIONID_BITS = RequiredBits (COLLISIONID_MAX);
 
 
 		public AbilityType AbilityId { get; private set; }
@@ -44,6 +46,8 @@ namespace NetworkLibrary.MessageElements
 		public int ActorHitId { get; private set; }
 
 		public int ActorCastId { get; private set; }
+
+		public int CollisionId { get; private set; }
 
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: CollisionElement
@@ -60,11 +64,12 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public CollisionElement (AbilityType abilityId, int actorHitId, int actorCastId)
+		public CollisionElement (AbilityType abilityId, int actorHitId, int actorCastId, int collisionId)
 		{
 			AbilityId = abilityId;
 			ActorHitId = actorHitId;
 			ActorCastId = actorCastId;
+			CollisionId = collisionId;
 		}
 
 		/// ----------------------------------------------
@@ -133,7 +138,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override int Bits ()
 		{
-			return ABILITYID_BITS + ACTORHITID_BITS + ACTORCASTID_BITS;
+			return ABILITYID_BITS + ACTORHITID_BITS + ACTORCASTID_BITS + COLLISIONID_BITS;
 		}
 
 		/// ----------------------------------------------
@@ -159,6 +164,7 @@ namespace NetworkLibrary.MessageElements
 			bitStream.Write ((int)AbilityId, 0, ABILITYID_BITS);
 			bitStream.Write	(ActorHitId, 0, ACTORHITID_BITS);
 			bitStream.Write	(ActorCastId, 0, ACTORCASTID_BITS);
+			bitStream.Write	(CollisionId, 0, COLLISIONID_BITS);
 		}
 
 		/// ----------------------------------------------
@@ -184,7 +190,7 @@ namespace NetworkLibrary.MessageElements
 			AbilityId = (AbilityType)bitstream.ReadNext (ABILITYID_BITS);
 			ActorHitId = bitstream.ReadNext (ACTORHITID_BITS);
 			ActorCastId = bitstream.ReadNext (ACTORCASTID_BITS);
-
+			CollisionId = bitstream.ReadNext (COLLISIONID_BITS);
 		}
 
 		/// ----------------------------------------------
@@ -207,7 +213,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override void UpdateState (IStateMessageBridge bridge)
 		{
-			bridge.ProcessCollision (AbilityId, ActorHitId, ActorCastId);
+			bridge.ProcessCollision (AbilityId, ActorHitId, ActorCastId, CollisionId);
 		}
 
 		/// ----------------------------------------------

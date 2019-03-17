@@ -33,16 +33,20 @@ namespace NetworkLibrary.MessageElements
 		private const int ACTORID_MAX = 255;
 		private const int ABILITYID_MAX = 127;
 		private const int TARGETID_MAX = 255;
+		private const int COLLISIONID_MAX = 255;
 
 		private static readonly int ACTORID_BITS = RequiredBits (ACTORID_MAX);
 		private static readonly int ABILITYID_BITS = RequiredBits (ABILITYID_MAX);
 		private static readonly int TARGETID_BITS = RequiredBits (TARGETID_MAX);
+		private static readonly int COLLISIONID_BITS = RequiredBits (COLLISIONID_MAX);
 
 		public int ActorId { get; private set; }
 
 		public AbilityType AbilityId { get; private set; }
 
 		public int TargetId { get; private set; }
+
+		public int CollisionId { get; private set; }
 
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: TargetedAbilityElement
@@ -59,11 +63,12 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public TargetedAbilityElement (int actorId, AbilityType abilityId, int targetId)
+		public TargetedAbilityElement (int actorId, AbilityType abilityId, int targetId, int collisionId = 0)
 		{
 			ActorId = actorId;
 			AbilityId = abilityId;
 			TargetId = targetId;
+			CollisionId = collisionId;
 		}
 
 		/// ----------------------------------------------
@@ -132,7 +137,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override int Bits ()
 		{
-			return ACTORID_BITS + ABILITYID_BITS + TARGETID_BITS;
+			return ACTORID_BITS + ABILITYID_BITS + TARGETID_BITS + COLLISIONID_BITS;
 		}
 
 		/// ----------------------------------------------
@@ -158,6 +163,7 @@ namespace NetworkLibrary.MessageElements
 			bitStream.Write	(ActorId, 0, ACTORID_BITS);
 			bitStream.Write ((int)AbilityId, 0, ABILITYID_BITS);
 			bitStream.Write	(TargetId, 0, TARGETID_BITS);
+			bitStream.Write	(CollisionId, 0, COLLISIONID_BITS);
 		}
 
 		/// ----------------------------------------------
@@ -183,6 +189,7 @@ namespace NetworkLibrary.MessageElements
 			ActorId = bitstream.ReadNext (ACTORID_BITS);
 			AbilityId = (AbilityType)bitstream.ReadNext (ABILITYID_BITS);
 			TargetId = bitstream.ReadNext (TARGETID_BITS);
+			CollisionId = bitstream.ReadNext (COLLISIONID_BITS);
 
 		}
 
@@ -206,7 +213,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override void UpdateState (IStateMessageBridge bridge)
 		{
-			bridge.UseTargetedAbility (ActorId, AbilityId, TargetId);
+			bridge.UseTargetedAbility (ActorId, AbilityId, TargetId, CollisionId);
 		}
 
 		/// ----------------------------------------------
@@ -229,7 +236,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			if ( ActorId > ACTORID_MAX || (int)AbilityId > ABILITYID_MAX || TargetId > TARGETID_MAX) {
+			if ( ActorId > ACTORID_MAX || (int)AbilityId > ABILITYID_MAX || TargetId > TARGETID_MAX || CollisionId > COLLISIONID_MAX) {
 				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
 			}
 		}

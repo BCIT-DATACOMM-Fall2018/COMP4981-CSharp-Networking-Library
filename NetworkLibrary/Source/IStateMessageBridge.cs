@@ -32,11 +32,11 @@ namespace NetworkLibrary
 
 		void UpdateActorHealth (int actorId, int newHealth);
 
-		void UseTargetedAbility (int actorId, AbilityType abilityId, int targetId);
+		void UseTargetedAbility (int actorId, AbilityType abilityId, int targetId, int collisionId);
 
-		void UseAreaAbility (int actorId, AbilityType abilityId, float x, float z);
+		void UseAreaAbility (int actorId, AbilityType abilityId, float x, float z, int collisionId);
 
-		void ProcessCollision(AbilityType abilityId, int actorHitId, int actorCastId);
+		void ProcessCollision(AbilityType abilityId, int actorHitId, int actorCastId, int collisionId);
 
 		void SpawnActor(ActorType actorType, int ActorId, float x, float z);
 

@@ -65,7 +65,7 @@ namespace NetworkLibraryTest
 		{
 			byte[] bytes = new byte[1024];
 
-			CollisionElement element = new CollisionElement (0,7,7);
+			CollisionElement element = new CollisionElement (0,7,7, 100);
 			BitStream bitstream = new BitStream (bytes);
 			element.WriteTo (bitstream);
 
@@ -74,6 +74,26 @@ namespace NetworkLibraryTest
 			Assert.AreEqual (element.AbilityId, element2.AbilityId);
 			Assert.AreEqual (element.ActorCastId, element2.ActorCastId);
 			Assert.AreEqual (element.ActorHitId, element2.ActorHitId);
+			Assert.AreEqual (element.CollisionId, element2.CollisionId);
+
+		}
+
+		[Test ()]
+		public void SerializeAreaAbilityElement ()
+		{
+			byte[] bytes = new byte[1024];
+
+			AreaAbilityElement element = new AreaAbilityElement (0 ,AbilityType.TestProjectile,7, 0, 10);
+			BitStream bitstream = new BitStream (bytes);
+			element.WriteTo (bitstream);
+
+			AreaAbilityElement element2 = new AreaAbilityElement (bitstream);
+
+			Assert.AreEqual (element.AbilityId, element2.AbilityId);
+			Assert.AreEqual (element.ActorId, element2.ActorId);
+			Assert.AreEqual (element.CollisionId, element2.CollisionId);
+			Assert.AreEqual (element.X, element2.X);
+			Assert.AreEqual (element.Z, element2.Z);
 
 		}
 
