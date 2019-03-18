@@ -20,9 +20,7 @@ namespace NetworkLibrary
 	/// ----------------------------------------------
 	public enum ActorType : int
 	{
-		Player = 0,
-		AlliedPlayer,
-		EnemyPlayer
+		Player = 0
 	}
 }
 
