@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using NetworkLibrary.MessageElements;
 
 namespace NetworkLibrary
 {
@@ -38,14 +40,15 @@ namespace NetworkLibrary
 
 		void ProcessCollision(AbilityType abilityId, int actorHitId, int actorCastId, int collisionId);
 
-		void SpawnActor(ActorType actorType, int ActorId, float x, float z);
+		void SpawnActor(ActorType actorType, int actorId, int actorTeam, float x, float z);
 
 		void SetActorMovement(int actorId, float x, float z, float targetX, float targetZ);
 
-		void SetReady(int clientId, bool ready);
+		void SetReady(int clientId, bool ready, int team);
 
 		void StartGame(int playerNum);
 
+		void SetLobbyStatus(List<LobbyStatusElement.PlayerInfo> playerInfo);
 	}
 }
 

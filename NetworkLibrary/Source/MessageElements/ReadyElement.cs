@@ -7,7 +7,7 @@ namespace NetworkLibrary.MessageElements
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public ReadyElement (int actorId, int health)
+	/// CONSTRUCTORS:	public ReadyElement (int actorId, int health, int team)
 	/// 				public ReadyElement (BitStream bitstream)
 	/// 
 	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
@@ -16,10 +16,12 @@ namespace NetworkLibrary.MessageElements
 	/// 			public override void UpdateState (IStateMessageBridge bridge)
 	/// 			protected override void Validate ()
 	/// 
-	/// DATE: 		January 28th, 2019
+	/// DATE: 		March 8th, 2019
+	/// 
 	///
-	/// REVISIONS: 
-	///
+	/// REVISIONS: 	March 17th, 2019
+	/// 				Modified class to support teams
+	/// 
 	/// DESIGNER: 	Cameron Roberts
 	///
 	/// PROGRAMMER: Cameron Roberts
@@ -32,12 +34,16 @@ namespace NetworkLibrary.MessageElements
 
 		private const int READY_MAX = 1;
 		private const int CLIENTID_MAX = 127;
+		private const int TEAM_MAX = 7;
 		private static readonly int READY_BITS = RequiredBits (READY_MAX);
 		private static readonly int CLIENTID_BITS = RequiredBits (CLIENTID_MAX);
+		private static readonly int TEAM_BITS = RequiredBits (TEAM_MAX);
 
 		public bool Ready { get; private set; }
 
 		public int ClientId { get; private set; }
+
+		public int Team { get; private set; }
 
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: ReadyElement
@@ -50,14 +56,15 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public ReadyElement (int actorId, int health)
+		/// INTERFACE: 	public ReadyElement (int actorId, int health, int team)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public ReadyElement (bool ready, int clientId)
+		public ReadyElement (bool ready, int clientId, int team)
 		{
 			Ready = ready;
 			ClientId = clientId;
+			Team = team;
 		}
 
 		/// ----------------------------------------------
@@ -126,7 +133,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override int Bits ()
 		{
-			return READY_BITS + CLIENTID_BITS;
+			return READY_BITS + CLIENTID_BITS + TEAM_BITS;
 		}
 
 		/// ----------------------------------------------
@@ -151,6 +158,7 @@ namespace NetworkLibrary.MessageElements
 		{
 			bitStream.Write (Ready ? 1 : 0, 0, READY_BITS);
 			bitStream.Write (ClientId, 0, CLIENTID_BITS);
+			bitStream.Write (Team, 0, TEAM_BITS);
 		}
 
 		/// ----------------------------------------------
@@ -173,9 +181,9 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
-			Ready = bitstream.ReadNext (READY_BITS) == 1 ? true:false;
+			Ready = bitstream.ReadNext (READY_BITS) == 1 ? true : false;
 			ClientId = bitstream.ReadNext (CLIENTID_BITS);
-
+			Team = bitstream.ReadNext (TEAM_BITS);
 		}
 
 		/// ----------------------------------------------
@@ -198,7 +206,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override void UpdateState (IStateMessageBridge bridge)
 		{
-			bridge.SetReady (ClientId, Ready);
+			bridge.SetReady (ClientId, Ready, Team);
 		}
 
 		/// ----------------------------------------------
@@ -221,7 +229,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			if (ClientId > CLIENTID_MAX) {
+			if (ClientId > CLIENTID_MAX || Team > TEAM_MAX) {
 				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
 			}
 		}

@@ -31,7 +31,8 @@ namespace NetworkLibrary.MessageElements
 		SpawnElement,
 		MovementElement,
 		ReadyElement,
-		GameStartElement
+		GameStartElement,
+		LobbyStatusElement
 	}
 }
 

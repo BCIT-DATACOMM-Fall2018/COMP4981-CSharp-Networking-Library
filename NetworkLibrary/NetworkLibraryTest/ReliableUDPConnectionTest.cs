@@ -16,7 +16,7 @@ namespace NetworkLibraryTest
 			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
 			List<UpdateElement> reliableElements = new List<UpdateElement> ();
 			unreliableElements.Add (new HealthElement (10, 10));
-			reliableElements.Add (new SpawnElement (ActorType.Player, 1, 0, 0));
+			reliableElements.Add (new SpawnElement (ActorType.Player, 1,3,  0, 0));
 			ReliableUDPConnection conn = new ReliableUDPConnection (1);
 
 			conn.CreatePacket (unreliableElements, reliableElements);
@@ -49,7 +49,8 @@ namespace NetworkLibraryTest
 			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
 			List<UpdateElement> reliableElements = new List<UpdateElement> ();
 			unreliableElements.Add (new HealthElement (10, 10));
-			reliableElements.Add (new SpawnElement (ActorType.Player, 1, 0, 0));
+			reliableElements.Add (new SpawnElement (ActorType.Player, 1,3, 0, 0));
+			reliableElements.Add (new ReadyElement (true, 0, 1));
 
 			ReliableUDPConnection conn = new ReliableUDPConnection (1);
 			ReliableUDPConnection conn2 = new ReliableUDPConnection (2);
@@ -208,7 +209,6 @@ namespace NetworkLibraryTest
 			unreliableElements.Add (new HealthElement (10, 10));
 			List<UpdateElement> reliableElements = new List<UpdateElement> ();
 			reliableElements.Add (new HealthElement (10, 10));
-
 			ReliableUDPConnection conn = new ReliableUDPConnection (1);
 			ReliableUDPConnection conn2 = new ReliableUDPConnection (2);
 
@@ -220,6 +220,30 @@ namespace NetworkLibraryTest
 			}
 
 			Assert.AreEqual (conn2.CurrentAck, 6);
+
+		}
+
+		[Test ()]
+		public void UnpackingLobbyStatusElement ()
+		{
+
+			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
+			List<UpdateElement> reliableElements = new List<UpdateElement> ();
+			unreliableElements.Add (new HealthElement (10, 10));
+			unreliableElements.Add (new PositionElement (1,10, 10));
+			List<LobbyStatusElement.PlayerInfo> playerInfo = new List<LobbyStatusElement.PlayerInfo> ();
+			playerInfo.Add (new LobbyStatusElement.PlayerInfo (0, "Alice", 1, true));
+			playerInfo.Add (new LobbyStatusElement.PlayerInfo (1, "Bob", 2, false));
+			playerInfo.Add (new LobbyStatusElement.PlayerInfo (2, "Cedric", 2, true));
+
+			reliableElements.Add(new LobbyStatusElement (playerInfo));
+
+
+			ReliableUDPConnection conn = new ReliableUDPConnection (1);
+			Packet packet = conn.CreatePacket (unreliableElements, reliableElements);
+			UnpackedPacket unpacked = conn.ProcessPacket (packet, new ElementId[] { ElementId.HealthElement, ElementId.PositionElement });
+
+			Assert.AreEqual (unreliableElements.Count, unpacked.UnreliableElements.Count);
 
 		}
 	}

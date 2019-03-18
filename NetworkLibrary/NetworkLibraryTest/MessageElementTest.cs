@@ -2,6 +2,7 @@
 using System;
 using NetworkLibrary;
 using NetworkLibrary.MessageElements;
+using System.Collections.Generic;
 
 namespace NetworkLibraryTest
 {
@@ -30,7 +31,7 @@ namespace NetworkLibraryTest
 		{
 			byte[] bytes = new byte[1024];
 
-			SpawnElement element = new SpawnElement (ActorType.Player, 1,0,0);
+			SpawnElement element = new SpawnElement (ActorType.Player, 1, 6,8,100);
 			BitStream bitstream = new BitStream (bytes);
 			element.WriteTo (bitstream);
 
@@ -38,6 +39,7 @@ namespace NetworkLibraryTest
 
 			Assert.AreEqual (element.ActorId, element2.ActorId);
 			Assert.AreEqual (element.ActorType, element2.ActorType);
+			Assert.AreEqual (element.ActorTeam, element2.ActorTeam);
 			Assert.AreEqual (element.X, element2.X);
 			Assert.AreEqual (element.Z, element2.Z);
 
@@ -96,6 +98,46 @@ namespace NetworkLibraryTest
 			Assert.AreEqual (element.Z, element2.Z);
 
 		}
+
+		[Test ()]
+		public void SerializeLobbyStatusElement ()
+		{
+			byte[] bytes = new byte[1024];
+			List<LobbyStatusElement.PlayerInfo> playerInfo = new List<LobbyStatusElement.PlayerInfo> ();
+			playerInfo.Add (new LobbyStatusElement.PlayerInfo (0, "Alice", 1, true));
+			playerInfo.Add (new LobbyStatusElement.PlayerInfo (1, "Bob", 2, false));
+			playerInfo.Add (new LobbyStatusElement.PlayerInfo (2, "Cedric", 2, true));
+
+			LobbyStatusElement element = new LobbyStatusElement (playerInfo);
+			BitStream bitstream = new BitStream (bytes);
+			element.WriteTo (bitstream);
+
+			LobbyStatusElement element2 = new LobbyStatusElement (bitstream);
+			int bits = element.Bits ();
+
+			for (int i = 0; i < element.PlayerInformation.Count; i++) {
+				Assert.AreEqual (element.PlayerInformation[i].Id, element.PlayerInformation[i].Id);
+				Assert.AreEqual (element.PlayerInformation[i].Team, element.PlayerInformation[i].Team);
+				Assert.AreEqual (element.PlayerInformation[i].ReadyStatus, element.PlayerInformation[i].ReadyStatus);
+				Assert.IsTrue (element.PlayerInformation [i].Name.CompareTo (element.PlayerInformation [i].Name) == 0);
+			}
+		}
+
+		[Test ()]
+		public void SerializeReadyElement ()
+		{
+			byte[] bytes = new byte[1024];
+
+			ReadyElement element = new ReadyElement (true,0,1);
+			BitStream bitstream = new BitStream (bytes);
+			element.WriteTo (bitstream);
+
+			ReadyElement element2 = new ReadyElement (bitstream);
+			Assert.AreEqual (element.Ready, element2.Ready);
+			Assert.AreEqual (element.ClientId, element2.ClientId);
+			Assert.AreEqual (element.Team, element2.Team);
+		}
+
 
 		[Test ()]
 		public void RequiredBitsTest ()

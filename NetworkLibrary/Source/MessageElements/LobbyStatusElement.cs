@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: SpawnElement - A UpdateElement to cause an actor to be spawned
+	/// Class: LobbyStatusElement - A UpdateElement to cause an actor to be spawned
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public SpawnElement (ActorType actorType, int actorId, int team, int x, int z)
-	/// 				public SpawnElement (BitStream bitstream)
+	/// CONSTRUCTORS:	public LobbyStatusElement (List<PlayerInfo> playerInformation)
+	/// 				public LobbyStatusElement (BitStream bitstream)
 	/// 
 	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
@@ -16,10 +18,9 @@ namespace NetworkLibrary.MessageElements
 	/// 			public override void UpdateState (IStateMessageBridge bridge)
 	/// 			protected override void Validate ()
 	/// 
-	/// DATE: 		March 8th, 2019
+	/// DATE: 		March 17th, 2019
 	///
-	/// REVISIONS:  March 17th, 2019
-	/// 				Modified class to support teams
+	/// REVISIONS: 
 	///
 	/// DESIGNER: 	Cameron Roberts
 	///
@@ -27,34 +28,43 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// NOTES:		
 	/// ----------------------------------------------
-	public class SpawnElement : UpdateElement
+	public class LobbyStatusElement : UpdateElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.SpawnElement);
 
-		private const int ACTORTYPE_MAX = 31;
-		private const int ACTORID_MAX = 255;
-		private const int ACTORTEAM_MAX = 7;
-		private const float X_MAX = 500;
-		private const float Z_MAX = 500;
+		public struct PlayerInfo
+		{
+			public  int Id { get; private set;}
+			public string Name { get; private set;}
+			public int Team { get; set;}
+			public bool ReadyStatus { get; set;}
 
-		private static readonly int ACTORTYPE_BITS = RequiredBits (ACTORTYPE_MAX);
-		private static readonly int ACTORID_BITS = RequiredBits (ACTORID_MAX);
-		private static readonly int ACTORTEAM_BITS = RequiredBits (ACTORTEAM_MAX);
-		private static readonly int X_BITS = sizeof (float)*BitStream.BYTE_SIZE;
-		private static readonly int Z_BITS = sizeof (float)*BitStream.BYTE_SIZE;
+			public PlayerInfo (int id, string name, int team, bool readyStatus)
+			{
+				this.Id = id;
+				this.Name = name;
+				this.Team = team;
+				this.ReadyStatus = readyStatus;
+			}
+		}
 
-		public ActorType ActorType { get; private set; }
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.LobbyStatusElement);
 
-		public int ActorId { get; private set; }
+		private const int PLAYERS_MAX = 31;
+		private const int PLAYERID_MAX = 31;
+		private const int PLAYERTEAM_MAX = 7;
+		private const int PLAYERREADY_MAX = 1;
+		private const int NAMECHARS_MAX = 32;
 
-		public int ActorTeam { get; private set; }
+		private static readonly int PLAYERS_BITS = RequiredBits (PLAYERS_MAX);
+		private static readonly int PLAYERID_BITS = RequiredBits (PLAYERID_MAX);
+		private static readonly int PLAYERTEAM_BITS = RequiredBits (PLAYERTEAM_MAX);
+		private static readonly int PLAYERREADY_BITS = RequiredBits (PLAYERREADY_MAX);
+		private static readonly int NAMECHARS_BITS = RequiredBits (NAMECHARS_MAX);
 
-		public float X { get; private set; }
-
-		public float Z { get; private set; }
+		public List<PlayerInfo> PlayerInformation { get; private set; }
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: SpawnElement
+		/// CONSTRUCTOR: LobbyStatusElement
 		/// 
 		/// DATE:		March 8th, 2019
 		/// 
@@ -64,21 +74,20 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public SpawnElement (ActorType actorType, int actorId, int actorTeam, float x, float z)
+		/// INTERFACE: 	public LobbyStatusElement (List<PlayerInfo> playerInformation)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public SpawnElement (ActorType actorType, int actorId, int actorTeam, float x, float z)
+		public LobbyStatusElement (List<PlayerInfo> playerInformation)
 		{
-			ActorType = actorType;
-			ActorId = actorId;
-			ActorTeam = actorTeam;
-			X = x;
-			Z = z;
+			PlayerInformation = new List<PlayerInfo>();
+			foreach (var item in playerInformation) {
+				PlayerInformation.Add(new PlayerInfo(item.Id, item.Name, item.Team, item.ReadyStatus));
+			}
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: SpawnElement
+		/// CONSTRUCTOR: LobbyStatusElement
 		/// 
 		/// DATE:		March 8th, 2019
 		/// 
@@ -91,10 +100,10 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public HealthElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		SpawnElement by deserializing it 
+		/// 		LobbyStatusElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public SpawnElement (BitStream bitstream) : base (bitstream)
+		public LobbyStatusElement (BitStream bitstream) : base (bitstream)
 		{
 		}
 
@@ -111,10 +120,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a SpawnElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a LobbyStatusElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a SpawnElement when 
+		/// 			to reconstruct a LobbyStatusElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -136,13 +145,23 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public int Bits ()
 		/// 
 		/// RETURNS: 	The number of bits needed to store a
-		/// 			SpawnElement
+		/// 			LobbyStatusElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			a SpawnElement
+		/// 			a LobbyStatusElement
 		/// ----------------------------------------------
 		public override int Bits(){
-			return ACTORTYPE_BITS + ACTORID_BITS + ACTORTEAM_BITS + X_BITS + Z_BITS;
+			int bits = 0;
+			bits += PLAYERS_BITS;
+			foreach (var player in PlayerInformation) {
+				bits += PLAYERID_BITS + PLAYERTEAM_BITS + PLAYERREADY_BITS + NAMECHARS_BITS;
+				byte[] name = Encoding.UTF8.GetBytes (player.Name);
+				if (name.Length > NAMECHARS_MAX) {
+					throw new System.Runtime.Serialization.SerializationException ("Attempt to create a lobby status packet with a name greater than 32 characters");
+				}
+				bits += name.Length * BitStream.BYTE_SIZE;
+			}
+			return bits;
 		}
 
 		/// ----------------------------------------------
@@ -161,22 +180,23 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			SpawnElement to a BitStream.
+		/// 			LobbyStatusElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
-			bitStream.Write ((int)ActorType, 0, ACTORTYPE_BITS);
-			bitStream.Write (ActorId, 0, ACTORID_BITS);
-			bitStream.Write (ActorTeam, 0, ACTORTEAM_BITS);
-
-			byte[] bytes = BitConverter.GetBytes (X);
-			foreach (var item in bytes) {
-				bitStream.Write (item, 0, BitStream.BYTE_SIZE);
-			}
-
-			bytes = BitConverter.GetBytes (Z);
-			foreach (var item in bytes) {
-				bitStream.Write (item, 0, BitStream.BYTE_SIZE);
+			bitStream.Write (PlayerInformation.Count, 0, PLAYERS_BITS);
+			foreach (var item in PlayerInformation) {
+				bitStream.Write (item.Id, 0, PLAYERID_BITS);
+				bitStream.Write (item.Team, 0, PLAYERTEAM_BITS);
+				bitStream.Write (item.ReadyStatus ? 1 : 0, 0, PLAYERREADY_BITS);
+				byte[] name = Encoding.UTF8.GetBytes (item.Name);
+				if (name.Length > NAMECHARS_MAX) {
+					throw new System.Runtime.Serialization.SerializationException ("Attempt to create a lobby status packet with a name greater than 32 characters");
+				}
+				bitStream.Write (name.Length, 0 , NAMECHARS_BITS);
+				foreach (var character in name) {
+					bitStream.Write (character, 0, BitStream.BYTE_SIZE);
+				}
 			}
 		}
 
@@ -196,24 +216,23 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			SpawnElement from a BitStream.
+		/// 			LobbyStatusElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
-			ActorType = (ActorType)bitstream.ReadNext (ACTORTYPE_BITS);
-			ActorId = bitstream.ReadNext (ACTORID_BITS);
-			ActorTeam = bitstream.ReadNext (ACTORTEAM_BITS);
-
-			byte[] bytes = new byte[sizeof(float)];
-			for (int i = 0; i < sizeof(float); i++) {
-				bytes [i] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
+			int playerCount = bitstream.ReadNext (PLAYERS_BITS);
+			PlayerInformation = new List<PlayerInfo>();
+			for (int i = 0; i < playerCount; i++) {
+				int id = bitstream.ReadNext(PLAYERID_BITS);
+				int team = bitstream.ReadNext(PLAYERTEAM_BITS);
+				bool ready = bitstream.ReadNext (PLAYERREADY_BITS) == 1 ? true : false;
+				int nameBytes = bitstream.ReadNext(NAMECHARS_BITS);
+				byte[] name = new byte[nameBytes];
+				for (int j = 0; j < nameBytes; j++) {
+					name[j] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
+				}
+				PlayerInformation.Add(new PlayerInfo(id, Encoding.UTF8.GetString(name), team, ready));
 			}
-			X = BitConverter.ToSingle (bytes, 0);
-			bytes = new byte[sizeof(float)];
-			for (int i = 0; i < sizeof(float); i++) {
-				bytes [i] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
-			}
-			Z = BitConverter.ToSingle (bytes, 0);
 		}
 
 		/// ----------------------------------------------
@@ -236,7 +255,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override void UpdateState (IStateMessageBridge bridge)
 		{
-			bridge.SpawnActor (ActorType, ActorId, ActorTeam, X, Z);
+			bridge.SetLobbyStatus (PlayerInformation);
 		}
 
 		/// ----------------------------------------------
@@ -255,13 +274,16 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			SpawnElement.
+		/// 			LobbyStatusElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			if ((int)ActorType > ACTORTYPE_MAX || ActorId > ACTORID_MAX || ActorTeam > ACTORTEAM_MAX || X > X_MAX || Z > Z_MAX) {
-				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
+			foreach (var item in PlayerInformation) {
+				if (item.Id > PLAYERID_MAX || item.Team > PLAYERTEAM_MAX) {
+					throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
+				}
 			}
+
 		}
 	}
 }
