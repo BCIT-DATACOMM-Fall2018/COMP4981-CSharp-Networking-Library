@@ -208,7 +208,7 @@ namespace NetworkLibrary
 			List<UpdateElement> reliableElements = new List<UpdateElement> ();
 			try{
 				// reliable elements were not missed
-				if (CurrentAck % BUFFER_SIZE + reliableCount - 1 == seqNumber) {
+				if ((CurrentAck  + reliableCount - 1)% BUFFER_SIZE == seqNumber) {
 					// extract reliable elements from packet
 					for (int i = 0; i < reliableCount; i++) {
 						// get element indicator
