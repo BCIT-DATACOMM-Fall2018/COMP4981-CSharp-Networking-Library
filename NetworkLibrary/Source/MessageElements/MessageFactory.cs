@@ -96,6 +96,8 @@ namespace NetworkLibrary.MessageElements
 				return new LobbyStatusElement (bitStream);
 			case ElementId.NameElement:
 				return new NameElement (bitStream);
+			case ElementId.GameEndElement:
+				return new GameEndElement (bitStream);
 			default:
 				throw new InvalidOperationException ("Attempted to create a MessageElement with an invalid ID");
 			}
@@ -144,6 +146,8 @@ namespace NetworkLibrary.MessageElements
 				return new GameStartElement (bitStream);
 			case ElementId.LobbyStatusElement:
 				return new LobbyStatusElement (bitStream);
+			case ElementId.GameEndElement:
+				return new GameEndElement (bitStream);
 			default:
 				throw new InvalidOperationException ("Attempted to create a UpdateElement with an invalid ID: " + id);
 			}

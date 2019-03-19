@@ -65,6 +65,7 @@
     <Compile Include="Source\MessageElements\SpawnElement.cs" />
     <Compile Include="Source\MessageElements\LobbyStatusElement.cs" />
     <Compile Include="Source\MessageElements\NameElement.cs" />
+    <Compile Include="Source\MessageElements\GameEndElement.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

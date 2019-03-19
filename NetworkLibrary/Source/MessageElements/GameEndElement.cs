@@ -1,22 +1,22 @@
 ﻿using System;
-using System.Text;
 
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: NameElement - A MessageElement to store a clients Name in a packet
+	/// Class: GameEndElement - A UpdateElement to signal the end of the game and notify clients of the winner
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public NameElement (string name)
-	/// 				public NameElement (BitStream bitStream)
+	/// CONSTRUCTORS:	public GameEndElement (int actorId, int health)
+	/// 				public GameEndElement (BitStream bitstream)
 	/// 
-	/// FUNCTIONS:	public override PacketHeaderElement GetIndicator ()
+	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
 	/// 			protected override void Deserialize (BitStream bitstream)
+	/// 			public override void UpdateState (IStateMessageBridge bridge)
 	/// 			protected override void Validate ()
 	/// 
-	/// DATE: 		February 12th, 2019
+	/// DATE: 		January 28th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -24,22 +24,22 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// PROGRAMMER: Cameron Roberts
 	///
-	/// NOTES:		This NameElement is used to indentify the 
-	/// 			player who sent a packet.
+	/// NOTES:		
 	/// ----------------------------------------------
-	public class NameElement : MessageElement
+	public class GameEndElement : UpdateElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.NameElement);
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.GameEndElement);
 
-		private const int NAMECHARS_MAX = 32;
-		private static readonly int NAMECHARS_BITS = RequiredBits (NAMECHARS_MAX);
+		private const int WINTEAM_MAX = 7;
+		private static readonly int WINTEAM_BITS = RequiredBits (WINTEAM_MAX);
 
-		public string Name { get; private set;}
+		public int WinningTeam { get; private set; }
+
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: NameElement
+		/// CONSTRUCTOR: GameEndElement
 		/// 
-		/// DATE: 		February 12th, 2019
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -47,19 +47,19 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public NameElement (string name)
+		/// INTERFACE: 	public GameEndElement (int actorId, int health)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public NameElement (string name)
+		public GameEndElement (int winningTeam)
 		{
-			Name = name;
+			WinningTeam = winningTeam;
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: NameElement
+		/// CONSTRUCTOR: GameEndElement
 		/// 
-		/// DATE: 		February 12th, 2019
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -67,20 +67,20 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public PacketHeaderElement (BitStream bitstream)
+		/// INTERFACE: 	public GameEndElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		NameElement by deserializing it 
+		/// 		GameEndElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public NameElement (BitStream bitStream) : base (bitStream)
+		public GameEndElement (BitStream bitstream) : base (bitstream)
 		{
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	GetIndicator
 		/// 
-		/// DATE: 		February 12th, 2019
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -90,10 +90,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a NameElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a GameEndElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a NameElement when 
+		/// 			to reconstruct a GameEndElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -104,7 +104,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// FUNCTION:	Bits
 		/// 
-		/// DATE: 		February 12th, 2019
+		/// DATE:		February 10th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -115,28 +115,19 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public int Bits ()
 		/// 
 		/// RETURNS: 	The number of bits needed to store a
-		/// 			NameElement
+		/// 			GameEndElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			a NameElement
+		/// 			a GameEndElement
 		/// ----------------------------------------------
 		public override int Bits(){
-			int bits = 0;
-			bits += NAMECHARS_BITS;
-			byte[] name = Encoding.UTF8.GetBytes (Name);
-			if (name.Length > NAMECHARS_MAX) {
-				throw new System.Runtime.Serialization.SerializationException ("Attempt to create a lobby status packet with a name greater than 32 characters");
-			}
-			bits += name.Length * BitStream.BYTE_SIZE;
-
-
-			return bits;
+			return WINTEAM_BITS;
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Serialize
 		/// 
-		/// DATE: 		February 12th, 2019
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -149,24 +140,17 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			NameElement to a BitStream.
+		/// 			GameEndElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
-			byte[] name = Encoding.UTF8.GetBytes (Name);
-			if (name.Length > NAMECHARS_MAX) {
-				throw new System.Runtime.Serialization.SerializationException ("Attempt to create a lobby status packet with a name greater than 32 characters");
-			}
-			bitStream.Write (name.Length, 0 , NAMECHARS_BITS);
-			foreach (var character in name) {
-				bitStream.Write (character, 0, BitStream.BYTE_SIZE);
-			}
+			bitStream.Write (WinningTeam, 0, WINTEAM_BITS);
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Deserialize
 		/// 
-		/// DATE: 		February 12th, 2019
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -179,22 +163,41 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			NameElement from a BitStream.
+		/// 			GameEndElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
-			int nameBytes = bitstream.ReadNext(NAMECHARS_BITS);
-			byte[] name = new byte[nameBytes];
-			for (int j = 0; j < nameBytes; j++) {
-				name[j] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
-			}
-			Name = Encoding.UTF8.GetString(name);
+			WinningTeam = bitstream.ReadNext (WINTEAM_BITS);
+
+		}
+
+		/// ----------------------------------------------
+		/// FUNCTION:	UpdateState
+		/// 
+		/// DATE:		January 28th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public override void UpdateState (IStateMessageBridge bridge)
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		Contains logic needed to update the game state through
+		/// 			the use of a IStateMessageBridge.
+		/// ----------------------------------------------
+		public override void UpdateState (IStateMessageBridge bridge)
+		{
+			bridge.EndGame (WinningTeam);
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Validate
 		/// 
-		/// DATE: 		February 12th, 2019
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -207,10 +210,13 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			NameElement.
+		/// 			GameEndElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
+			if (WinningTeam > WINTEAM_MAX) {
+				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
+			}
 		}
 	}
 }

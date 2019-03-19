@@ -25,7 +25,7 @@ namespace NetworkLibrary
 	/// ----------------------------------------------
 	public class Packet
 	{
-		public const int DEFAULT_SIZE = 1024;
+		public const int DEFAULT_SIZE = 2048;
 
 		public byte[] Data { get;  set; }
 

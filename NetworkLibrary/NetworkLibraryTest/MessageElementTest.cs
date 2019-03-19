@@ -138,6 +138,18 @@ namespace NetworkLibraryTest
 			Assert.AreEqual (element.Team, element2.Team);
 		}
 
+		[Test ()]
+		public void SerializeGameEndElement ()
+		{
+			byte[] bytes = new byte[1024];
+
+			GameEndElement element = new GameEndElement (3);
+			BitStream bitstream = new BitStream (bytes);
+			element.WriteTo (bitstream);
+
+			GameEndElement element2 = new GameEndElement (bitstream);
+			Assert.AreEqual (element.WinningTeam, element2.WinningTeam);
+		}
 
 		[Test ()]
 		public void RequiredBitsTest ()

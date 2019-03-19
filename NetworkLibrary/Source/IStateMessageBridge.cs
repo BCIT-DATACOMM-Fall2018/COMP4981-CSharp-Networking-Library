@@ -49,6 +49,8 @@ namespace NetworkLibrary
 		void StartGame(int playerNum);
 
 		void SetLobbyStatus(List<LobbyStatusElement.PlayerInfo> playerInfo);
+
+		void EndGame(int winningTeam);
 	}
 }
 
