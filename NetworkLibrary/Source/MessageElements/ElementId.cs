@@ -32,7 +32,8 @@ namespace NetworkLibrary.MessageElements
 		MovementElement,
 		ReadyElement,
 		GameStartElement,
-		LobbyStatusElement
+		LobbyStatusElement,
+		NameElement
 	}
 }
 

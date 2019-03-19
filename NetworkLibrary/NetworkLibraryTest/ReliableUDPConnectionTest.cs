@@ -246,6 +246,16 @@ namespace NetworkLibraryTest
 			Assert.AreEqual (unreliableElements.Count, unpacked.UnreliableElements.Count);
 
 		}
+
+		[Test ()]
+		public void ReadingNameFromRequestPacket ()
+		{
+			string name = "Alice";
+			Packet packet = ReliableUDPConnection.CreateRequestPacket (name);
+			string depackedName = ReliableUDPConnection.GetClientNameFromRequestPacket (packet);
+			Assert.AreEqual (name, depackedName);
+
+		}
 	}
 }
 

@@ -301,15 +301,19 @@ namespace NetworkLibrary
 		/// 
 		/// NOTES:		Creates a Packet to send to a server to initiate a connection
 		/// ----------------------------------------------
-		public static Packet CreateRequestPacket ()
+		public static Packet CreateRequestPacket (string name = "Default")
 		{
 			int neededBits = 0;
 			PacketHeaderElement header = new PacketHeaderElement (PacketType.RequestPacket, 0, 0, 0);
+			NameElement nameElement = new NameElement (name);
 			neededBits += header.Bits ();
+			neededBits += nameElement.Bits ();
 			Packet packet = new Packet ((neededBits - 1) / BYTE_SIZE + 1);
 
 			BitStream bitStream = new BitStream (packet.Data);
 			header.WriteTo (bitStream);
+			nameElement.WriteTo (bitStream);
+
 
 			return packet;
 		}
@@ -351,6 +355,14 @@ namespace NetworkLibrary
 			PacketHeaderElement header = new PacketHeaderElement (bitStream);
 			ClientIDElement idElement = new ClientIDElement (bitStream);
 			return idElement.ClientID;
+
+		}
+
+		public static string GetClientNameFromRequestPacket(Packet packet){
+			BitStream bitStream = new BitStream (packet.Data);
+			PacketHeaderElement header = new PacketHeaderElement (bitStream);
+			NameElement nameElement = new NameElement (bitStream);
+			return nameElement.Name;
 
 		}
 	}
