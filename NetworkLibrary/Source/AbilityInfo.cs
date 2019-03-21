@@ -8,11 +8,11 @@ namespace NetworkLibrary
 			// TestProjectile
 			new AbilityInfo (isArea: true, requiresCollision: true, cooldown: 30),
 			// TestTargeted
-			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, enemyTargetAllowed: true, cooldown: 60),
+			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, enemyTargetAllowed: true, cooldown: 60, range:10),
 			// TestHomingTargeted
-			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, requiresCollision: true, cooldown: 120),
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, requiresCollision: true, cooldown: 120, range:20),
 			// TestAreaOfEffect
-			new AbilityInfo (isArea: true, requiresCollision: true, cooldown: 180)
+			new AbilityInfo (isArea: true, requiresCollision: true, cooldown: 180, range:30)
 		};
 
 		// The ability targets a location on the map
@@ -36,7 +36,9 @@ namespace NetworkLibrary
 
 		public int Cooldown { get; private set; }
 
-		private AbilityInfo (bool isArea = false, bool isTargeted = false, bool isSelf = false, bool allyTargetAllowed = false, bool enemyTargetAllowed = false, bool requiresCollision = false, int cooldown = 0)
+		public int Range { get; private set; }
+
+		private AbilityInfo (bool isArea = false, bool isTargeted = false, bool isSelf = false, bool allyTargetAllowed = false, bool enemyTargetAllowed = false, bool requiresCollision = false, int cooldown = 0, int range = 0)
 		{
 			IsArea = isArea;
 			IsTargeted = isTargeted;
@@ -45,6 +47,8 @@ namespace NetworkLibrary
 			EnemyTargetAllowed = enemyTargetAllowed;
 			RequiresCollision = requiresCollision;
 			Cooldown = cooldown;
+			Range = range;
+
 		}
 
 
