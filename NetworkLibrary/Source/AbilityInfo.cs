@@ -8,11 +8,13 @@ namespace NetworkLibrary
 			// TestProjectile
 			new AbilityInfo (isArea: true, requiresCollision: true, cooldown: 30),
 			// TestTargeted
-			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, enemyTargetAllowed: true, cooldown: 60, range:10),
+			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, enemyTargetAllowed: true, cooldown: 60, range:15),
 			// TestHomingTargeted
-			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, requiresCollision: true, cooldown: 120, range:20),
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, requiresCollision: true, cooldown: 120, range:30),
 			// TestAreaOfEffect
-			new AbilityInfo (isArea: true, requiresCollision: true, cooldown: 180, range:30)
+			new AbilityInfo (isArea: true, requiresCollision: true, cooldown: 180, range:30),
+			// AutoAttack
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 15)
 		};
 
 		// The ability targets a location on the map

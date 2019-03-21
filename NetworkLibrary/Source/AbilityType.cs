@@ -22,7 +22,8 @@ namespace NetworkLibrary
 		TestProjectile = 0,
 		TestTargeted,
 		TestTargetedHoming,
-		TestAreaOfEffect
+		TestAreaOfEffect,
+		AutoAttack
 	}
 }
 
