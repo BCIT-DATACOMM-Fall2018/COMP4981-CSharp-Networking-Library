@@ -16,7 +16,7 @@ namespace NetworkLibraryTest
 			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
 			List<UpdateElement> reliableElements = new List<UpdateElement> ();
 			unreliableElements.Add (new HealthElement (10, 10));
-			reliableElements.Add (new SpawnElement (ActorType.Player, 1,3,  0, 0));
+			reliableElements.Add (new SpawnElement (ActorType.HumanPlayerA, 1,3,  0, 0));
 			ReliableUDPConnection conn = new ReliableUDPConnection (1);
 
 			conn.CreatePacket (unreliableElements, reliableElements);
@@ -49,7 +49,7 @@ namespace NetworkLibraryTest
 			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
 			List<UpdateElement> reliableElements = new List<UpdateElement> ();
 			unreliableElements.Add (new HealthElement (10, 10));
-			reliableElements.Add (new SpawnElement (ActorType.Player, 1,3, 0, 0));
+			reliableElements.Add (new SpawnElement (ActorType.HumanPlayerA, 1,3, 0, 0));
 			reliableElements.Add (new ReadyElement (true, 0, 1));
 
 			ReliableUDPConnection conn = new ReliableUDPConnection (1);

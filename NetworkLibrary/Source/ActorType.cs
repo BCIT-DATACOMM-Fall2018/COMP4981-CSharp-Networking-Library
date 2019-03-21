@@ -20,7 +20,16 @@ namespace NetworkLibrary
 	/// ----------------------------------------------
 	public enum ActorType : int
 	{
-		Player = 0
+		HumanPlayerA = 0,
+		HumanPlayerB,
+		HumanPlayerC,
+		HumanPlayerD,
+		HumanPlayerE,
+		OrcPlayerA,
+		OrcPlayerB,
+		OrcPlayerC,
+		OrcPlayerD,
+		OrcplayerE
 	}
 }
 

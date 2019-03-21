@@ -31,7 +31,7 @@ namespace NetworkLibraryTest
 		{
 			byte[] bytes = new byte[1024];
 
-			SpawnElement element = new SpawnElement (ActorType.Player, 1, 6,8,100);
+			SpawnElement element = new SpawnElement (ActorType.HumanPlayerA, 1, 6,8,100);
 			BitStream bitstream = new BitStream (bytes);
 			element.WriteTo (bitstream);
 
