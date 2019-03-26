@@ -23,7 +23,9 @@ namespace NetworkLibrary
 		TestTargeted,
 		TestTargetedHoming,
 		TestAreaOfEffect,
-		AutoAttack
+		AutoAttack,
+		Wall,
+		Banish
 	}
 }
 
