@@ -3,12 +3,12 @@
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: HealthElement - A UpdateElement to update actor health
+	/// Class: MovementElement - A UpdateElement to update actor position
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public HealthElement (int actorId, int health)
-	/// 				public HealthElement (BitStream bitstream)
+	/// CONSTRUCTORS:	public MovementElement (int actorId, int x, int z, float targetX, float targetZ)
+	/// 				public MovementElement (BitStream bitstream)
 	/// 
 	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
@@ -16,7 +16,7 @@ namespace NetworkLibrary.MessageElements
 	/// 			public override void UpdateState (IStateMessageBridge bridge)
 	/// 			protected override void Validate ()
 	/// 
-	/// DATE: 		January 28th, 2019
+	/// DATE: 		March 8th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -26,23 +26,37 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// NOTES:		
 	/// ----------------------------------------------
-	public class HealthElement : UpdateElement
+	public class MovementElement : UpdateElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.HealthElement);
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.MovementElement);
 
-		private const int HEALTH_MAX = 1000;
 		private const int ACTORID_MAX = 127;
-		private static readonly int HEALTH_BITS = RequiredBits (HEALTH_MAX);
+		private const float X_MAX = 500;
+		private const float Z_MAX = 500;
+		private const float TARGETX_MAX = 500;
+		private const float TARGETZ_MAX = 500;
+
 		private static readonly int ACTORID_BITS = RequiredBits (ACTORID_MAX);
+		private static readonly int X_BITS = sizeof (float)*BitStream.BYTE_SIZE;
+		private static readonly int Z_BITS = sizeof (float)*BitStream.BYTE_SIZE;
+		private static readonly int TARGETX_BITS = sizeof (float)*BitStream.BYTE_SIZE;
+		private static readonly int TARGETZ_BITS = sizeof (float)*BitStream.BYTE_SIZE;
+
 
 		public int ActorId { get; private set; }
 
-		public int Health { get; private set; }
+		public float X { get; private set; }
+
+		public float Z { get; private set; }
+
+		public float TargetX { get; private set; }
+
+		public float TargetZ { get; private set; }
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: HealthElement
+		/// CONSTRUCTOR: MovementElement
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -50,20 +64,23 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public HealthElement (int actorId, int health)
+		/// INTERFACE: 	public MovementElement (int actorId, int x, int z, float targetX, float targetZ)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public HealthElement (int actorId, int health)
+		public MovementElement (int actorId, float x, float z, float targetX, float targetZ)
 		{
 			ActorId = actorId;
-			Health = health;
+			X = x;
+			Z = z;
+			TargetX = targetX;
+			TargetZ = targetZ;
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: HealthElement
+		/// CONSTRUCTOR: MovementElement
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -74,17 +91,17 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public HealthElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		HealthElement by deserializing it 
+		/// 		MovementElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public HealthElement (BitStream bitstream) : base (bitstream)
+		public MovementElement (BitStream bitstream) : base (bitstream)
 		{
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	GetIndicator
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -94,10 +111,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a HealthElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a MovementElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a HealthElement when 
+		/// 			to reconstruct a MovementElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -108,7 +125,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// FUNCTION:	Bits
 		/// 
-		/// DATE:		February 10th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -119,19 +136,19 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public int Bits ()
 		/// 
 		/// RETURNS: 	The number of bits needed to store a
-		/// 			HealthElement
+		/// 			MovementElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			a HealthElement
+		/// 			a MovementElement
 		/// ----------------------------------------------
 		public override int Bits(){
-			return HEALTH_BITS + ACTORID_BITS;
+			return ACTORID_BITS + X_BITS + Z_BITS + TARGETX_BITS + TARGETZ_BITS;
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Serialize
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -144,18 +161,33 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			HealthElement to a BitStream.
+		/// 			MovementElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
 			bitStream.Write (ActorId, 0, ACTORID_BITS);
-			bitStream.Write	(Health, 0, HEALTH_BITS);
+			byte[] bytes = BitConverter.GetBytes (X);
+			foreach (var item in bytes) {
+				bitStream.Write (item, 0, BitStream.BYTE_SIZE);
+			}
+			bytes = BitConverter.GetBytes (Z);
+			foreach (var item in bytes) {
+				bitStream.Write (item, 0, BitStream.BYTE_SIZE);
+			}
+			bytes = BitConverter.GetBytes (TargetX);
+			foreach (var item in bytes) {
+				bitStream.Write (item, 0, BitStream.BYTE_SIZE);
+			}
+			bytes = BitConverter.GetBytes (TargetZ);
+			foreach (var item in bytes) {
+				bitStream.Write (item, 0, BitStream.BYTE_SIZE);
+			}
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Deserialize
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -168,19 +200,38 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			HealthElement from a BitStream.
+		/// 			MovementElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
 			ActorId = bitstream.ReadNext (ACTORID_BITS);
-			Health = bitstream.ReadNext (HEALTH_BITS);
+			byte[] bytes = new byte[sizeof(float)];
+			for (int i = 0; i < sizeof(float); i++) {
+				bytes [i] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
+			}
+			X = BitConverter.ToSingle (bytes, 0);
+			bytes = new byte[sizeof(float)];
+			for (int i = 0; i < sizeof(float); i++) {
+				bytes [i] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
+			}
+			Z = BitConverter.ToSingle (bytes, 0);
+			bytes = new byte[sizeof(float)];
+			for (int i = 0; i < sizeof(float); i++) {
+				bytes [i] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
+			}
+			TargetX = BitConverter.ToSingle (bytes, 0);
+			bytes = new byte[sizeof(float)];
+			for (int i = 0; i < sizeof(float); i++) {
+				bytes [i] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
+			}
+			TargetZ = BitConverter.ToSingle (bytes, 0);
 
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	UpdateState
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -197,13 +248,13 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override void UpdateState (IStateMessageBridge bridge)
 		{
-			bridge.UpdateActorHealth (ActorId, Health);
+			bridge.SetActorMovement (ActorId, X, Z, TargetX, TargetZ);
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Validate
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -216,11 +267,11 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			HealthElement.
+		/// 			MovementElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			if (ActorId > ACTORID_MAX || Health > HEALTH_MAX) {
+			if (ActorId > ACTORID_MAX || X > X_MAX || Z > Z_MAX || TargetX > TARGETX_MAX || TargetZ > TARGETZ_MAX) {
 				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
 			}
 		}

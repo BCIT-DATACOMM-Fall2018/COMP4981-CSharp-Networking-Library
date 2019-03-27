@@ -1,21 +1,22 @@
 ﻿using System;
+using System.Text;
 
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: ElementIndicatorElement - A MessageElement to store connection information in a packet
+	/// Class: NameElement - A MessageElement to store a clients Name in a packet
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public PacketHeaderElement (int seqNumber, int ackNumber, int reliableElements)
-	/// 				public PacketHeaderElement (BitStream bitStream)
+	/// CONSTRUCTORS:	public NameElement (string name)
+	/// 				public NameElement (BitStream bitStream)
 	/// 
 	/// FUNCTIONS:	public override PacketHeaderElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
 	/// 			protected override void Deserialize (BitStream bitstream)
 	/// 			protected override void Validate ()
 	/// 
-	/// DATE: 		January 28th, 2019
+	/// DATE: 		February 12th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -23,30 +24,22 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// PROGRAMMER: Cameron Roberts
 	///
-	/// NOTES:		This ElementIndicatorElement is used to indentify reliable 
-	/// 			MessageElements placed after it in a Packet.
+	/// NOTES:		This NameElement is used to indentify the 
+	/// 			player who sent a packet.
 	/// ----------------------------------------------
-	public class PacketHeaderElement : MessageElement
+	public class NameElement : MessageElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.PacketHeaderElement);
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.NameElement);
 
-		private const int TYPE_BITS = 4;
-		private const int SEQ_BITS = 10;
-		private const int ACK_BITS = 10;
-		private const int RELIABLE_BITS = 10;
+		private const int NAMECHARS_MAX = 32;
+		private static readonly int NAMECHARS_BITS = RequiredBits (NAMECHARS_MAX);
 
-		public PacketType Type { get; private set; }
-
-		public int SeqNumber { get; private set; }
-
-		public int AckNumber { get; private set; }
-
-		public int ReliableElements { get; private set; }
+		public string Name { get; private set;}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: PacketHeaderElement
+		/// CONSTRUCTOR: NameElement
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -54,22 +47,19 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public PacketHeaderElement (int seqNumber, int ackNumber, int reliableElements)
+		/// INTERFACE: 	public NameElement (string name)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public PacketHeaderElement (PacketType type, int seqNumber, int ackNumber, int reliableElements)
+		public NameElement (string name)
 		{
-			Type = type;
-			SeqNumber = seqNumber;
-			AckNumber = ackNumber;
-			ReliableElements = reliableElements;
+			Name = name;
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: PacketHeaderElement
+		/// CONSTRUCTOR: NameElement
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -80,17 +70,17 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public PacketHeaderElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		PacketHeaderElement by deserializing it 
+		/// 		NameElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public PacketHeaderElement (BitStream bitStream) : base (bitStream)
+		public NameElement (BitStream bitStream) : base (bitStream)
 		{
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	GetIndicator
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -100,10 +90,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a PacketHeaderElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a NameElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a PacketHeaderElement when 
+		/// 			to reconstruct a NameElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -114,7 +104,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// FUNCTION:	Bits
 		/// 
-		/// DATE:		February 10th, 2019
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -125,20 +115,28 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public int Bits ()
 		/// 
 		/// RETURNS: 	The number of bits needed to store a
-		/// 			PacketHeaderElement
+		/// 			NameElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			a PacketHeaderElement
+		/// 			a NameElement
 		/// ----------------------------------------------
-		public override int Bits ()
-		{
-			return SEQ_BITS + ACK_BITS + RELIABLE_BITS + TYPE_BITS;
+		public override int Bits(){
+			int bits = 0;
+			bits += NAMECHARS_BITS;
+			byte[] name = Encoding.UTF8.GetBytes (Name);
+			if (name.Length > NAMECHARS_MAX) {
+				throw new System.Runtime.Serialization.SerializationException ("Attempt to create a lobby status packet with a name greater than 32 characters");
+			}
+			bits += name.Length * BitStream.BYTE_SIZE;
+
+
+			return bits;
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Serialize
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -151,20 +149,24 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			PacketHeaderElement to a BitStream.
+		/// 			NameElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
-			bitStream.Write ((int)Type, 0, TYPE_BITS);
-			bitStream.Write (SeqNumber, 0, SEQ_BITS);
-			bitStream.Write	(AckNumber, 0, ACK_BITS);
-			bitStream.Write	(ReliableElements, 0, RELIABLE_BITS);
+			byte[] name = Encoding.UTF8.GetBytes (Name);
+			if (name.Length > NAMECHARS_MAX) {
+				throw new System.Runtime.Serialization.SerializationException ("Attempt to create a lobby status packet with a name greater than 32 characters");
+			}
+			bitStream.Write (name.Length, 0 , NAMECHARS_BITS);
+			foreach (var character in name) {
+				bitStream.Write (character, 0, BitStream.BYTE_SIZE);
+			}
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Deserialize
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -177,20 +179,22 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			PacketHeaderElement from a BitStream.
+		/// 			NameElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
-			Type = (PacketType)bitstream.ReadNext (TYPE_BITS);
-			SeqNumber = bitstream.ReadNext (SEQ_BITS);
-			AckNumber = bitstream.ReadNext (ACK_BITS);
-			ReliableElements = bitstream.ReadNext (RELIABLE_BITS);
+			int nameBytes = bitstream.ReadNext(NAMECHARS_BITS);
+			byte[] name = new byte[nameBytes];
+			for (int j = 0; j < nameBytes; j++) {
+				name[j] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
+			}
+			Name = Encoding.UTF8.GetString(name);
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Validate
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -203,7 +207,7 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			PacketHeaderElement.
+		/// 			NameElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{

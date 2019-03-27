@@ -3,16 +3,17 @@
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: ElementIndicatorElement - A MessageElement to store connection information in a packet
+	/// Class: GameStartElement - A UpdateElement to indicate ready status
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public PacketHeaderElement (int seqNumber, int ackNumber, int reliableElements)
-	/// 				public PacketHeaderElement (BitStream bitStream)
+	/// CONSTRUCTORS:	public GameStartElement (int actorId, int health)
+	/// 				public GameStartElement (BitStream bitstream)
 	/// 
-	/// FUNCTIONS:	public override PacketHeaderElement GetIndicator ()
+	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
 	/// 			protected override void Deserialize (BitStream bitstream)
+	/// 			public override void UpdateState (IStateMessageBridge bridge)
 	/// 			protected override void Validate ()
 	/// 
 	/// DATE: 		January 28th, 2019
@@ -23,28 +24,19 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// PROGRAMMER: Cameron Roberts
 	///
-	/// NOTES:		This ElementIndicatorElement is used to indentify reliable 
-	/// 			MessageElements placed after it in a Packet.
+	/// NOTES:		
 	/// ----------------------------------------------
-	public class PacketHeaderElement : MessageElement
+	public class GameStartElement : UpdateElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.PacketHeaderElement);
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.GameStartElement);
 
-		private const int TYPE_BITS = 4;
-		private const int SEQ_BITS = 10;
-		private const int ACK_BITS = 10;
-		private const int RELIABLE_BITS = 10;
+		private const int PLAYERNUM_MAX = 127;
+		private static readonly int PLAYERNUM_BITS = RequiredBits (PLAYERNUM_MAX);
 
-		public PacketType Type { get; private set; }
-
-		public int SeqNumber { get; private set; }
-
-		public int AckNumber { get; private set; }
-
-		public int ReliableElements { get; private set; }
+		public int PlayerNum { get; private set; }
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: PacketHeaderElement
+		/// CONSTRUCTOR: GameStartElement
 		/// 
 		/// DATE:		January 28th, 2019
 		/// 
@@ -54,20 +46,17 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public PacketHeaderElement (int seqNumber, int ackNumber, int reliableElements)
+		/// INTERFACE: 	public GameStartElement (int actorId, int health)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public PacketHeaderElement (PacketType type, int seqNumber, int ackNumber, int reliableElements)
+		public GameStartElement (int playerNum)
 		{
-			Type = type;
-			SeqNumber = seqNumber;
-			AckNumber = ackNumber;
-			ReliableElements = reliableElements;
+			PlayerNum = playerNum;
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: PacketHeaderElement
+		/// CONSTRUCTOR: GameStartElement
 		/// 
 		/// DATE:		January 28th, 2019
 		/// 
@@ -77,13 +66,13 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public PacketHeaderElement (BitStream bitstream)
+		/// INTERFACE: 	public GameStartElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		PacketHeaderElement by deserializing it 
+		/// 		GameStartElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public PacketHeaderElement (BitStream bitStream) : base (bitStream)
+		public GameStartElement (BitStream bitstream) : base (bitstream)
 		{
 		}
 
@@ -100,10 +89,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a PacketHeaderElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a GameStartElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a PacketHeaderElement when 
+		/// 			to reconstruct a GameStartElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -125,14 +114,14 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public int Bits ()
 		/// 
 		/// RETURNS: 	The number of bits needed to store a
-		/// 			PacketHeaderElement
+		/// 			GameStartElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			a PacketHeaderElement
+		/// 			a GameStartElement
 		/// ----------------------------------------------
 		public override int Bits ()
 		{
-			return SEQ_BITS + ACK_BITS + RELIABLE_BITS + TYPE_BITS;
+			return PLAYERNUM_BITS;
 		}
 
 		/// ----------------------------------------------
@@ -151,14 +140,11 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			PacketHeaderElement to a BitStream.
+		/// 			GameStartElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
-			bitStream.Write ((int)Type, 0, TYPE_BITS);
-			bitStream.Write (SeqNumber, 0, SEQ_BITS);
-			bitStream.Write	(AckNumber, 0, ACK_BITS);
-			bitStream.Write	(ReliableElements, 0, RELIABLE_BITS);
+			bitStream.Write (PlayerNum, 0, PLAYERNUM_BITS);
 		}
 
 		/// ----------------------------------------------
@@ -177,14 +163,35 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			PacketHeaderElement from a BitStream.
+		/// 			GameStartElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
-			Type = (PacketType)bitstream.ReadNext (TYPE_BITS);
-			SeqNumber = bitstream.ReadNext (SEQ_BITS);
-			AckNumber = bitstream.ReadNext (ACK_BITS);
-			ReliableElements = bitstream.ReadNext (RELIABLE_BITS);
+			PlayerNum = bitstream.ReadNext (PLAYERNUM_BITS);
+
+		}
+
+		/// ----------------------------------------------
+		/// FUNCTION:	UpdateState
+		/// 
+		/// DATE:		January 28th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public override void UpdateState (IStateMessageBridge bridge)
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		Contains logic needed to update the game state through
+		/// 			the use of a IStateMessageBridge.
+		/// ----------------------------------------------
+		public override void UpdateState (IStateMessageBridge bridge)
+		{
+			bridge.StartGame (PlayerNum);
 		}
 
 		/// ----------------------------------------------
@@ -203,10 +210,13 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			PacketHeaderElement.
+		/// 			GameStartElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
+			if (PlayerNum > PLAYERNUM_MAX) {
+				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
+			}
 		}
 	}
 }

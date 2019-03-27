@@ -3,48 +3,50 @@
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: ElementIndicatorElement - A MessageElement to store connection information in a packet
+	/// Class: ReadyElement - A UpdateElement to indicate ready status
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public PacketHeaderElement (int seqNumber, int ackNumber, int reliableElements)
-	/// 				public PacketHeaderElement (BitStream bitStream)
+	/// CONSTRUCTORS:	public ReadyElement (int actorId, int health, int team)
+	/// 				public ReadyElement (BitStream bitstream)
 	/// 
-	/// FUNCTIONS:	public override PacketHeaderElement GetIndicator ()
+	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
 	/// 			protected override void Deserialize (BitStream bitstream)
+	/// 			public override void UpdateState (IStateMessageBridge bridge)
 	/// 			protected override void Validate ()
 	/// 
-	/// DATE: 		January 28th, 2019
+	/// DATE: 		March 8th, 2019
+	/// 
 	///
-	/// REVISIONS: 
-	///
+	/// REVISIONS: 	March 17th, 2019
+	/// 				Modified class to support teams
+	/// 
 	/// DESIGNER: 	Cameron Roberts
 	///
 	/// PROGRAMMER: Cameron Roberts
 	///
-	/// NOTES:		This ElementIndicatorElement is used to indentify reliable 
-	/// 			MessageElements placed after it in a Packet.
+	/// NOTES:		
 	/// ----------------------------------------------
-	public class PacketHeaderElement : MessageElement
+	public class ReadyElement : UpdateElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.PacketHeaderElement);
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.ReadyElement);
 
-		private const int TYPE_BITS = 4;
-		private const int SEQ_BITS = 10;
-		private const int ACK_BITS = 10;
-		private const int RELIABLE_BITS = 10;
+		private const int READY_MAX = 1;
+		private const int CLIENTID_MAX = 127;
+		private const int TEAM_MAX = 7;
+		private static readonly int READY_BITS = RequiredBits (READY_MAX);
+		private static readonly int CLIENTID_BITS = RequiredBits (CLIENTID_MAX);
+		private static readonly int TEAM_BITS = RequiredBits (TEAM_MAX);
 
-		public PacketType Type { get; private set; }
+		public bool Ready { get; private set; }
 
-		public int SeqNumber { get; private set; }
+		public int ClientId { get; private set; }
 
-		public int AckNumber { get; private set; }
-
-		public int ReliableElements { get; private set; }
+		public int Team { get; private set; }
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: PacketHeaderElement
+		/// CONSTRUCTOR: ReadyElement
 		/// 
 		/// DATE:		January 28th, 2019
 		/// 
@@ -54,20 +56,19 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public PacketHeaderElement (int seqNumber, int ackNumber, int reliableElements)
+		/// INTERFACE: 	public ReadyElement (int actorId, int health, int team)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public PacketHeaderElement (PacketType type, int seqNumber, int ackNumber, int reliableElements)
+		public ReadyElement (bool ready, int clientId, int team)
 		{
-			Type = type;
-			SeqNumber = seqNumber;
-			AckNumber = ackNumber;
-			ReliableElements = reliableElements;
+			Ready = ready;
+			ClientId = clientId;
+			Team = team;
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: PacketHeaderElement
+		/// CONSTRUCTOR: ReadyElement
 		/// 
 		/// DATE:		January 28th, 2019
 		/// 
@@ -77,13 +78,13 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public PacketHeaderElement (BitStream bitstream)
+		/// INTERFACE: 	public ReadyElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		PacketHeaderElement by deserializing it 
+		/// 		ReadyElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public PacketHeaderElement (BitStream bitStream) : base (bitStream)
+		public ReadyElement (BitStream bitstream) : base (bitstream)
 		{
 		}
 
@@ -100,10 +101,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a PacketHeaderElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a ReadyElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a PacketHeaderElement when 
+		/// 			to reconstruct a ReadyElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -125,14 +126,14 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public int Bits ()
 		/// 
 		/// RETURNS: 	The number of bits needed to store a
-		/// 			PacketHeaderElement
+		/// 			ReadyElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			a PacketHeaderElement
+		/// 			a ReadyElement
 		/// ----------------------------------------------
 		public override int Bits ()
 		{
-			return SEQ_BITS + ACK_BITS + RELIABLE_BITS + TYPE_BITS;
+			return READY_BITS + CLIENTID_BITS + TEAM_BITS;
 		}
 
 		/// ----------------------------------------------
@@ -151,14 +152,13 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			PacketHeaderElement to a BitStream.
+		/// 			ReadyElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
-			bitStream.Write ((int)Type, 0, TYPE_BITS);
-			bitStream.Write (SeqNumber, 0, SEQ_BITS);
-			bitStream.Write	(AckNumber, 0, ACK_BITS);
-			bitStream.Write	(ReliableElements, 0, RELIABLE_BITS);
+			bitStream.Write (Ready ? 1 : 0, 0, READY_BITS);
+			bitStream.Write (ClientId, 0, CLIENTID_BITS);
+			bitStream.Write (Team, 0, TEAM_BITS);
 		}
 
 		/// ----------------------------------------------
@@ -177,14 +177,36 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			PacketHeaderElement from a BitStream.
+		/// 			ReadyElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
-			Type = (PacketType)bitstream.ReadNext (TYPE_BITS);
-			SeqNumber = bitstream.ReadNext (SEQ_BITS);
-			AckNumber = bitstream.ReadNext (ACK_BITS);
-			ReliableElements = bitstream.ReadNext (RELIABLE_BITS);
+			Ready = bitstream.ReadNext (READY_BITS) == 1 ? true : false;
+			ClientId = bitstream.ReadNext (CLIENTID_BITS);
+			Team = bitstream.ReadNext (TEAM_BITS);
+		}
+
+		/// ----------------------------------------------
+		/// FUNCTION:	UpdateState
+		/// 
+		/// DATE:		January 28th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public override void UpdateState (IStateMessageBridge bridge)
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		Contains logic needed to update the game state through
+		/// 			the use of a IStateMessageBridge.
+		/// ----------------------------------------------
+		public override void UpdateState (IStateMessageBridge bridge)
+		{
+			bridge.SetReady (ClientId, Ready, Team);
 		}
 
 		/// ----------------------------------------------
@@ -203,10 +225,13 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			PacketHeaderElement.
+		/// 			ReadyElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
+			if (ClientId > CLIENTID_MAX || Team > TEAM_MAX) {
+				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
+			}
 		}
 	}
 }

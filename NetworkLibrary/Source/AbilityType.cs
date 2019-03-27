@@ -1,13 +1,13 @@
 ﻿using System;
 
-namespace NetworkLibrary.MessageElements
+namespace NetworkLibrary
 {
 	/// ----------------------------------------------
 	/// Enum: 	ElementId - An enum to store MessageElement IDs
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// DATE: 		January 28th, 2018
+	/// DATE: 		January 28th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -17,11 +17,15 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// NOTES:	
 	/// ----------------------------------------------
-	public enum PacketType : int
+	public enum AbilityType : int
 	{
-		GameplayPacket = 0,
-		RequestPacket,
-		ConfirmationPacket
+		TestProjectile = 0,
+		TestTargeted,
+		TestTargetedHoming,
+		TestAreaOfEffect,
+		AutoAttack,
+		Wall,
+		Banish
 	}
 }
 

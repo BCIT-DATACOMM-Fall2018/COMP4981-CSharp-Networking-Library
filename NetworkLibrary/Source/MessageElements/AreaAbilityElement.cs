@@ -3,12 +3,12 @@
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: HealthElement - A UpdateElement to update actor health
+	/// Class: AreaAbilityElement - A UpdateElement to denote an ability use
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public HealthElement (int actorId, int health)
-	/// 				public HealthElement (BitStream bitstream)
+	/// CONSTRUCTORS:	public AreaAbilityElement (int actorId, AbilityType abilityId, int x, int z)
+	/// 				public AreaAbilityElement (BitStream bitstream)
 	/// 
 	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
@@ -16,7 +16,7 @@ namespace NetworkLibrary.MessageElements
 	/// 			public override void UpdateState (IStateMessageBridge bridge)
 	/// 			protected override void Validate ()
 	/// 
-	/// DATE: 		January 28th, 2019
+	/// DATE: 		March 8th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -26,23 +26,36 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// NOTES:		
 	/// ----------------------------------------------
-	public class HealthElement : UpdateElement
+	public class AreaAbilityElement : UpdateElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.HealthElement);
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.AreaAbilityElement);
 
-		private const int HEALTH_MAX = 1000;
-		private const int ACTORID_MAX = 127;
-		private static readonly int HEALTH_BITS = RequiredBits (HEALTH_MAX);
+		private const int ACTORID_MAX = 255;
+		private const int ABILITYID_MAX = 127;
+		private const float X_MAX = 500;
+		private const float Z_MAX = 500;
+		private const int COLLISIONID_MAX = 255;
+
 		private static readonly int ACTORID_BITS = RequiredBits (ACTORID_MAX);
+		private static readonly int ABILITYID_BITS = RequiredBits (ABILITYID_MAX);
+		private static readonly int X_BITS = sizeof (float)*BitStream.BYTE_SIZE;
+		private static readonly int Z_BITS = sizeof (float)*BitStream.BYTE_SIZE;
+		private static readonly int COLLISIONID_BITS = RequiredBits (COLLISIONID_MAX);
 
 		public int ActorId { get; private set; }
 
-		public int Health { get; private set; }
+		public AbilityType AbilityId { get; private set; }
+
+		public float X { get; private set; }
+
+		public float Z { get; private set; }
+
+		public int CollisionId { get; private set; }
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: HealthElement
+		/// CONSTRUCTOR: AreaAbilityElement
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -50,20 +63,23 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public HealthElement (int actorId, int health)
+		/// INTERFACE: 	public AreaAbilityElement (int actorId, AbilityType abilityId, int x, int z)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public HealthElement (int actorId, int health)
+		public AreaAbilityElement (int actorId, AbilityType abilityId, float x, float z, int collisionId = 0)
 		{
 			ActorId = actorId;
-			Health = health;
+			AbilityId = abilityId;
+			X = x;
+			Z = z;
+			CollisionId = collisionId;
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: HealthElement
+		/// CONSTRUCTOR: AreaAbilityElement
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -74,17 +90,17 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public HealthElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		HealthElement by deserializing it 
+		/// 		AreaAbilityElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public HealthElement (BitStream bitstream) : base (bitstream)
+		public AreaAbilityElement (BitStream bitstream) : base (bitstream)
 		{
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	GetIndicator
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -94,10 +110,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a HealthElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a AreaAbilityElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a HealthElement when 
+		/// 			to reconstruct a AreaAbilityElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -108,7 +124,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// FUNCTION:	Bits
 		/// 
-		/// DATE:		February 10th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -119,19 +135,20 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public int Bits ()
 		/// 
 		/// RETURNS: 	The number of bits needed to store a
-		/// 			HealthElement
+		/// 			AreaAbilityElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			a HealthElement
+		/// 			a AreaAbilityElement
 		/// ----------------------------------------------
-		public override int Bits(){
-			return HEALTH_BITS + ACTORID_BITS;
+		public override int Bits ()
+		{
+			return ACTORID_BITS + ABILITYID_BITS + X_BITS + Z_BITS + COLLISIONID_BITS;
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Serialize
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -144,18 +161,27 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			HealthElement to a BitStream.
+		/// 			AreaAbilityElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
-			bitStream.Write (ActorId, 0, ACTORID_BITS);
-			bitStream.Write	(Health, 0, HEALTH_BITS);
+			bitStream.Write	(ActorId, 0, ACTORID_BITS);
+			bitStream.Write ((int)AbilityId, 0, ABILITYID_BITS);
+			byte[] bytes = BitConverter.GetBytes (X);
+			foreach (var item in bytes) {
+				bitStream.Write (item, 0, BitStream.BYTE_SIZE);
+			}
+			bytes = BitConverter.GetBytes (Z);
+			foreach (var item in bytes) {
+				bitStream.Write (item, 0, BitStream.BYTE_SIZE);
+			}
+			bitStream.Write	(CollisionId, 0, COLLISIONID_BITS);
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Deserialize
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -168,19 +194,29 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			HealthElement from a BitStream.
+		/// 			AreaAbilityElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
 			ActorId = bitstream.ReadNext (ACTORID_BITS);
-			Health = bitstream.ReadNext (HEALTH_BITS);
-
+			AbilityId = (AbilityType)bitstream.ReadNext (ABILITYID_BITS);
+			byte[] bytes = new byte[sizeof(float)];
+			for (int i = 0; i < sizeof(float); i++) {
+				bytes [i] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
+			}
+			X = BitConverter.ToSingle (bytes, 0);
+			bytes = new byte[sizeof(float)];
+			for (int i = 0; i < sizeof(float); i++) {
+				bytes [i] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
+			}
+			Z = BitConverter.ToSingle (bytes, 0);
+			CollisionId = bitstream.ReadNext (COLLISIONID_BITS);
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	UpdateState
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -197,13 +233,13 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override void UpdateState (IStateMessageBridge bridge)
 		{
-			bridge.UpdateActorHealth (ActorId, Health);
+			bridge.UseAreaAbility (ActorId, AbilityId, X, Z, CollisionId);
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Validate
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -216,11 +252,11 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			HealthElement.
+		/// 			AreaAbilityElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			if (ActorId > ACTORID_MAX || Health > HEALTH_MAX) {
+			if ( ActorId > ACTORID_MAX || (int)AbilityId > ABILITYID_MAX || X > X_MAX || Z > Z_MAX || CollisionId > COLLISIONID_MAX) {
 				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
 			}
 		}

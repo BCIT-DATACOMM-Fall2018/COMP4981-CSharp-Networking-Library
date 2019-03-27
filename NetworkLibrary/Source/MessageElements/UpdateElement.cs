@@ -12,7 +12,7 @@ namespace NetworkLibrary.MessageElements
 	/// 
 	/// FUNCTIONS:	public abstract void UpdateState (IStateMessageBridge bridge);
 	/// 
-	/// DATE: 		January 28th, 2018
+	/// DATE: 		January 28th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -27,7 +27,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: UpdateElement
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -46,7 +46,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: UpdateElement
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -66,7 +66,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// FUNCTION:	UpdateState
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
