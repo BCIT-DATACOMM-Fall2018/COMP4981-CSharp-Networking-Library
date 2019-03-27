@@ -13,7 +13,7 @@ namespace NetworkLibrary
 	///
 	/// DESIGNER: 	Cameron Roberts
 	///
-	/// PROGRAMMER: Cameron Roberts
+	/// PROGRAMMER: Cameron Roberts, Simon Wu
 	///
 	/// NOTES:	
 	/// ----------------------------------------------

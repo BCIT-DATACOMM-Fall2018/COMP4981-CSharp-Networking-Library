@@ -1,11 +1,5 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workbench ActiveDocument="Source/MessageElements/AreaAbilityElement.cs">
-    <Files>
-      <File FileName="Source/AbilityType.cs" Line="1" Column="1" />
-      <File FileName="Source/MessageElements/AreaAbilityElement.cs" Line="1" Column="1" />
-      <File FileName="Source/AbilityInfo.cs" Line="23" Column="34" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workbench />
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
