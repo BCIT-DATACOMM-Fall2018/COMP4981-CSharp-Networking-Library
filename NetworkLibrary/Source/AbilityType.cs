@@ -23,6 +23,8 @@ namespace NetworkLibrary
 		TestTargeted,
 		TestTargetedHoming,
 		TestAreaOfEffect,
+        WeebOut,
+        Whale,
 		AutoAttack
 	}
 }
