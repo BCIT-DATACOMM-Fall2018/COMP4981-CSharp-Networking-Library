@@ -14,7 +14,15 @@ namespace NetworkLibrary
 			// TestAreaOfEffect
 			new AbilityInfo (isArea: true, cooldown: 180, range:30),
 			// AutoAttack
-			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 15)
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 15),
+			// Bullet Ability
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 50, range: 50),
+			// Pork Chop
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 105, range: 20),
+			// Dart
+			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 150, range: 40),
+			// Purification
+			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, isSelf: true, cooldown: 150, range: 40),
 		};
 
 		// The ability targets a location on the map

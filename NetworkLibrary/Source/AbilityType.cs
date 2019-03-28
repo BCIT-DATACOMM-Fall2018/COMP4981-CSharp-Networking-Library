@@ -23,7 +23,11 @@ namespace NetworkLibrary
 		TestTargeted,
 		TestTargetedHoming,
 		TestAreaOfEffect,
-		AutoAttack
+		AutoAttack,
+		BulletAbility,
+		PorkChop,
+		Dart,
+		Purification
 	}
 }
 
