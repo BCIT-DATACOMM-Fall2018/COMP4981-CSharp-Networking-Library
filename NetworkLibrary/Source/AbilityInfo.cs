@@ -16,7 +16,7 @@ namespace NetworkLibrary
 			// AutoAttack
 			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 15),
 			// blink
-			new AbilityInfo (isArea: true, cooldown: 13, range: 30)
+			new AbilityInfo (isArea: true, requiresCollision: false, cooldown: 13, range: 30)
 		};
 
 		// The ability targets a location on the map
