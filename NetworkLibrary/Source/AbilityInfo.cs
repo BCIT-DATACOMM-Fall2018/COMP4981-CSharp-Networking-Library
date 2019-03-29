@@ -18,7 +18,7 @@ namespace NetworkLibrary
 			// Wall
 			new AbilityInfo (isArea: true, cooldown:10, range: 30),
 			// Banish
-			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 10, range: 30)
+			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, requiresCollision: false, enemyTargetAllowed: true, cooldown: 10, range: 40)
 		};
 
 		// The ability targets a location on the map
