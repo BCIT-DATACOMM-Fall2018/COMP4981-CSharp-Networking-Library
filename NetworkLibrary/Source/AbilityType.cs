@@ -23,7 +23,8 @@ namespace NetworkLibrary
 		TestTargeted,
 		TestTargetedHoming,
 		TestAreaOfEffect,
-		AutoAttack
+		AutoAttack,
+        TowerAttack
 	}
 }
 

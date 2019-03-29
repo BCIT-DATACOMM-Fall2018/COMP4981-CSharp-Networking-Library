@@ -14,7 +14,9 @@ namespace NetworkLibrary
 			// TestAreaOfEffect
 			new AbilityInfo (isArea: true, cooldown: 180, range:30),
 			// AutoAttack
-			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 15)
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 15),
+            //TowerAttack
+            new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 1, range: 100)
 		};
 
 		// The ability targets a location on the map
