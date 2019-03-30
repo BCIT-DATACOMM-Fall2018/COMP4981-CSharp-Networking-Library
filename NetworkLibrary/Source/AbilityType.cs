@@ -24,6 +24,7 @@ namespace NetworkLibrary
 		TestTargetedHoming,
 		TestAreaOfEffect,
 		UwuImScared,
+		Fireball,
 		AutoAttack
 	}
 }
