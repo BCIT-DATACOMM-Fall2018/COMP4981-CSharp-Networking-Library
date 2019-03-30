@@ -23,6 +23,7 @@ namespace NetworkLibrary
 		TestTargeted,
 		TestTargetedHoming,
 		TestAreaOfEffect,
+		UwuImScared,
 		AutoAttack
 	}
 }
