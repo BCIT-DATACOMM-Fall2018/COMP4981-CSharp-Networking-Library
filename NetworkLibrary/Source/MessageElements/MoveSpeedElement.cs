@@ -56,7 +56,7 @@ namespace NetworkLibrary.MessageElements
         /// 
         /// NOTES:		
         /// ----------------------------------------------
-        public MoveSpeedElement(int actorId, int health)
+        public MoveSpeedElement(int actorId, int speed)
         {
             ActorId = actorId;
             Speed = speed;
@@ -200,7 +200,7 @@ namespace NetworkLibrary.MessageElements
         /// ----------------------------------------------
         public override void UpdateState(IStateMessageBridge bridge)
         {
-            bridge.UpdateActorHealth(ActorId, Speed);
+            bridge.UpdateActorSpeed(ActorId, Speed);
         }
 
         /// ----------------------------------------------
