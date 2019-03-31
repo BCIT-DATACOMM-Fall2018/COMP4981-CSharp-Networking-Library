@@ -18,7 +18,7 @@ namespace NetworkLibrary
 			// UwuImScared
 			new AbilityInfo (isSelf: true, allyTargetAllowed: true, requiresCollision: false, cooldown: 180),
 			// Fireball
-			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 80, range: 30)
+			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 180, range: 80)
 		};
 
 		// The ability targets a location on the map
