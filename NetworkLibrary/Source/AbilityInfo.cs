@@ -4,7 +4,7 @@ namespace NetworkLibrary
 {
 	public struct AbilityInfo
 	{
-		public static readonly AbilityInfo[] InfoArray = {
+        public static readonly AbilityInfo[] InfoArray = {
 			// TestProjectile
 			new AbilityInfo (isArea: true, cooldown: 30),
 			// TestTargeted
@@ -13,6 +13,10 @@ namespace NetworkLibrary
 			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 120, range:30),
 			// TestAreaOfEffect
 			new AbilityInfo (isArea: true, cooldown: 180, range:30),
+            // WeebOut
+            new AbilityInfo (isArea: true, cooldown: 3, range: 30),
+            // Whale
+            new AbilityInfo (isArea: true, cooldown: 40, range: 80),
 			// AutoAttack
 			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 15)
 		};
