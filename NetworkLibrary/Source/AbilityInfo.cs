@@ -13,12 +13,12 @@ namespace NetworkLibrary
 			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 120, range:30),
 			// TestAreaOfEffect
 			new AbilityInfo (isArea: true, cooldown: 180, range:30),
-			// UwuImScared
-			new AbilityInfo (isTargeted: true, isSelf: true, requiresCollision: false, cooldown: 180),
-			// Fireball
-			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 80, range: 30),
 			// AutoAttack
-			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 15)
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 15),
+			// UwuImScared
+			new AbilityInfo (isSelf: true, allyTargetAllowed: true, requiresCollision: false, cooldown: 180),
+			// Fireball
+			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 80, range: 30)
 		};
 
 		// The ability targets a location on the map
@@ -60,4 +60,3 @@ namespace NetworkLibrary
 
 	}
 }
-
