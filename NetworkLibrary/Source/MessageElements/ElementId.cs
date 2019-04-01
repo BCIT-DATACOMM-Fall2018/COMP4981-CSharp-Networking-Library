@@ -35,7 +35,8 @@ namespace NetworkLibrary.MessageElements
 		LobbyStatusElement,
 		NameElement,
 		GameEndElement,
-		ExperienceElement
+		ExperienceElement,
+        MoveSpeedElement
 	}
 }
 

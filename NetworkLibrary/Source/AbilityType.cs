@@ -34,5 +34,6 @@ namespace NetworkLibrary
 		Fireball,
         WeebOut,
         Whale,
+        TowerAttack
 	}
 }

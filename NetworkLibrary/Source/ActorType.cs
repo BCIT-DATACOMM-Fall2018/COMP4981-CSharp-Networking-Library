@@ -29,7 +29,8 @@ namespace NetworkLibrary
 		OrcPlayerB,
 		OrcPlayerC,
 		OrcPlayerD,
-		OrcplayerE
+		OrcplayerE,
+        TowerA
 	}
 }
 
