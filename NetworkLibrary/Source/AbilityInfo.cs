@@ -14,7 +14,11 @@ namespace NetworkLibrary
 			// TestAreaOfEffect
 			new AbilityInfo (isArea: true, cooldown: 180, range:30),
 			// AutoAttack
-			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 15)
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 15),
+			// Gungnir
+			new AbilityInfo (isArea: true, cooldown: 30),
+			// Slash
+			new AbilityInfo (isArea: true, cooldown: 30, range:30),
 		};
 
 		// The ability targets a location on the map

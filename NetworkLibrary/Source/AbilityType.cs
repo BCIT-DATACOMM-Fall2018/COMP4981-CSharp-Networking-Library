@@ -23,7 +23,9 @@ namespace NetworkLibrary
 		TestTargeted,
 		TestTargetedHoming,
 		TestAreaOfEffect,
-		AutoAttack
+		AutoAttack,
+		Gungnir,
+		Slash
 	}
 }
 
