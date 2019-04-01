@@ -15,7 +15,6 @@ namespace NetworkLibrary
 			new AbilityInfo (isArea: true, cooldown: 180, range:30),
 			// AutoAttack
 			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 15),
-<<<<<<< HEAD
 			// Wall
 			new AbilityInfo (isArea: true, cooldown:10, range: 30),
 			// Banish
@@ -28,12 +27,10 @@ namespace NetworkLibrary
 			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 150, range: 40),
 			// Purification
 			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, isSelf: true, cooldown: 150, range: 40),
-=======
 			// UwuImScared
 			new AbilityInfo (isSelf: true, allyTargetAllowed: true, requiresCollision: false, cooldown: 180),
 			// Fireball
 			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 180, range: 80)
->>>>>>> 18e4f37062f9f78204ec0c3236bce817fd5e002a
 		};
 
 		// The ability targets a location on the map

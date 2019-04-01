@@ -24,16 +24,13 @@ namespace NetworkLibrary
 		TestTargetedHoming,
 		TestAreaOfEffect,
 		AutoAttack,
-<<<<<<< HEAD
 		Wall,
 		Banish,
 		BulletAbility,
 		PorkChop,
 		Dart,
-		Purification
-=======
+		Purification,
 		UwuImScared,
 		Fireball
->>>>>>> 18e4f37062f9f78204ec0c3236bce817fd5e002a
 	}
 }
