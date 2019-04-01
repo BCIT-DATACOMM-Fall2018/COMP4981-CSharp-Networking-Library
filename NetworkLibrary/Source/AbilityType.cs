@@ -34,6 +34,7 @@ namespace NetworkLibrary
 		Fireball,
         WeebOut,
         Whale,
-        TowerAttack
+        TowerAttack,
+		Blink
 	}
 }

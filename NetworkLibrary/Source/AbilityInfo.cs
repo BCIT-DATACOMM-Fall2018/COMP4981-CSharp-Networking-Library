@@ -36,7 +36,9 @@ namespace NetworkLibrary
             // Whale
             new AbilityInfo (isArea: true, cooldown: 40, range: 80),
             //TowerAttack
-            new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 1, range: 100)
+            new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 1, range: 100),
+			// blink
+			new AbilityInfo (isArea: true, requiresCollision: false, cooldown: 13, range: 45)
 		};
 
 		// The ability targets a location on the map
