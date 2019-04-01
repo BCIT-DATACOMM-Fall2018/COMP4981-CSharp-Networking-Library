@@ -98,6 +98,8 @@ namespace NetworkLibrary.MessageElements
 				return new NameElement (bitStream);
 			case ElementId.GameEndElement:
 				return new GameEndElement (bitStream);
+			case ElementId.ExperienceElement:
+				return new ExperienceElement (bitStream);
 			default:
 				throw new InvalidOperationException ("Attempted to create a MessageElement with an invalid ID");
 			}

@@ -152,6 +152,21 @@ namespace NetworkLibraryTest
 		}
 
 		[Test ()]
+		public void SerializeExperienceElement ()
+		{
+			byte[] bytes = new byte[1024];
+
+			ExperienceElement element = new ExperienceElement (3, 3001);
+			BitStream bitstream = new BitStream (bytes);
+			element.WriteTo (bitstream);
+
+			ExperienceElement element2 = new ExperienceElement (bitstream);
+			Assert.AreEqual (element.Experience, element2.Experience);
+			Assert.AreEqual (element.ActorId, element2.ActorId);
+
+		}
+
+		[Test ()]
 		public void RequiredBitsTest ()
 		{
 			int bitsNeeded = MessageElement.RequiredBits (25);

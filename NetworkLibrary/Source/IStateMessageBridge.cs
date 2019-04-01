@@ -51,6 +51,8 @@ namespace NetworkLibrary
 		void SetLobbyStatus(List<LobbyStatusElement.PlayerInfo> playerInfo);
 
 		void EndGame(int winningTeam);
+
+		void UpdateActorExperience(int actorId, int experience);
 	}
 }
 
