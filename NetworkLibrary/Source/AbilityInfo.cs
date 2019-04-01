@@ -14,7 +14,12 @@ namespace NetworkLibrary
 			// TestAreaOfEffect
 			new AbilityInfo (isArea: true, cooldown: 180, range:30),
 			// AutoAttack
-			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 15)
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 15),
+            //PewPew
+            new AbilityInfo(isArea: true, cooldown: 3, range: 50),
+            //Sploosh
+            //TODO After stats modifier have been implemented +0.2 defence modifier for 3 seconds
+            new AbilityInfo(isArea: true, cooldown: 4, range: 15),
 		};
 
 		// The ability targets a location on the map
