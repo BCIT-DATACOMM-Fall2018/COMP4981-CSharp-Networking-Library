@@ -18,7 +18,15 @@ namespace NetworkLibrary
 			// Wall
 			new AbilityInfo (isArea: true, cooldown:10, range: 30),
 			// Banish
-			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, requiresCollision: false, enemyTargetAllowed: true, cooldown: 10, range: 40)
+			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, requiresCollision: false, enemyTargetAllowed: true, cooldown: 10, range: 40),
+			// Bullet Ability
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 50, range: 50),
+			// Pork Chop
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 105, range: 20),
+			// Dart
+			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 150, range: 40),
+			// Purification
+			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, isSelf: true, cooldown: 150, range: 40),
 		};
 
 		// The ability targets a location on the map

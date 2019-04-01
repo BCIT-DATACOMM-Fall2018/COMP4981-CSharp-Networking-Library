@@ -25,7 +25,11 @@ namespace NetworkLibrary
 		TestAreaOfEffect,
 		AutoAttack,
 		Wall,
-		Banish
+		Banish,
+		BulletAbility,
+		PorkChop,
+		Dart,
+		Purification
 	}
 }
 
