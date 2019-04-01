@@ -1,9 +1,8 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workbench ActiveDocument="Source/CWrapper/Libsocket.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Source/AbilityInfo.cs">
     <Files>
-      <File FileName="Source/Socket.cs" Line="1" Column="1" />
-      <File FileName="Source/CWrapper/Libsocket.cs" Line="64" Column="31" />
-      <File FileName="Source/TCPSocket.cs" Line="1" Column="1" />
+      <File FileName="Source/MessageElements/AreaAbilityElement.cs" Line="1" Column="1" />
+      <File FileName="Source/AbilityInfo.cs" Line="15" Column="60" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />

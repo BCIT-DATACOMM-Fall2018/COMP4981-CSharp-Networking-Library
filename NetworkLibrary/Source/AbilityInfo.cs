@@ -4,7 +4,7 @@ namespace NetworkLibrary
 {
 	public struct AbilityInfo
 	{
-		public static readonly AbilityInfo[] InfoArray = {
+        public static readonly AbilityInfo[] InfoArray = {
 			// TestProjectile
 			new AbilityInfo (isArea: true, cooldown: 30),
 			// TestTargeted
@@ -30,7 +30,11 @@ namespace NetworkLibrary
 			// UwuImScared
 			new AbilityInfo (isSelf: true, allyTargetAllowed: true, requiresCollision: false, cooldown: 180),
 			// Fireball
-			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 180, range: 80)
+			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 180, range: 80),
+            // WeebOut
+            new AbilityInfo (isArea: true, cooldown: 3, range: 30),
+            // Whale
+            new AbilityInfo (isArea: true, cooldown: 40, range: 80),
 		};
 
 		// The ability targets a location on the map

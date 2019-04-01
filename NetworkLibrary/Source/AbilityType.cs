@@ -13,7 +13,7 @@ namespace NetworkLibrary
 	///
 	/// DESIGNER: 	Cameron Roberts
 	///
-	/// PROGRAMMER: Cameron Roberts
+	/// PROGRAMMER: Cameron Roberts, Simon Wu
 	///
 	/// NOTES:
 	/// ----------------------------------------------
@@ -31,6 +31,8 @@ namespace NetworkLibrary
 		Dart,
 		Purification,
 		UwuImScared,
-		Fireball
+		Fireball,
+        WeebOut,
+        Whale,
 	}
 }
