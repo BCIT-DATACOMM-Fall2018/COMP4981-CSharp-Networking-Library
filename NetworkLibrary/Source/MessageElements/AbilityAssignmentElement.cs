@@ -54,10 +54,10 @@ namespace NetworkLibrary.MessageElements
         /// 
         /// NOTES:		
         /// ----------------------------------------------
-        public AbilityAssignmentElement(int actorId, int health)
+        public AbilityAssignmentElement(int actorId, int abilityId)
         {
             ActorId = actorId;
-            AbilityId = health;
+            AbilityId = abilityId;
         }
 
         /// ----------------------------------------------
