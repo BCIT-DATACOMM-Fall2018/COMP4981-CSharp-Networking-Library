@@ -53,6 +53,8 @@ namespace NetworkLibrary
 		void EndGame(int winningTeam);
 
 		void UpdateActorExperience(int actorId, int experience);
+
+        void UpdateAbilityAssignment(int actorId, int abilityId);
 	}
 }
 
