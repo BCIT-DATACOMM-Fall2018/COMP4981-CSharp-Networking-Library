@@ -55,6 +55,8 @@ namespace NetworkLibrary
 		void UpdateActorExperience(int actorId, int experience);
 
         void UpdateActorSpeed(int actorId, int speed);
+
+        void UpdateAbilityAssignment(int actorId, int abilityId);
 	}
 }
 
