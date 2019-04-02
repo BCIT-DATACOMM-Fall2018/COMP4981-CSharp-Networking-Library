@@ -4,18 +4,18 @@ namespace NetworkLibrary
 {
 	/// ----------------------------------------------
 	/// Enum: 	ElementId - An enum to store MessageElement IDs
-	/// 
+	///
 	/// PROGRAM: NetworkLibrary
 	///
 	/// DATE: 		January 28th, 2019
 	///
-	/// REVISIONS: 
+	/// REVISIONS:
 	///
 	/// DESIGNER: 	Cameron Roberts
 	///
-	/// PROGRAMMER: Cameron Roberts
+	/// PROGRAMMER: Cameron Roberts, Simon Wu
 	///
-	/// NOTES:	
+	/// NOTES:
 	/// ----------------------------------------------
 	public enum AbilityType : int
 	{
@@ -23,7 +23,18 @@ namespace NetworkLibrary
 		TestTargeted,
 		TestTargetedHoming,
 		TestAreaOfEffect,
-		AutoAttack
+		AutoAttack,
+		Wall,
+		Banish,
+		BulletAbility,
+		PorkChop,
+		Dart,
+		Purification,
+		UwuImScared,
+		Fireball,
+        WeebOut,
+        Whale,
+        TowerAttack,
+		Blink
 	}
 }
-
