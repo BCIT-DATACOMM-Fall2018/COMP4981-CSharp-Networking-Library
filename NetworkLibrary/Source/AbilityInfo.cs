@@ -38,7 +38,12 @@ namespace NetworkLibrary
             //TowerAttack
             new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 1, range: 100),
 			// blink
-			new AbilityInfo (isArea: true, requiresCollision: false, cooldown: 13, range: 45)
+			new AbilityInfo (isArea: true, requiresCollision: false, cooldown: 13, range: 45),
+			// Gungnir
+			new AbilityInfo (isArea: true, cooldown: 10, range:500),
+			// Slash
+			new AbilityInfo (isArea: true, cooldown: 5, range:100),
+
 		};
 
 		// The ability targets a location on the map

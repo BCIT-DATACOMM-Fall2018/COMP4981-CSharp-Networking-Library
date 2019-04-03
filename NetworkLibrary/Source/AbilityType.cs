@@ -35,6 +35,8 @@ namespace NetworkLibrary
         WeebOut,
         Whale,
         TowerAttack,
-		Blink
+		Blink,
+		Gungnir,
+		Slash
 	}
 }
