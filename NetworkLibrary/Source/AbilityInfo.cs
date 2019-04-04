@@ -4,7 +4,7 @@ namespace NetworkLibrary
 {
 	public struct AbilityInfo
 	{
-		public static readonly AbilityInfo[] InfoArray = {
+        public static readonly AbilityInfo[] InfoArray = {
 			// TestProjectile
 			new AbilityInfo (isArea: true, cooldown: 30),
 			// TestTargeted
@@ -15,11 +15,35 @@ namespace NetworkLibrary
 			new AbilityInfo (isArea: true, cooldown: 180, range:30),
 			// AutoAttack
 			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 15),
-            //PewPew
-            new AbilityInfo(isArea: true, cooldown: 3, range: 50),
-            //Sploosh
-            //TODO After stats modifier have been implemented +0.2 defence modifier for 3 seconds
-            new AbilityInfo(isArea: true, cooldown: 4, range: 15),
+			// Wall
+			new AbilityInfo (isArea: true, cooldown:10, range: 30),
+			// Banish
+			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, requiresCollision: false, enemyTargetAllowed: true, cooldown: 10, range: 40),
+			// Bullet Ability
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 50, range: 50),
+			// Pork Chop
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 105, range: 20),
+			// Dart
+			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 150, range: 40),
+			// Purification
+			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, isSelf: true, cooldown: 150, range: 40),
+			// UwuImScared
+			new AbilityInfo (isSelf: true, allyTargetAllowed: true, requiresCollision: false, cooldown: 180),
+			// Fireball
+			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 180, range: 80),
+            // WeebOut
+            new AbilityInfo (isArea: true, cooldown: 3, range: 30),
+            // Whale
+            new AbilityInfo (isArea: true, cooldown: 40, range: 80),
+            //TowerAttack
+            new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 1, range: 100),
+			// blink
+			new AbilityInfo (isArea: true, requiresCollision: false, cooldown: 13, range: 45),
+			//PewPew
+			new AbilityInfo(isArea: true, cooldown: 3, range: 50),
+			//Sploosh
+			//TODO After stats modifier have been implemented +0.2 defence modifier for 3 seconds
+			new AbilityInfo(isArea: true, cooldown: 4, range: 15)
 		};
 
 		// The ability targets a location on the map
@@ -61,4 +85,3 @@ namespace NetworkLibrary
 
 	}
 }
-
