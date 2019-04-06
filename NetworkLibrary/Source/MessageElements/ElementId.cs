@@ -37,7 +37,8 @@ namespace NetworkLibrary.MessageElements
 		GameEndElement,
 		ExperienceElement,
         MoveSpeedElement,
-        AbilityAssignmentElement
+        AbilityAssignmentElement,
+		TowerHealthElement
 	}
 }
 

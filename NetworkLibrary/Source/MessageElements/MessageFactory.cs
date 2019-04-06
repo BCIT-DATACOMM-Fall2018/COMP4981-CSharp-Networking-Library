@@ -100,6 +100,10 @@ namespace NetworkLibrary.MessageElements
 				return new GameEndElement (bitStream);
 			case ElementId.ExperienceElement:
 				return new ExperienceElement (bitStream);
+			case ElementId.AbilityAssignmentElement:
+				return new AbilityAssignmentElement (bitStream);
+			case ElementId.TowerHealthElement:
+				return new TowerHealthElement (bitStream);
 			default:
 				throw new InvalidOperationException ("Attempted to create a MessageElement with an invalid ID");
 			}
@@ -150,6 +154,12 @@ namespace NetworkLibrary.MessageElements
 				return new LobbyStatusElement (bitStream);
 			case ElementId.GameEndElement:
 				return new GameEndElement (bitStream);
+			case ElementId.ExperienceElement:
+				return new ExperienceElement (bitStream);
+			case ElementId.AbilityAssignmentElement:
+				return new AbilityAssignmentElement (bitStream);
+			case ElementId.TowerHealthElement:
+				return new TowerHealthElement (bitStream);
 			default:
 				throw new InvalidOperationException ("Attempted to create a UpdateElement with an invalid ID: " + id);
 			}
