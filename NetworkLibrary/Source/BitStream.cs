@@ -86,7 +86,7 @@ namespace NetworkLibrary
 		public void Write (int data, int offset, int bits)
 		{
 			if(bits + offset > sizeof(int)* BYTE_SIZE){
-				throw new InvalidOperationException ("Bits + offset cannot be greater than the size of the data");
+				throw new InvalidOperationException ("Bits + offset " + bits + " + " +  offset + " cannot be greater than the size of the data");
 			}
 			if (bits > spaceInByte && wordCount + (bits / 8) > buffer.Length) {
 				throw new InvalidOperationException ("Attempt to write past the end of the buffer");
@@ -131,7 +131,7 @@ namespace NetworkLibrary
 		public void Write (byte data, int offset, int bits)
 		{
 			if(bits + offset > sizeof(byte)* BYTE_SIZE){
-				throw new InvalidOperationException ("Bits + offset cannot be greater than the size of the data");
+				throw new InvalidOperationException ("Bits + offset " + bits + " + " +  offset + " cannot be greater than the size of the data");
 			}
 			if (bits > spaceInByte && wordCount + (bits / 8) > buffer.Length) {
 				throw new InvalidOperationException ("Attempt to write past the end of the buffer");

@@ -32,7 +32,7 @@ namespace NetworkLibrary.MessageElements
 
 
 		//TODO Add constant for maximum indicator number and base bits off that
-		private const int INDICATOR_BITS = 4;
+		private const int INDICATOR_BITS = 5;
 
 		public ElementId ElementIndicator { get; private set; }
 
