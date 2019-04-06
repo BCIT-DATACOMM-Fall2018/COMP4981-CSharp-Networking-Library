@@ -16,7 +16,7 @@ namespace NetworkLibrary
 			// AutoAttack
 			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 15),
 			// Wall
-			new AbilityInfo (isArea: true, cooldown:10, range: 30),
+			new AbilityInfo (isArea: true, cooldown:30, range: 30),
 			// Banish
 			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, requiresCollision: false, enemyTargetAllowed: true, cooldown: 10, range: 40),
 			// Bullet Ability
@@ -32,18 +32,18 @@ namespace NetworkLibrary
 			// Fireball
 			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 180, range: 80),
             // WeebOut
-            new AbilityInfo (isArea: true, cooldown: 3, range: 30),
+            new AbilityInfo (isArea: true, cooldown: 90, range: 30),
             // Whale
             new AbilityInfo (isArea: true, cooldown: 40, range: 80),
             //TowerAttack
-            new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 1, range: 100),
+            new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 100),
 			// blink
-			new AbilityInfo (isArea: true, requiresCollision: false, cooldown: 13, range: 45),
+			new AbilityInfo (isArea: true, requiresCollision: false, cooldown: 300, range: 45),
 			//PewPew
-			new AbilityInfo(isArea: true, cooldown: 3, range: 50),
+			new AbilityInfo(isArea: true, cooldown: 90, range: 50),
 			//Sploosh
 			//TODO After stats modifier have been implemented +0.2 defence modifier for 3 seconds
-			new AbilityInfo(isArea: true, cooldown: 4, range: 15)
+			new AbilityInfo(isArea: true, cooldown: 120, range: 15)
 		};
 
 		// The ability targets a location on the map
