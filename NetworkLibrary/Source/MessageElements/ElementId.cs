@@ -38,7 +38,8 @@ namespace NetworkLibrary.MessageElements
 		ExperienceElement,
         MoveSpeedElement,
         AbilityAssignmentElement,
-		TowerHealthElement
+		TowerHealthElement,
+		RemainingLivesElement
 	}
 }
 

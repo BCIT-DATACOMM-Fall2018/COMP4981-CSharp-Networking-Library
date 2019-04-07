@@ -57,6 +57,8 @@ namespace NetworkLibrary
         void UpdateActorSpeed(int actorId, int speed);
 
         void UpdateAbilityAssignment(int actorId, int abilityId);
+
+		void UpdateLifeCount (List<RemainingLivesElement.LivesInfo> livesInfo);
 	}
 }
 

@@ -195,8 +195,26 @@ namespace NetworkLibraryTest
 			Assert.AreEqual (element.AckNumber, element2.AckNumber);
 			Assert.AreEqual (element.SeqNumber, element2.SeqNumber);
 			Assert.AreEqual (element.Type, element2.Type);
+		}
 
+		[Test ()]
+		public void SerializeRemainingLivesElement ()
+		{
+			byte[] bytes = new byte[1024];
 
+			var livesInfo = new List<RemainingLivesElement.LivesInfo> ();
+			livesInfo.Add(new RemainingLivesElement.LivesInfo(1, 5));
+			livesInfo.Add(new RemainingLivesElement.LivesInfo(2, 50));
+			RemainingLivesElement element = new RemainingLivesElement (livesInfo);
+			BitStream bitstream = new BitStream (bytes);
+			element.WriteTo (bitstream);
+
+			RemainingLivesElement element2 = new RemainingLivesElement (bitstream);
+			Assert.AreEqual (element.TeamLivesInfo.Count, element2.TeamLivesInfo.Count);
+			for (int i = 0; i < element.TeamLivesInfo.Count; i++) {
+				Assert.AreEqual (element.TeamLivesInfo [i].TeamNumber, element2.TeamLivesInfo [i].TeamNumber);
+				Assert.AreEqual (element.TeamLivesInfo [i].Lives, element2.TeamLivesInfo [i].Lives);
+			}
 		}
 
 		[Test ()]

@@ -60,7 +60,7 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public CollisionElement (AbilityType abilityId, int actorHitId, int actorCastId)
+		/// INTERFACE: 	public CollisionElement (AbilityType abilityId, int actorHitId, int actorCastId, int collisionId)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------

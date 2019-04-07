@@ -104,6 +104,8 @@ namespace NetworkLibrary.MessageElements
 				return new AbilityAssignmentElement (bitStream);
 			case ElementId.TowerHealthElement:
 				return new TowerHealthElement (bitStream);
+			case ElementId.RemainingLivesElement:
+				return new RemainingLivesElement (bitStream);
 			default:
 				throw new InvalidOperationException ("Attempted to create a MessageElement with an invalid ID");
 			}
@@ -160,6 +162,8 @@ namespace NetworkLibrary.MessageElements
 				return new AbilityAssignmentElement (bitStream);
 			case ElementId.TowerHealthElement:
 				return new TowerHealthElement (bitStream);
+			case ElementId.RemainingLivesElement:
+				return new RemainingLivesElement (bitStream);
 			default:
 				throw new InvalidOperationException ("Attempted to create a UpdateElement with an invalid ID: " + id);
 			}
