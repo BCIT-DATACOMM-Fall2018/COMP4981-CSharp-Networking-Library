@@ -47,7 +47,7 @@ namespace NetworkLibrary
 			// Gungnir
 			new AbilityInfo (isArea: true, cooldown: 300, range:500),
 			// Slash
-			new AbilityInfo (isArea: true, cooldown: 150, range:100),
+			new AbilityInfo (isArea: true, cooldown: 150, range:0),
 		};
 
 		// The ability targets a location on the map
