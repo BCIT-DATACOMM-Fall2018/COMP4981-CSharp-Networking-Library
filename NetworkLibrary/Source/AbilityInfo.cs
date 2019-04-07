@@ -43,7 +43,11 @@ namespace NetworkLibrary
 			new AbilityInfo(isTargeted: true, enemyTargetAllowed: true, cooldown: 120, range: 50),
 			//Sploosh
 			//TODO After stats modifier have been implemented +0.2 defence modifier for 3 seconds
-			new AbilityInfo(isTargeted: true, enemyTargetAllowed: true, cooldown: 90, range: 15)
+			new AbilityInfo(isTargeted: true, enemyTargetAllowed: true, cooldown: 90, range: 15),
+			// Gungnir
+			new AbilityInfo (isArea: true, cooldown: 300, range:500),
+			// Slash
+			new AbilityInfo (isArea: true, cooldown: 150, range:0),
 		};
 
 		// The ability targets a location on the map

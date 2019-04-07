@@ -37,6 +37,8 @@ namespace NetworkLibrary
         TowerAttack,
 		Blink,
 		PewPew,
-		Sploosh
+		Sploosh,
+		Gungnir,
+		Slash
 	}
 }
