@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: CollisionElement - A UpdateElement to denote a collision
+	/// Class: TowerHealthElement - A UpdateElement used to update tower health
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public CollisionElement (AbilityType abilityId, int actorHitId, int actorCastId)
-	/// 				public CollisionElement (BitStream bitstream)
+	/// CONSTRUCTORS:	public TowerHealthElement (List<PlayerInfo> playerInformation)
+	/// 				public TowerHealthElement (BitStream bitstream)
 	/// 
 	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
@@ -16,7 +18,7 @@ namespace NetworkLibrary.MessageElements
 	/// 			public override void UpdateState (IStateMessageBridge bridge)
 	/// 			protected override void Validate ()
 	/// 
-	/// DATE: 		March 8th, 2019
+	/// DATE: 		April 5th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -26,31 +28,34 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// NOTES:		
 	/// ----------------------------------------------
-	public class CollisionElement : UpdateElement
+	public class TowerHealthElement : UpdateElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.CollisionElement);
 
-		private const int ABILITYID_MAX = 127;
-		private const int ACTORHITID_MAX = 255;
-		private const int ACTORCASTID_MAX = 255;
-		private const int COLLISIONID_MAX = 255;
+		public struct TowerInfo
+		{
+			public int ActorId { get; private set;}
+			public int Health { get; private set;}
 
-		private static readonly int ABILITYID_BITS = RequiredBits (ABILITYID_MAX);
-		private static readonly int ACTORHITID_BITS = RequiredBits (ACTORHITID_MAX);
-		private static readonly int ACTORCASTID_BITS = RequiredBits (ACTORCASTID_MAX);
-		private static readonly int COLLISIONID_BITS = RequiredBits (COLLISIONID_MAX);
+			public TowerInfo (int actorId, int health)
+			{
+				this.ActorId = actorId;
+				this.Health = health;
+			}
+		}
 
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.TowerHealthElement);
 
-		public AbilityType AbilityId { get; private set; }
+		private const int TOWERS_MAX = 31;
+		private const int HEALTH_MAX = 1000;
+		private const int ACTORID_MAX = 127;
+		private static readonly int TOWERS_BITS = RequiredBits (TOWERS_MAX);
+		private static readonly int HEALTH_BITS = RequiredBits (HEALTH_MAX);
+		private static readonly int ACTORID_BITS = RequiredBits (ACTORID_MAX);
 
-		public int ActorHitId { get; private set; }
-
-		public int ActorCastId { get; private set; }
-
-		public int CollisionId { get; private set; }
+		public List<TowerInfo> TowerInformation { get; private set; }
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: CollisionElement
+		/// CONSTRUCTOR: TowerHealthElement
 		/// 
 		/// DATE:		March 8th, 2019
 		/// 
@@ -60,20 +65,20 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public CollisionElement (AbilityType abilityId, int actorHitId, int actorCastId, int collisionId)
+		/// INTERFACE: 	public TowerHealthElement (List<TowerInfo> towerInformation)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public CollisionElement (AbilityType abilityId, int actorHitId, int actorCastId, int collisionId)
+		public TowerHealthElement (List<TowerInfo> towerInformation)
 		{
-			AbilityId = abilityId;
-			ActorHitId = actorHitId;
-			ActorCastId = actorCastId;
-			CollisionId = collisionId;
+			TowerInformation = new List<TowerInfo>();
+			foreach (var item in towerInformation) {
+				TowerInformation.Add(new TowerInfo(item.ActorId, item.Health));
+			}
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: CollisionElement
+		/// CONSTRUCTOR: TowerHealthElement
 		/// 
 		/// DATE:		March 8th, 2019
 		/// 
@@ -86,10 +91,10 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public HealthElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		CollisionElement by deserializing it 
+		/// 		TowerHealthElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public CollisionElement (BitStream bitstream) : base (bitstream)
+		public TowerHealthElement (BitStream bitstream) : base (bitstream)
 		{
 		}
 
@@ -106,10 +111,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a CollisionElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a TowerHealthElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a CollisionElement when 
+		/// 			to reconstruct a TowerHealthElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -131,14 +136,16 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public int Bits ()
 		/// 
 		/// RETURNS: 	The number of bits needed to store a
-		/// 			CollisionElement
+		/// 			TowerHealthElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			a CollisionElement
+		/// 			a TowerHealthElement
 		/// ----------------------------------------------
-		public override int Bits ()
-		{
-			return ABILITYID_BITS + ACTORHITID_BITS + ACTORCASTID_BITS + COLLISIONID_BITS;
+		public override int Bits(){
+			int bits = 0;
+			bits += TOWERS_BITS;
+			bits += TowerInformation.Count * (HEALTH_BITS + ACTORID_BITS);
+			return bits;
 		}
 
 		/// ----------------------------------------------
@@ -157,14 +164,15 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			CollisionElement to a BitStream.
+		/// 			TowerHealthElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
-			bitStream.Write ((int)AbilityId, 0, ABILITYID_BITS);
-			bitStream.Write	(ActorHitId, 0, ACTORHITID_BITS);
-			bitStream.Write	(ActorCastId, 0, ACTORCASTID_BITS);
-			bitStream.Write	(CollisionId, 0, COLLISIONID_BITS);
+			bitStream.Write (TowerInformation.Count, 0, TOWERS_BITS);
+			foreach (var item in TowerInformation) {
+				bitStream.Write (item.ActorId, 0, ACTORID_BITS);
+				bitStream.Write (item.Health, 0, HEALTH_BITS);
+			}
 		}
 
 		/// ----------------------------------------------
@@ -183,14 +191,17 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			CollisionElement from a BitStream.
+		/// 			TowerHealthElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
-			AbilityId = (AbilityType)bitstream.ReadNext (ABILITYID_BITS);
-			ActorHitId = bitstream.ReadNext (ACTORHITID_BITS);
-			ActorCastId = bitstream.ReadNext (ACTORCASTID_BITS);
-			CollisionId = bitstream.ReadNext (COLLISIONID_BITS);
+			int towerCount = bitstream.ReadNext (TOWERS_BITS);
+			TowerInformation = new List<TowerInfo>();
+			for (int i = 0; i < towerCount; i++) {
+				int actorId = bitstream.ReadNext(ACTORID_BITS);
+				int health = bitstream.ReadNext(HEALTH_BITS);
+				TowerInformation.Add (new TowerInfo (actorId, health));
+			}
 		}
 
 		/// ----------------------------------------------
@@ -213,7 +224,9 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override void UpdateState (IStateMessageBridge bridge)
 		{
-			bridge.ProcessCollision (AbilityId, ActorHitId, ActorCastId, CollisionId);
+			foreach(var tower in TowerInformation){
+				bridge.UpdateActorHealth (tower.ActorId, tower.Health);
+			}
 		}
 
 		/// ----------------------------------------------
@@ -232,12 +245,14 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			CollisionElement.
+		/// 			TowerHealthElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			if ((int)AbilityId > ABILITYID_MAX || ActorHitId > ACTORHITID_MAX || ActorCastId > ACTORCASTID_MAX) {
-				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
+			foreach (var item in TowerInformation) {
+				if (item.ActorId > ACTORID_MAX || item.Health > HEALTH_MAX) {
+					throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
+				}
 			}
 		}
 	}

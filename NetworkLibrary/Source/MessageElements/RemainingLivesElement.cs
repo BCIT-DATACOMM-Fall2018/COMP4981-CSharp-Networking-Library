@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: CollisionElement - A UpdateElement to denote a collision
+	/// Class: RemainingLivesElement - A UpdateElement to update actor health
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public CollisionElement (AbilityType abilityId, int actorHitId, int actorCastId)
-	/// 				public CollisionElement (BitStream bitstream)
+	/// CONSTRUCTORS:	public RemainingLivesElement (int actorId, int health)
+	/// 				public RemainingLivesElement (BitStream bitstream)
 	/// 
 	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
@@ -16,7 +17,7 @@ namespace NetworkLibrary.MessageElements
 	/// 			public override void UpdateState (IStateMessageBridge bridge)
 	/// 			protected override void Validate ()
 	/// 
-	/// DATE: 		March 8th, 2019
+	/// DATE: 		April 5th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -26,33 +27,36 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// NOTES:		
 	/// ----------------------------------------------
-	public class CollisionElement : UpdateElement
+	public class RemainingLivesElement : UpdateElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.CollisionElement);
+		public struct LivesInfo
+		{
+			public int TeamNumber { get; private set;}
+			public int Lives { get; private set;}
 
-		private const int ABILITYID_MAX = 127;
-		private const int ACTORHITID_MAX = 255;
-		private const int ACTORCASTID_MAX = 255;
-		private const int COLLISIONID_MAX = 255;
-
-		private static readonly int ABILITYID_BITS = RequiredBits (ABILITYID_MAX);
-		private static readonly int ACTORHITID_BITS = RequiredBits (ACTORHITID_MAX);
-		private static readonly int ACTORCASTID_BITS = RequiredBits (ACTORCASTID_MAX);
-		private static readonly int COLLISIONID_BITS = RequiredBits (COLLISIONID_MAX);
+			public LivesInfo (int teamNumber, int lives)
+			{
+				this.TeamNumber = teamNumber;
+				this.Lives = lives;
+			}
+		}
 
 
-		public AbilityType AbilityId { get; private set; }
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.RemainingLivesElement);
 
-		public int ActorHitId { get; private set; }
+		private const int TEAMS_MAX = 7;
+		private const int TEAMNUM_MAX = 7;
+		private const int LIVES_MAX = 50;
+		private static readonly int TEAMS_BITS = RequiredBits (TEAMS_MAX);
+		private static readonly int TEAMNUM_BITS = RequiredBits (TEAMNUM_MAX);
+		private static readonly int LIVES_BITS = RequiredBits (LIVES_MAX);
 
-		public int ActorCastId { get; private set; }
-
-		public int CollisionId { get; private set; }
+		public List<LivesInfo> TeamLivesInfo { get; private set; }
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: CollisionElement
+		/// CONSTRUCTOR: RemainingLivesElement
 		/// 
-		/// DATE:		March 8th, 2019
+		/// DATE:		April 5th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -60,22 +64,22 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public CollisionElement (AbilityType abilityId, int actorHitId, int actorCastId, int collisionId)
+		/// INTERFACE: 	public RemainingLivesElement (List<LivesInfo> livesInfo)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public CollisionElement (AbilityType abilityId, int actorHitId, int actorCastId, int collisionId)
+		public RemainingLivesElement (List<LivesInfo> livesInfo)
 		{
-			AbilityId = abilityId;
-			ActorHitId = actorHitId;
-			ActorCastId = actorCastId;
-			CollisionId = collisionId;
+			TeamLivesInfo = new List<LivesInfo>();
+			foreach (var item in livesInfo) {
+				TeamLivesInfo.Add(new LivesInfo(item.TeamNumber, item.Lives));
+			}
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: CollisionElement
+		/// CONSTRUCTOR: RemainingLivesElement
 		/// 
-		/// DATE:		March 8th, 2019
+		/// DATE:		April 5th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -83,20 +87,20 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public HealthElement (BitStream bitstream)
+		/// INTERFACE: 	public RemainingLivesElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		CollisionElement by deserializing it 
+		/// 		RemainingLivesElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public CollisionElement (BitStream bitstream) : base (bitstream)
+		public RemainingLivesElement (BitStream bitstream) : base (bitstream)
 		{
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	GetIndicator
 		/// 
-		/// DATE:		March 8th, 2019
+		/// DATE:		April 5th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -106,10 +110,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a CollisionElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a RemainingLivesElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a CollisionElement when 
+		/// 			to reconstruct a RemainingLivesElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -120,7 +124,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// FUNCTION:	Bits
 		/// 
-		/// DATE:		March 8th, 2019
+		/// DATE:		February 10th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -131,20 +135,21 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public int Bits ()
 		/// 
 		/// RETURNS: 	The number of bits needed to store a
-		/// 			CollisionElement
+		/// 			RemainingLivesElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			a CollisionElement
+		/// 			a RemainingLivesElement
 		/// ----------------------------------------------
-		public override int Bits ()
-		{
-			return ABILITYID_BITS + ACTORHITID_BITS + ACTORCASTID_BITS + COLLISIONID_BITS;
-		}
+		public override int Bits(){
+			int bits = 0;
+			bits += TEAMS_BITS;
+			bits += TeamLivesInfo.Count * (TEAMNUM_BITS + LIVES_BITS);
+			return bits;		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Serialize
 		/// 
-		/// DATE:		March 8th, 2019
+		/// DATE:		April 5th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -157,20 +162,21 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			CollisionElement to a BitStream.
+		/// 			RemainingLivesElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
-			bitStream.Write ((int)AbilityId, 0, ABILITYID_BITS);
-			bitStream.Write	(ActorHitId, 0, ACTORHITID_BITS);
-			bitStream.Write	(ActorCastId, 0, ACTORCASTID_BITS);
-			bitStream.Write	(CollisionId, 0, COLLISIONID_BITS);
+			bitStream.Write (TeamLivesInfo.Count, 0, TEAMS_BITS);
+			foreach (var item in TeamLivesInfo) {
+				bitStream.Write (item.TeamNumber, 0, TEAMNUM_BITS);
+				bitStream.Write (item.Lives, 0, LIVES_BITS);
+			}
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Deserialize
 		/// 
-		/// DATE:		March 8th, 2019
+		/// DATE:		April 5th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -183,20 +189,23 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			CollisionElement from a BitStream.
+		/// 			RemainingLivesElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
-			AbilityId = (AbilityType)bitstream.ReadNext (ABILITYID_BITS);
-			ActorHitId = bitstream.ReadNext (ACTORHITID_BITS);
-			ActorCastId = bitstream.ReadNext (ACTORCASTID_BITS);
-			CollisionId = bitstream.ReadNext (COLLISIONID_BITS);
+			int towerCount = bitstream.ReadNext (TEAMS_BITS);
+			TeamLivesInfo = new List<LivesInfo>();
+			for (int i = 0; i < towerCount; i++) {
+				int teamNum = bitstream.ReadNext(TEAMNUM_BITS);
+				int lives = bitstream.ReadNext(LIVES_BITS);
+				TeamLivesInfo.Add (new LivesInfo (teamNum, lives));
+			}
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	UpdateState
 		/// 
-		/// DATE:		March 8th, 2019
+		/// DATE:		April 5th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -213,13 +222,13 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override void UpdateState (IStateMessageBridge bridge)
 		{
-			bridge.ProcessCollision (AbilityId, ActorHitId, ActorCastId, CollisionId);
+			bridge.UpdateLifeCount (TeamLivesInfo);
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Validate
 		/// 
-		/// DATE:		March 8th, 2019
+		/// DATE:		April 5th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -232,12 +241,14 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			CollisionElement.
+		/// 			RemainingLivesElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			if ((int)AbilityId > ABILITYID_MAX || ActorHitId > ACTORHITID_MAX || ActorCastId > ACTORCASTID_MAX) {
-				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
+			foreach (var item in TeamLivesInfo) {
+				if (item.TeamNumber > TEAMNUM_MAX || item.Lives > LIVES_MAX) {
+					throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
+				}
 			}
 		}
 	}

@@ -3,7 +3,7 @@
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: GameStartElement - A UpdateElement to indicate ready status
+	/// Class: GameStartElement - A UpdateElement to indicate the start of a game
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
@@ -46,7 +46,7 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public GameStartElement (int actorId, int health)
+		/// INTERFACE: 	public GameStartElement (int playerNum)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------

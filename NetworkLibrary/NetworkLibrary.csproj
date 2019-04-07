@@ -67,6 +67,9 @@
     <Compile Include="Source\MessageElements\NameElement.cs" />
     <Compile Include="Source\MessageElements\GameEndElement.cs" />
     <Compile Include="Source\MessageElements\ExperienceElement.cs" />
+    <Compile Include="Source\MessageElements\AbilityAssignmentElement.cs" />
+    <Compile Include="Source\MessageElements\TowerHealthElement.cs" />
+    <Compile Include="Source\MessageElements\RemainingLivesElement.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -16,34 +16,38 @@ namespace NetworkLibrary
 			// AutoAttack
 			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 15),
 			// Wall
-			new AbilityInfo (isArea: true, cooldown:10, range: 30),
+			new AbilityInfo (isArea: true, cooldown:30, range: 30),
 			// Banish
-			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, requiresCollision: false, enemyTargetAllowed: true, cooldown: 10, range: 40),
+			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, requiresCollision: false, enemyTargetAllowed: true, cooldown: 300, range: 40),
 			// Bullet Ability
-			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 50, range: 50),
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 180, range: 50),
 			// Pork Chop
-			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 105, range: 20),
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 120, range: 20),
 			// Dart
 			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 150, range: 40),
 			// Purification
 			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, isSelf: true, cooldown: 150, range: 40),
 			// UwuImScared
-			new AbilityInfo (isSelf: true, allyTargetAllowed: true, requiresCollision: false, cooldown: 180),
+			new AbilityInfo (isSelf: true, allyTargetAllowed: true, requiresCollision: false, cooldown: 300),
 			// Fireball
 			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 180, range: 80),
             // WeebOut
-            new AbilityInfo (isArea: true, cooldown: 3, range: 30),
+            new AbilityInfo (isArea: true, cooldown: 90, range: 0),
             // Whale
-            new AbilityInfo (isArea: true, cooldown: 40, range: 80),
+            new AbilityInfo (isArea: true, cooldown: 500, range: 0),
             //TowerAttack
-            new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 1, range: 100),
+            new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 50),
 			// blink
-			new AbilityInfo (isArea: true, requiresCollision: false, cooldown: 13, range: 45),
+			new AbilityInfo (isArea: true, requiresCollision: false, cooldown: 300, range: 45),
+			//PewPew
+			new AbilityInfo(isTargeted: true, enemyTargetAllowed: true, cooldown: 120, range: 50),
+			//Sploosh
+			//TODO After stats modifier have been implemented +0.2 defence modifier for 3 seconds
+			new AbilityInfo(isTargeted: true, enemyTargetAllowed: true, cooldown: 90, range: 15),
 			// Gungnir
-			new AbilityInfo (isArea: true, cooldown: 10, range:500),
+			new AbilityInfo (isArea: true, cooldown: 300, range:500),
 			// Slash
-			new AbilityInfo (isArea: true, cooldown: 5, range:100),
-
+			new AbilityInfo (isArea: true, cooldown: 150, range:100),
 		};
 
 		// The ability targets a location on the map

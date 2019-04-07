@@ -85,8 +85,13 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		public void Write (int data, int offset, int bits)
 		{
-			//TODO Add check to make sure bits isnt larger than the size of data
-			//TODO Add check to make sure you cant attempt to write past the end of the buffer
+			if(bits + offset > sizeof(int)* BYTE_SIZE){
+				throw new InvalidOperationException ("Bits + offset " + bits + " + " +  offset + " cannot be greater than the size of the data");
+			}
+			if (bits > spaceInByte && wordCount + (bits / 8) > buffer.Length) {
+				throw new InvalidOperationException ("Attempt to write past the end of the buffer");
+			}
+
 			data >>= offset;
 			int bitsRemaining = bits;
 			int nextBits;
@@ -125,8 +130,13 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		public void Write (byte data, int offset, int bits)
 		{
-			//TODO Add check to make sure bits isnt larger than the size of data
-			//TODO Add check to make sure you cant attempt to write past the end of the buffer
+			if(bits + offset > sizeof(byte)* BYTE_SIZE){
+				throw new InvalidOperationException ("Bits + offset " + bits + " + " +  offset + " cannot be greater than the size of the data");
+			}
+			if (bits > spaceInByte && wordCount + (bits / 8) > buffer.Length) {
+				throw new InvalidOperationException ("Attempt to write past the end of the buffer");
+			}
+
 			data >>= offset;
 			int bitsRemaining = bits;
 			int nextBits;
@@ -167,8 +177,13 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		public int Read (int offset, int bits)
 		{
-			//TODO Add check to make sure bits isnt larger than could be returned in an integer
-			//TODO Add check to make sure you cant read past the end of the data buffer
+			if(bits > sizeof(int)* BYTE_SIZE){
+				throw new InvalidOperationException ("Cannot read more bits than would fit in the data");
+			}
+			if (((readIndex + bits)/8) > buffer.Length) {
+				throw new InvalidOperationException ("Attempt to r past the end of the buffer");
+			}
+
 			int byteIndex = offset / BYTE_SIZE;
 			int bitIndex = offset % BYTE_SIZE;
 			int bitsRemaining = bits;
@@ -212,8 +227,13 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		public byte ReadByte (int offset, int bits)
 		{
-			//TODO Add check to make sure bits isnt larger than could be returned in an integer
-			//TODO Add check to make sure you cant read past the end of the data buffer
+			if(bits > sizeof(byte)* BYTE_SIZE){
+				throw new InvalidOperationException ("Cannot read more bits than would fit in the data");
+			}
+			if (((readIndex + bits)/8) > buffer.Length) {
+				throw new InvalidOperationException ("Attempt to r past the end of the buffer");
+			}
+
 			int byteIndex = offset / BYTE_SIZE;
 			int bitIndex = offset % BYTE_SIZE;
 			int bitsRemaining = bits;
@@ -259,7 +279,6 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		public int ReadNext (int bits)
 		{
-			//TODO Add check to make sure you cant read past the end of the data buffer
 			int result = Read (readIndex, bits);
 			readIndex += bits;
 			return result;
@@ -286,7 +305,6 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		public byte ReadNextByte (int bits)
 		{
-			//TODO Add check to make sure you cant read past the end of the data buffer
 			byte result = ReadByte (readIndex, bits);
 			readIndex += bits;
 			return result;
