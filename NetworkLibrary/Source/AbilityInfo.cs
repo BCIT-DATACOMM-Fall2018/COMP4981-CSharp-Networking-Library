@@ -5,49 +5,56 @@ namespace NetworkLibrary
 	public struct AbilityInfo
 	{
         public static readonly AbilityInfo[] InfoArray = {
+			/// DEBUG ABILITIES
 			// TestProjectile
-			new AbilityInfo (isArea: true, cooldown: 30),
+			new AbilityInfo (isArea: true, cooldown: 30, range:500),
 			// TestTargeted
 			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, enemyTargetAllowed: true, cooldown: 60, range:15),
 			// TestHomingTargeted
 			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 120, range:30),
 			// TestAreaOfEffect
 			new AbilityInfo (isArea: true, cooldown: 180, range:30),
+
+			/// AUTOATTACK ABILITIES
 			// AutoAttack
 			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 15),
-			// Wall
-			new AbilityInfo (isArea: true, cooldown:30, range: 30),
-			// Banish
-			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, requiresCollision: false, enemyTargetAllowed: true, cooldown: 300, range: 40),
-			// Bullet Ability
-			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 180, range: 50),
-			// Pork Chop
-			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 120, range: 20),
+			// TowerAttack
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 45),
+
+			/// BASIC ABILITIES
+			//PewPew
+			new AbilityInfo(isTargeted: true, enemyTargetAllowed: true, cooldown: 120, range: 45),
+			//Sploosh
+			new AbilityInfo(isTargeted: true, enemyTargetAllowed: true, cooldown: 90, range: 15),
 			// Dart
-			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 150, range: 40),
+			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 150, range: 500),
+			// WeebOut
+			new AbilityInfo (isArea: true, isSelf: true, cooldown: 90, range: 0),
+			// Slash
+			new AbilityInfo (isArea: true, isSelf: true, cooldown: 150, range:0),
+
+			/// NORMAL ABILITIES
 			// Purification
 			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, isSelf: true, cooldown: 150, range: 40),
-			// UwuImScared
-			new AbilityInfo (isSelf: true, allyTargetAllowed: true, requiresCollision: false, cooldown: 300),
-			// Fireball
-			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 180, range: 80),
-            // WeebOut
-            new AbilityInfo (isArea: true, cooldown: 90, range: 0),
-            // Whale
-            new AbilityInfo (isArea: true, cooldown: 500, range: 0),
-            //TowerAttack
-            new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 30, range: 50),
 			// blink
-			new AbilityInfo (isArea: true, requiresCollision: false, cooldown: 300, range: 45),
-			//PewPew
-			new AbilityInfo(isTargeted: true, enemyTargetAllowed: true, cooldown: 120, range: 50),
-			//Sploosh
-			//TODO After stats modifier have been implemented +0.2 defence modifier for 3 seconds
-			new AbilityInfo(isTargeted: true, enemyTargetAllowed: true, cooldown: 90, range: 15),
+			new AbilityInfo (isArea: true, requiresCollision: false, cooldown: 180, range: 45),
+			// UwuImScared
+			new AbilityInfo (isSelf: true, allyTargetAllowed: true, requiresCollision: false, cooldown: 270),
+			// Wall
+			new AbilityInfo (isArea: true, cooldown:180, range: 30),
+			// Bullet Ability
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 180, range: 45),
+			// Banish
+			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, requiresCollision: false, enemyTargetAllowed: true, cooldown: 300, range: 40),
+			// Pork Chop
+			new AbilityInfo (isTargeted: true, enemyTargetAllowed: true, cooldown: 120, range: 20),
+
+			// Fireball
+			new AbilityInfo (isArea: true, enemyTargetAllowed: true, cooldown: 300, range: 80),
 			// Gungnir
 			new AbilityInfo (isArea: true, cooldown: 300, range:500),
-			// Slash
-			new AbilityInfo (isArea: true, cooldown: 150, range:0),
+			// Whale
+			new AbilityInfo (isArea: true, isSelf: true, cooldown: 300, range: 0),
 		};
 
 		// The ability targets a location on the map

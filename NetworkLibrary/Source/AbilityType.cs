@@ -19,26 +19,32 @@ namespace NetworkLibrary
 	/// ----------------------------------------------
 	public enum AbilityType : int
 	{
+		// Debug abilities
 		TestProjectile = 0,
 		TestTargeted,
 		TestTargetedHoming,
 		TestAreaOfEffect,
+		// Auto attack abilities
 		AutoAttack,
-		Wall,
-		Banish,
-		BulletAbility,
-		PorkChop,
-		Dart,
-		Purification,
-		UwuImScared,
-		Fireball,
-        WeebOut,
-        Whale,
-        TowerAttack,
-		Blink,
+		TowerAttack,
+		// Basic abilities
 		PewPew,
 		Sploosh,
+		Dart,
+		WeebOut,
+		Slash,
+		// Normal abilities
+		Purification,
+		Blink,
+		UwuImScared,
+		Wall,
+		BulletAbility,
+		Banish,
+		PorkChop,
+		// Ultimate abilities
+		Fireball,
 		Gungnir,
-		Slash
+		Whale
+
 	}
 }
