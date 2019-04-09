@@ -35,7 +35,7 @@ namespace NetworkLibrary
 
 			/// NORMAL ABILITIES
 			// Purification
-			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, isSelf: true, cooldown: 150, range: 40),
+			new AbilityInfo (isTargeted: true, allyTargetAllowed: true, cooldown: 150, range: 40),
 			// blink
 			new AbilityInfo (isArea: true, requiresCollision: false, cooldown: 180, range: 45),
 			// UwuImScared
