@@ -1,21 +1,22 @@
 ﻿using System;
+using System.Text;
 
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: ElementIndicatorElement - A MessageElement to identify MessageElements in a Packet.
+	/// Class: NameElement - A MessageElement to store a clients Name in a packet
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public ElementIndicatorElement (ElementId elementIndicator)
-	/// 				public ElementIndicatorElement (BitStream bitStream)
+	/// CONSTRUCTORS:	public NameElement (string name)
+	/// 				public NameElement (BitStream bitStream)
 	/// 
-	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
+	/// FUNCTIONS:	public override PacketHeaderElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
 	/// 			protected override void Deserialize (BitStream bitstream)
 	/// 			protected override void Validate ()
 	/// 
-	/// DATE: 		January 28th, 2019
+	/// DATE: 		February 12th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -23,23 +24,22 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// PROGRAMMER: Cameron Roberts
 	///
-	/// NOTES:		This ElementIndicatorElement is used to indentify reliable 
-	/// 			MessageElements placed after it in a Packet.
+	/// NOTES:		This NameElement is used to indentify the 
+	/// 			player who sent a packet.
 	/// ----------------------------------------------
-	public class ElementIndicatorElement : MessageElement
+	public class NameElement : MessageElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.ElementIndicatorElement);
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.NameElement);
 
+		private const int NAMECHARS_MAX = 32;
+		private static readonly int NAMECHARS_BITS = RequiredBits (NAMECHARS_MAX);
 
-		//TODO Add constant for maximum indicator number and base bits off that
-		private const int INDICATOR_BITS = 5;
-
-		public ElementId ElementIndicator { get; private set; }
+		public string Name { get; private set;}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: ElementIndicatorElement
+		/// CONSTRUCTOR: NameElement
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -47,19 +47,19 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public ElementIndicatorElement (ElementId elementIndicator)
+		/// INTERFACE: 	public NameElement (string name)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public ElementIndicatorElement (ElementId elementIndicator)
+		public NameElement (string name)
 		{
-			ElementIndicator = elementIndicator;
+			Name = name;
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: ElementIndicatorElement
+		/// CONSTRUCTOR: NameElement
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -67,21 +67,20 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public ElementIndicatorElement (BitStream bitstream)
+		/// INTERFACE: 	public PacketHeaderElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		ElementIndicatorElement by deserializing it 
+		/// 		NameElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public ElementIndicatorElement (BitStream bitStream) : base (bitStream)
+		public NameElement (BitStream bitStream) : base (bitStream)
 		{
 		}
-
 
 		/// ----------------------------------------------
 		/// FUNCTION:	GetIndicator
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -91,10 +90,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a ElementIndicatorElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a NameElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a ElementIndicatorElement when 
+		/// 			to reconstruct a NameElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -105,7 +104,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// FUNCTION:	Bits
 		/// 
-		/// DATE:		February 10th, 2019
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -115,20 +114,29 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public int Bits ()
 		/// 
-		/// RETURNS: 	The number of bits needed to store an
-		/// 			ElementIndicatorElement
+		/// RETURNS: 	The number of bits needed to store a
+		/// 			NameElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			an ElementIndicatorElement
+		/// 			a NameElement
 		/// ----------------------------------------------
 		public override int Bits(){
-			return INDICATOR_BITS;
+			int bits = 0;
+			bits += NAMECHARS_BITS;
+			byte[] name = Encoding.UTF8.GetBytes (Name);
+			if (name.Length > NAMECHARS_MAX) {
+				throw new System.Runtime.Serialization.SerializationException ("Attempt to create a lobby status packet with a name greater than 32 characters");
+			}
+			bits += name.Length * BitStream.BYTE_SIZE;
+
+
+			return bits;
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Serialize
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -141,17 +149,24 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			ElementIndicatorElement to a BitStream.
+		/// 			NameElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
-			bitStream.Write ((int)ElementIndicator, 0, INDICATOR_BITS);
+			byte[] name = Encoding.UTF8.GetBytes (Name);
+			if (name.Length > NAMECHARS_MAX) {
+				throw new System.Runtime.Serialization.SerializationException ("Attempt to create a lobby status packet with a name greater than 32 characters");
+			}
+			bitStream.Write (name.Length, 0 , NAMECHARS_BITS);
+			foreach (var character in name) {
+				bitStream.Write (character, 0, BitStream.BYTE_SIZE);
+			}
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Deserialize
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -164,17 +179,22 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			ElementIndicatorElement from a BitStream.
+		/// 			NameElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
-			ElementIndicator = (ElementId)bitstream.ReadNext (INDICATOR_BITS);
+			int nameBytes = bitstream.ReadNext(NAMECHARS_BITS);
+			byte[] name = new byte[nameBytes];
+			for (int j = 0; j < nameBytes; j++) {
+				name[j] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
+			}
+			Name = Encoding.UTF8.GetString(name);
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Validate
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE: 		February 12th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -187,11 +207,10 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			ElementIndicatorElement.
+		/// 			NameElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			//TODO Add validation for ElementIndicatorElement
 		}
 	}
 }

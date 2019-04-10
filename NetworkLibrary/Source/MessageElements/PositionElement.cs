@@ -3,19 +3,20 @@
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: ElementIndicatorElement - A MessageElement to identify MessageElements in a Packet.
+	/// Class: PositionElement - A UpdateElement to update actor position
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public ElementIndicatorElement (ElementId elementIndicator)
-	/// 				public ElementIndicatorElement (BitStream bitStream)
+	/// CONSTRUCTORS:	public PositionElement (int actorId, int x, int z)
+	/// 				public PositionElement (BitStream bitstream)
 	/// 
 	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
 	/// 			protected override void Deserialize (BitStream bitstream)
+	/// 			public override void UpdateState (IStateMessageBridge bridge)
 	/// 			protected override void Validate ()
 	/// 
-	/// DATE: 		January 28th, 2019
+	/// DATE: 		March 8th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -23,23 +24,31 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// PROGRAMMER: Cameron Roberts
 	///
-	/// NOTES:		This ElementIndicatorElement is used to indentify reliable 
-	/// 			MessageElements placed after it in a Packet.
+	/// NOTES:		
 	/// ----------------------------------------------
-	public class ElementIndicatorElement : MessageElement
+	public class PositionElement : UpdateElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.ElementIndicatorElement);
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.PositionElement);
+
+		private const int ACTORID_MAX = 127;
+		private const float X_MAX = 500;
+		private const float Z_MAX = 500;
+
+		private static readonly int ACTORID_BITS = RequiredBits (ACTORID_MAX);
+		private static readonly int X_BITS = sizeof (float)*BitStream.BYTE_SIZE;
+		private static readonly int Z_BITS = sizeof (float)*BitStream.BYTE_SIZE;
 
 
-		//TODO Add constant for maximum indicator number and base bits off that
-		private const int INDICATOR_BITS = 5;
+		public int ActorId { get; private set; }
 
-		public ElementId ElementIndicator { get; private set; }
+		public float X { get; private set; }
+
+		public float Z { get; private set; }
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: ElementIndicatorElement
+		/// CONSTRUCTOR: PositionElement
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -47,19 +56,21 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public ElementIndicatorElement (ElementId elementIndicator)
+		/// INTERFACE: 	public PositionElement (int actorId, int x, int z)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public ElementIndicatorElement (ElementId elementIndicator)
+		public PositionElement (int actorId, float x, float z)
 		{
-			ElementIndicator = elementIndicator;
+			ActorId = actorId;
+			X = x;
+			Z = z;
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: ElementIndicatorElement
+		/// CONSTRUCTOR: PositionElement
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -67,21 +78,20 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public ElementIndicatorElement (BitStream bitstream)
+		/// INTERFACE: 	public HealthElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		ElementIndicatorElement by deserializing it 
+		/// 		PositionElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public ElementIndicatorElement (BitStream bitStream) : base (bitStream)
+		public PositionElement (BitStream bitstream) : base (bitstream)
 		{
 		}
-
 
 		/// ----------------------------------------------
 		/// FUNCTION:	GetIndicator
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -91,10 +101,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a ElementIndicatorElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a PositionElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a ElementIndicatorElement when 
+		/// 			to reconstruct a PositionElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -105,7 +115,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// FUNCTION:	Bits
 		/// 
-		/// DATE:		February 10th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -115,20 +125,20 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public int Bits ()
 		/// 
-		/// RETURNS: 	The number of bits needed to store an
-		/// 			ElementIndicatorElement
+		/// RETURNS: 	The number of bits needed to store a
+		/// 			PositionElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			an ElementIndicatorElement
+		/// 			a PositionElement
 		/// ----------------------------------------------
 		public override int Bits(){
-			return INDICATOR_BITS;
+			return ACTORID_BITS + X_BITS + Z_BITS;
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Serialize
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -141,17 +151,25 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			ElementIndicatorElement to a BitStream.
+		/// 			PositionElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
-			bitStream.Write ((int)ElementIndicator, 0, INDICATOR_BITS);
+			bitStream.Write (ActorId, 0, ACTORID_BITS);
+			byte[] bytes = BitConverter.GetBytes (X);
+			foreach (var item in bytes) {
+				bitStream.Write (item, 0, BitStream.BYTE_SIZE);
+			}
+			bytes = BitConverter.GetBytes (Z);
+			foreach (var item in bytes) {
+				bitStream.Write (item, 0, BitStream.BYTE_SIZE);
+			}
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Deserialize
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -164,17 +182,51 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			ElementIndicatorElement from a BitStream.
+		/// 			PositionElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
-			ElementIndicator = (ElementId)bitstream.ReadNext (INDICATOR_BITS);
+			ActorId = bitstream.ReadNext (ACTORID_BITS);
+			byte[] bytes = new byte[sizeof(float)];
+			for (int i = 0; i < sizeof(float); i++) {
+				bytes [i] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
+			}
+			X = BitConverter.ToSingle (bytes, 0);
+			bytes = new byte[sizeof(float)];
+			for (int i = 0; i < sizeof(float); i++) {
+				bytes [i] = bitstream.ReadNextByte (BitStream.BYTE_SIZE);
+			}
+			Z = BitConverter.ToSingle (bytes, 0);
+
+		}
+
+		/// ----------------------------------------------
+		/// FUNCTION:	UpdateState
+		/// 
+		/// DATE:		March 8th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public override void UpdateState (IStateMessageBridge bridge)
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		Contains logic needed to update the game state through
+		/// 			the use of a IStateMessageBridge.
+		/// ----------------------------------------------
+		public override void UpdateState (IStateMessageBridge bridge)
+		{
+			bridge.UpdateActorPosition (ActorId, X, Z);
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Validate
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -187,11 +239,13 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			ElementIndicatorElement.
+		/// 			PositionElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			//TODO Add validation for ElementIndicatorElement
+			if (ActorId > ACTORID_MAX || X > X_MAX || Z > Z_MAX) {
+				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
+			}
 		}
 	}
 }

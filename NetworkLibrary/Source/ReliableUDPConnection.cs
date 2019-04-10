@@ -78,9 +78,14 @@ namespace NetworkLibrary
 		/// 			that will resend them after a certain amount of packet creations if they have 
 		/// 			not been acknowledged by an consumed packet.
 		/// ----------------------------------------------
-		public Packet CreatePacket (List<UpdateElement> unreliableElements, List<UpdateElement> reliableElements = null)
+		public Packet CreatePacket (List<UpdateElement> unreliableElements, List<UpdateElement> reliableElements = null, PacketType packetType = PacketType.GameplayPacket)
 		{
 			if (reliableElements != null) {
+				for (int i = 1; i <= reliableElements.Count; i++) {
+					if ((MessageIndex + i) % BUFFER_SIZE == LastKnownWanted % BUFFER_SIZE) {
+						throw new InsufficientMemoryException ("Not enough space to add reliable elements to buffer");
+					}
+				}
 				foreach (var element in reliableElements) {
 					MessageBuffer [MessageIndex % BUFFER_SIZE] = element;
 					MessageTimer [MessageIndex % BUFFER_SIZE] = 0;
@@ -101,7 +106,7 @@ namespace NetworkLibrary
 			var packetReliableElements = new List<MessageElement> ();
 			bool resending = false;
 			int indexOfLastMessage = LastKnownWanted-1;
-			for (int i = LastKnownWanted; i != MessageIndex; i++) {
+			for (int i = LastKnownWanted; i % BUFFER_SIZE != MessageIndex % BUFFER_SIZE; i++) {
 				if (resending || MessageTimer [i % BUFFER_SIZE] == 0) {
 					if ((reliableBits + MessageBuffer [i % BUFFER_SIZE].Bits () + MessageBuffer [i % BUFFER_SIZE].GetIndicator ().Bits ()) > MAXIMUM_RELIABLE_BITS) {
 						break;
@@ -121,12 +126,12 @@ namespace NetworkLibrary
 
 
 			// get header data
-			int ack = CurrentAck;
+			int ack = CurrentAck % BUFFER_SIZE;
 			int reliableCount = packetReliableElements.Count;
-			int seqNumber = indexOfLastMessage;
+			int seqNumber = indexOfLastMessage % BUFFER_SIZE;
 
 			// put packet header information into packet
-			PacketHeaderElement header = new PacketHeaderElement (PacketType.GameplayPacket, seqNumber, ack, reliableCount);
+			PacketHeaderElement header = new PacketHeaderElement (packetType, seqNumber, ack, reliableCount);
 			neededBits += header.Bits ();
 			neededBits += ClientID.Bits ();
 
@@ -179,7 +184,7 @@ namespace NetworkLibrary
 			BitStream bitStream = new BitStream (packet.Data);
 
 			PacketHeaderElement header = new PacketHeaderElement (bitStream);
-			if (header.Type != PacketType.GameplayPacket) {
+			if (header.Type != PacketType.GameplayPacket && header.Type != PacketType.HeartbeatPacket) {
 				throw new ArgumentException ("Attempted to process non gameplay packet as a gameplay packet.");
 			}
 
@@ -193,26 +198,36 @@ namespace NetworkLibrary
 			LastKnownWanted = ackNumber;
 
 			List<UpdateElement> unreliableElements = new List<UpdateElement> ();
-			// check that this unreliable information is new
-			if (seqNumber >= CurrentAck -1) {
-				// extract unreliable elements from packet
-				foreach (var id in expectedUnreliableIds) {
-					unreliableElements.Add (messageFactory.CreateUpdateElement (id, bitStream));
-				}
+			// extract unreliable elements from packet
+			foreach (var id in expectedUnreliableIds) {
+				unreliableElements.Add (messageFactory.CreateUpdateElement (id, bitStream));
 			}
-			
+
 			List<UpdateElement> reliableElements = new List<UpdateElement> ();
-			// reliable elements were not missed
-			if (CurrentAck + reliableCount - 1 == seqNumber) {
-				// extract reliable elements from packet
-				for (int i = 0; i < reliableCount; i++) {
-					// get element indicator
-					ElementIndicatorElement indicatorElement = new ElementIndicatorElement (bitStream);
-					// use indicator to create message and call its update state function;
-					reliableElements.Add (messageFactory.CreateUpdateElement (indicatorElement.ElementIndicator, bitStream));
+			try{
+				// reliable elements were not missed
+				if ((CurrentAck  + reliableCount - 1)% BUFFER_SIZE == seqNumber) {
+					// extract reliable elements from packet
+					for (int i = 0; i < reliableCount; i++) {
+						// get element indicator
+						ElementIndicatorElement indicatorElement = new ElementIndicatorElement (bitStream);
+						// use indicator to create message and call its update state function;
+						reliableElements.Add (messageFactory.CreateUpdateElement (indicatorElement.ElementIndicator, bitStream));
+					}
+					CurrentAck += reliableCount;
 				}
-				CurrentAck += reliableCount;
+			} catch (InvalidOperationException e){ 
+				string packetData = "";
+				for (int i = 0; i < packet.Data.Length; i++) {
+					packetData += packet.Data[i].ToString("x4") + " ";
+				}
+				string expectedIds = "[";
+				for (int i = 0; i < expectedUnreliableIds.Length; i++) {
+					expectedIds += expectedUnreliableIds [i] + ", ";
+				}
+				throw new InvalidOperationException (e.Message + "Packet Data: " + packetData + ", Expected unreliableElements: " + expectedIds);
 			}
+
 			return new UnpackedPacket (unreliableElements, reliableElements);
 		}
 
@@ -284,15 +299,19 @@ namespace NetworkLibrary
 		/// 
 		/// NOTES:		Creates a Packet to send to a server to initiate a connection
 		/// ----------------------------------------------
-		public static Packet CreateRequestPacket ()
+		public static Packet CreateRequestPacket (string name = "Default")
 		{
 			int neededBits = 0;
 			PacketHeaderElement header = new PacketHeaderElement (PacketType.RequestPacket, 0, 0, 0);
+			NameElement nameElement = new NameElement (name);
 			neededBits += header.Bits ();
-			Packet packet = new Packet (neededBits);
+			neededBits += nameElement.Bits ();
+			Packet packet = new Packet ((neededBits - 1) / BYTE_SIZE + 1);
 
 			BitStream bitStream = new BitStream (packet.Data);
 			header.WriteTo (bitStream);
+			nameElement.WriteTo (bitStream);
+
 
 			return packet;
 		}
@@ -321,12 +340,28 @@ namespace NetworkLibrary
 			ClientIDElement clientIdElement = new ClientIDElement(clientID);
 			neededBits += header.Bits ();
 			neededBits += clientIdElement.Bits ();
-			Packet packet = new Packet (neededBits);
+			Packet packet = new Packet ((neededBits - 1) / BYTE_SIZE + 1);
 
 			BitStream bitStream = new BitStream (packet.Data);
 			header.WriteTo (bitStream);
 			clientIdElement.WriteTo (bitStream);
 			return packet;
+		}
+
+		public static int GetClientIdFromConfirmationPacket(Packet packet){
+			BitStream bitStream = new BitStream (packet.Data);
+			PacketHeaderElement header = new PacketHeaderElement (bitStream);
+			ClientIDElement idElement = new ClientIDElement (bitStream);
+			return idElement.ClientID;
+
+		}
+
+		public static string GetClientNameFromRequestPacket(Packet packet){
+			BitStream bitStream = new BitStream (packet.Data);
+			PacketHeaderElement header = new PacketHeaderElement (bitStream);
+			NameElement nameElement = new NameElement (bitStream);
+			return nameElement.Name;
+
 		}
 	}
 }

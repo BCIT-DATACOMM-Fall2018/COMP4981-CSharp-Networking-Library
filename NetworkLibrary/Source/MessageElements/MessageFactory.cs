@@ -13,7 +13,7 @@ namespace NetworkLibrary.MessageElements
 	/// FUNCTIONS:	public MessageElement CreateMessageElement (ElementId id, BitStream bitStream)
 	///				public UpdateElement CreateUpdateElement (ElementId id, BitStream bitStream)
 	/// 
-	/// DATE: 		January 28th, 2018
+	/// DATE: 		January 28th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -29,7 +29,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: Bitstream
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -48,7 +48,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// FUNCTION:	CreateMessageElement
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -74,15 +74,47 @@ namespace NetworkLibrary.MessageElements
 				return new PacketHeaderElement (bitStream);
 			case ElementId.HealthElement:
 				return new HealthElement (bitStream);
+			case ElementId.ClientIDElement:
+				return new ClientIDElement (bitStream);
+			case ElementId.PositionElement:
+				return new PositionElement (bitStream);
+			case ElementId.CollisionElement:
+				return new CollisionElement (bitStream);
+			case ElementId.TargetedAbilityElement:
+				return new TargetedAbilityElement (bitStream);
+			case ElementId.AreaAbilityElement:
+				return new AreaAbilityElement (bitStream);
+			case ElementId.SpawnElement:
+				return new SpawnElement (bitStream);
+			case ElementId.MovementElement:
+				return new PositionElement (bitStream);
+			case ElementId.ReadyElement:
+				return new ReadyElement (bitStream);
+			case ElementId.GameStartElement:
+				return new GameStartElement (bitStream);
+			case ElementId.LobbyStatusElement:
+				return new LobbyStatusElement (bitStream);
+			case ElementId.NameElement:
+				return new NameElement (bitStream);
+			case ElementId.GameEndElement:
+				return new GameEndElement (bitStream);
+			case ElementId.ExperienceElement:
+				return new ExperienceElement (bitStream);
+			case ElementId.AbilityAssignmentElement:
+				return new AbilityAssignmentElement (bitStream);
+			case ElementId.TowerHealthElement:
+				return new TowerHealthElement (bitStream);
+			case ElementId.RemainingLivesElement:
+				return new RemainingLivesElement (bitStream);
 			default:
-				throw new InvalidOperationException ();
+				throw new InvalidOperationException ("Attempted to create a MessageElement with an invalid ID");
 			}
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	CreateMessageElement
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -104,8 +136,36 @@ namespace NetworkLibrary.MessageElements
 			switch (id) {
 			case ElementId.HealthElement:
 				return new HealthElement (bitStream);
+			case ElementId.PositionElement:
+				return new PositionElement (bitStream);
+			case ElementId.CollisionElement:
+				return new CollisionElement (bitStream);
+			case ElementId.TargetedAbilityElement:
+				return new TargetedAbilityElement (bitStream);
+			case ElementId.AreaAbilityElement:
+				return new AreaAbilityElement (bitStream);
+			case ElementId.SpawnElement:
+				return new SpawnElement (bitStream);
+			case ElementId.MovementElement:
+				return new MovementElement (bitStream);
+			case ElementId.ReadyElement:
+				return new ReadyElement (bitStream);
+			case ElementId.GameStartElement:
+				return new GameStartElement (bitStream);
+			case ElementId.LobbyStatusElement:
+				return new LobbyStatusElement (bitStream);
+			case ElementId.GameEndElement:
+				return new GameEndElement (bitStream);
+			case ElementId.ExperienceElement:
+				return new ExperienceElement (bitStream);
+			case ElementId.AbilityAssignmentElement:
+				return new AbilityAssignmentElement (bitStream);
+			case ElementId.TowerHealthElement:
+				return new TowerHealthElement (bitStream);
+			case ElementId.RemainingLivesElement:
+				return new RemainingLivesElement (bitStream);
 			default:
-				throw new InvalidOperationException ();
+				throw new InvalidOperationException ("Attempted to create a UpdateElement with an invalid ID: " + id);
 			}
 		}
 	}

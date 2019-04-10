@@ -17,7 +17,7 @@ namespace NetworkLibrary
 	/// 			public int ReadNext (int bits)
 	/// 			private static int GetBits (int data, int offset, int bits)
 	/// 
-	/// DATE: 		January 28th, 2018
+	/// DATE: 		January 28th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -30,7 +30,7 @@ namespace NetworkLibrary
 	/// ----------------------------------------------
 	public class BitStream
 	{
-		private const int BYTE_SIZE = 8;
+		public const int BYTE_SIZE = 8;
 		private byte[] buffer;
 		private uint wordCount;
 		private int spaceInByte;
@@ -39,7 +39,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: Bitstream
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -61,7 +61,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// FUNCTION:	Write
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -85,8 +85,58 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		public void Write (int data, int offset, int bits)
 		{
-			//TODO Add check to make sure bits isnt larger than the size of data
-			//TODO Add check to make sure you cant attempt to write past the end of the buffer
+			if(bits + offset > sizeof(int)* BYTE_SIZE){
+				throw new InvalidOperationException ("Bits + offset " + bits + " + " +  offset + " cannot be greater than the size of the data");
+			}
+			if (bits > spaceInByte && wordCount + (bits / 8) > buffer.Length) {
+				throw new InvalidOperationException ("Attempt to write past the end of the buffer");
+			}
+
+			data >>= offset;
+			int bitsRemaining = bits;
+			int nextBits;
+			while (bitsRemaining > 0) {
+				if (spaceInByte == 0) {
+					spaceInByte = BYTE_SIZE;
+					wordCount++;
+				}
+				nextBits = Math.Min (spaceInByte, bitsRemaining);
+				buffer [wordCount] |= (byte)(GetBits (data, bitsRemaining - nextBits, nextBits) << (spaceInByte - nextBits));
+				spaceInByte -= nextBits;
+				bitsRemaining -= nextBits;
+			}
+		}
+
+		/// ----------------------------------------------
+		/// FUNCTION:	Write
+		/// 
+		/// DATE:		March 10th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public void Write (byte data, int offset, int bits)
+		/// 				byte data: The data to be written to the byte array.
+		/// 				int offset: An offset on the data to be written.
+		/// 				int bits: The number of bits to write
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:	Functions identically to the function Write(int data, int offset, int bits)7
+		/// 		with the exception that this function writes a byte rather than an int.
+		/// ----------------------------------------------
+		public void Write (byte data, int offset, int bits)
+		{
+			if(bits + offset > sizeof(byte)* BYTE_SIZE){
+				throw new InvalidOperationException ("Bits + offset " + bits + " + " +  offset + " cannot be greater than the size of the data");
+			}
+			if (bits > spaceInByte && wordCount + (bits / 8) > buffer.Length) {
+				throw new InvalidOperationException ("Attempt to write past the end of the buffer");
+			}
+
 			data >>= offset;
 			int bitsRemaining = bits;
 			int nextBits;
@@ -105,7 +155,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// FUNCTION:	Read
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -127,8 +177,13 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		public int Read (int offset, int bits)
 		{
-			//TODO Add check to make sure bits isnt larger than could be returned in an integer
-			//TODO Add check to make sure you cant read past the end of the data buffer
+			if(bits > sizeof(int)* BYTE_SIZE){
+				throw new InvalidOperationException ("Cannot read more bits than would fit in the data");
+			}
+			if (((readIndex + bits)/8) > buffer.Length) {
+				throw new InvalidOperationException ("Attempt to r past the end of the buffer");
+			}
+
 			int byteIndex = offset / BYTE_SIZE;
 			int bitIndex = offset % BYTE_SIZE;
 			int bitsRemaining = bits;
@@ -151,9 +206,59 @@ namespace NetworkLibrary
 		}
 
 		/// ----------------------------------------------
+		/// FUNCTION:	ReadByte
+		/// 
+		/// DATE:		March 10th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public int ReadByte (int offset, int bits)
+		/// 				int offset: An offset on the data to be read.
+		/// 				int bits: The number of bits to be read
+		/// 
+		/// RETURNS: 	An integer representation of the bits read from the
+		/// 			byte array.
+		/// 
+		/// NOTES:		Functions the same as Read but returns a byte.
+		/// ----------------------------------------------
+		public byte ReadByte (int offset, int bits)
+		{
+			if(bits > sizeof(byte)* BYTE_SIZE){
+				throw new InvalidOperationException ("Cannot read more bits than would fit in the data");
+			}
+			if (((readIndex + bits)/8) > buffer.Length) {
+				throw new InvalidOperationException ("Attempt to r past the end of the buffer");
+			}
+
+			int byteIndex = offset / BYTE_SIZE;
+			int bitIndex = offset % BYTE_SIZE;
+			int bitsRemaining = bits;
+			byte output = 0;
+			int nextBits = Math.Min (BYTE_SIZE - bitIndex, bitsRemaining);
+
+			while (bitsRemaining > 0) {
+				if (bitIndex == BYTE_SIZE) {
+					bitIndex = 0;
+					byteIndex++;
+				}
+				output <<= nextBits;
+				output |= (byte)GetBits (buffer [byteIndex], BYTE_SIZE - bitIndex - nextBits, nextBits);
+
+				bitIndex += nextBits;
+				bitsRemaining -= nextBits;
+				nextBits = Math.Min (8 - bitIndex, bitsRemaining);
+			}
+			return output;
+		}
+
+		/// ----------------------------------------------
 		/// FUNCTION:	ReadNext
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -174,8 +279,33 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		public int ReadNext (int bits)
 		{
-			//TODO Add check to make sure you cant read past the end of the data buffer
 			int result = Read (readIndex, bits);
+			readIndex += bits;
+			return result;
+		}
+
+		/// ----------------------------------------------
+		/// FUNCTION:	ReadNextByte
+		/// 
+		/// DATE:		January 28th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public int ReadNextByte (int bits)
+		/// 				int bits: The number of bits to be read
+		/// 
+		/// RETURNS: 	An integer representation of the bits read from the
+		/// 			byte array.
+		/// 
+		/// NOTES:		Functions as ReadNext but returns a byte instead of an int.
+		/// ----------------------------------------------
+		public byte ReadNextByte (int bits)
+		{
+			byte result = ReadByte (readIndex, bits);
 			readIndex += bits;
 			return result;
 		}
@@ -183,7 +313,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// FUNCTION:	GetBits
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 

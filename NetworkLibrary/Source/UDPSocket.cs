@@ -13,7 +13,7 @@ namespace NetworkLibrary
 	/// FUNCTIONS:	public void Send (Packet packet)
 	/// 			public Packet Receive ()
 	/// 
-	/// DATE: 		January 28th, 2018
+	/// DATE: 		January 28th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -35,7 +35,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: UDPSocket
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -80,7 +80,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// FUNCTION:	Send
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -121,7 +121,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// FUNCTION:	Receive
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 

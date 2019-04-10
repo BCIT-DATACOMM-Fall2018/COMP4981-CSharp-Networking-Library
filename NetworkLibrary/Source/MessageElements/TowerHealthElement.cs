@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: HealthElement - A UpdateElement to update actor health
+	/// Class: TowerHealthElement - A UpdateElement used to update tower health
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public HealthElement (int actorId, int health)
-	/// 				public HealthElement (BitStream bitstream)
+	/// CONSTRUCTORS:	public TowerHealthElement (List<PlayerInfo> playerInformation)
+	/// 				public TowerHealthElement (BitStream bitstream)
 	/// 
 	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
@@ -16,7 +18,7 @@ namespace NetworkLibrary.MessageElements
 	/// 			public override void UpdateState (IStateMessageBridge bridge)
 	/// 			protected override void Validate ()
 	/// 
-	/// DATE: 		January 28th, 2019
+	/// DATE: 		April 5th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -26,23 +28,36 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// NOTES:		
 	/// ----------------------------------------------
-	public class HealthElement : UpdateElement
+	public class TowerHealthElement : UpdateElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.HealthElement);
 
+		public struct TowerInfo
+		{
+			public int ActorId { get; private set;}
+			public int Health { get; private set;}
+
+			public TowerInfo (int actorId, int health)
+			{
+				this.ActorId = actorId;
+				this.Health = health;
+			}
+		}
+
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.TowerHealthElement);
+
+		private const int TOWERS_MAX = 31;
 		private const int HEALTH_MAX = 1000;
 		private const int ACTORID_MAX = 127;
+		private static readonly int TOWERS_BITS = RequiredBits (TOWERS_MAX);
 		private static readonly int HEALTH_BITS = RequiredBits (HEALTH_MAX);
 		private static readonly int ACTORID_BITS = RequiredBits (ACTORID_MAX);
 
-		public int ActorId { get; private set; }
-
-		public int Health { get; private set; }
+		public List<TowerInfo> TowerInformation { get; private set; }
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: HealthElement
+		/// CONSTRUCTOR: TowerHealthElement
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -50,20 +65,22 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public HealthElement (int actorId, int health)
+		/// INTERFACE: 	public TowerHealthElement (List<TowerInfo> towerInformation)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public HealthElement (int actorId, int health)
+		public TowerHealthElement (List<TowerInfo> towerInformation)
 		{
-			ActorId = actorId;
-			Health = health;
+			TowerInformation = new List<TowerInfo>();
+			foreach (var item in towerInformation) {
+				TowerInformation.Add(new TowerInfo(item.ActorId, item.Health));
+			}
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: HealthElement
+		/// CONSTRUCTOR: TowerHealthElement
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -74,17 +91,17 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public HealthElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		HealthElement by deserializing it 
+		/// 		TowerHealthElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public HealthElement (BitStream bitstream) : base (bitstream)
+		public TowerHealthElement (BitStream bitstream) : base (bitstream)
 		{
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	GetIndicator
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -94,10 +111,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a HealthElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a TowerHealthElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a HealthElement when 
+		/// 			to reconstruct a TowerHealthElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -108,7 +125,7 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		/// FUNCTION:	Bits
 		/// 
-		/// DATE:		February 10th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -119,19 +136,22 @@ namespace NetworkLibrary.MessageElements
 		/// INTERFACE: 	public int Bits ()
 		/// 
 		/// RETURNS: 	The number of bits needed to store a
-		/// 			HealthElement
+		/// 			TowerHealthElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			a HealthElement
+		/// 			a TowerHealthElement
 		/// ----------------------------------------------
 		public override int Bits(){
-			return HEALTH_BITS + ACTORID_BITS;
+			int bits = 0;
+			bits += TOWERS_BITS;
+			bits += TowerInformation.Count * (HEALTH_BITS + ACTORID_BITS);
+			return bits;
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Serialize
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -144,18 +164,21 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			HealthElement to a BitStream.
+		/// 			TowerHealthElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
-			bitStream.Write (ActorId, 0, ACTORID_BITS);
-			bitStream.Write	(Health, 0, HEALTH_BITS);
+			bitStream.Write (TowerInformation.Count, 0, TOWERS_BITS);
+			foreach (var item in TowerInformation) {
+				bitStream.Write (item.ActorId, 0, ACTORID_BITS);
+				bitStream.Write (item.Health, 0, HEALTH_BITS);
+			}
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Deserialize
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -168,19 +191,23 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			HealthElement from a BitStream.
+		/// 			TowerHealthElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
-			ActorId = bitstream.ReadNext (ACTORID_BITS);
-			Health = bitstream.ReadNext (HEALTH_BITS);
-
+			int towerCount = bitstream.ReadNext (TOWERS_BITS);
+			TowerInformation = new List<TowerInfo>();
+			for (int i = 0; i < towerCount; i++) {
+				int actorId = bitstream.ReadNext(ACTORID_BITS);
+				int health = bitstream.ReadNext(HEALTH_BITS);
+				TowerInformation.Add (new TowerInfo (actorId, health));
+			}
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	UpdateState
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -197,13 +224,15 @@ namespace NetworkLibrary.MessageElements
 		/// ----------------------------------------------
 		public override void UpdateState (IStateMessageBridge bridge)
 		{
-			bridge.UpdateActorHealth (ActorId, Health);
+			foreach(var tower in TowerInformation){
+				bridge.UpdateActorHealth (tower.ActorId, tower.Health);
+			}
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Validate
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 8th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -216,12 +245,14 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			HealthElement.
+		/// 			TowerHealthElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			if (ActorId > ACTORID_MAX || Health > HEALTH_MAX) {
-				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
+			foreach (var item in TowerInformation) {
+				if (item.ActorId > ACTORID_MAX || item.Health > HEALTH_MAX) {
+					throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
+				}
 			}
 		}
 	}

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using NetworkLibrary.MessageElements;
 
 namespace NetworkLibrary
 {
@@ -12,7 +14,7 @@ namespace NetworkLibrary
 	/// 
 	/// FUNCTIONS:	TBD
 	/// 
-	/// DATE: 		January 28th, 2018
+	/// DATE: 		January 28th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -24,19 +26,39 @@ namespace NetworkLibrary
 	/// 			to update the game state without knowledge of how the state
 	/// 			is implemented and stored so they can be used on both the client
 	/// 			and server.
-	/// 
-	/// 			The functions in the interface are placeholders and will change
-	/// 			in the future.
 	/// ----------------------------------------------
 	public interface IStateMessageBridge
 	{
 
-		void UpdateActorPosition (int actorId, double x, double y);
+		void UpdateActorPosition (int actorId, float x, float z);
 
 		void UpdateActorHealth (int actorId, int newHealth);
 
-		void UseActorAbility (int actorId, int abilityId, int targetId, int x, int y);
+		void UseTargetedAbility (int actorId, AbilityType abilityId, int targetId, int collisionId);
 
+		void UseAreaAbility (int actorId, AbilityType abilityId, float x, float z, int collisionId);
+
+		void ProcessCollision(AbilityType abilityId, int actorHitId, int actorCastId, int collisionId);
+
+		void SpawnActor(ActorType actorType, int actorId, int actorTeam, float x, float z);
+
+		void SetActorMovement(int actorId, float x, float z, float targetX, float targetZ);
+
+		void SetReady(int clientId, bool ready, int team);
+
+		void StartGame(int playerNum);
+
+		void SetLobbyStatus(List<LobbyStatusElement.PlayerInfo> playerInfo);
+
+		void EndGame(int winningTeam);
+
+		void UpdateActorExperience(int actorId, int experience);
+
+        void UpdateActorSpeed(int actorId, int speed);
+
+        void UpdateAbilityAssignment(int actorId, int abilityId);
+
+		void UpdateLifeCount (List<RemainingLivesElement.LivesInfo> livesInfo);
 	}
 }
 

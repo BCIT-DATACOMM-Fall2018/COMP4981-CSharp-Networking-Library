@@ -3,41 +3,50 @@
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: ElementIndicatorElement - A MessageElement to identify MessageElements in a Packet.
+	/// Class: ReadyElement - A UpdateElement to indicate ready status
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public ElementIndicatorElement (ElementId elementIndicator)
-	/// 				public ElementIndicatorElement (BitStream bitStream)
+	/// CONSTRUCTORS:	public ReadyElement (int actorId, int health, int team)
+	/// 				public ReadyElement (BitStream bitstream)
 	/// 
 	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
 	/// 			protected override void Deserialize (BitStream bitstream)
+	/// 			public override void UpdateState (IStateMessageBridge bridge)
 	/// 			protected override void Validate ()
 	/// 
-	/// DATE: 		January 28th, 2019
+	/// DATE: 		March 8th, 2019
+	/// 
 	///
-	/// REVISIONS: 
-	///
+	/// REVISIONS: 	March 17th, 2019
+	/// 				Modified class to support teams
+	/// 
 	/// DESIGNER: 	Cameron Roberts
 	///
 	/// PROGRAMMER: Cameron Roberts
 	///
-	/// NOTES:		This ElementIndicatorElement is used to indentify reliable 
-	/// 			MessageElements placed after it in a Packet.
+	/// NOTES:		
 	/// ----------------------------------------------
-	public class ElementIndicatorElement : MessageElement
+	public class ReadyElement : UpdateElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.ElementIndicatorElement);
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.ReadyElement);
 
+		private const int READY_MAX = 1;
+		private const int CLIENTID_MAX = 127;
+		private const int TEAM_MAX = 7;
+		private static readonly int READY_BITS = RequiredBits (READY_MAX);
+		private static readonly int CLIENTID_BITS = RequiredBits (CLIENTID_MAX);
+		private static readonly int TEAM_BITS = RequiredBits (TEAM_MAX);
 
-		//TODO Add constant for maximum indicator number and base bits off that
-		private const int INDICATOR_BITS = 5;
+		public bool Ready { get; private set; }
 
-		public ElementId ElementIndicator { get; private set; }
+		public int ClientId { get; private set; }
+
+		public int Team { get; private set; }
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: ElementIndicatorElement
+		/// CONSTRUCTOR: ReadyElement
 		/// 
 		/// DATE:		January 28th, 2019
 		/// 
@@ -47,17 +56,19 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public ElementIndicatorElement (ElementId elementIndicator)
+		/// INTERFACE: 	public ReadyElement (int actorId, int health, int team)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public ElementIndicatorElement (ElementId elementIndicator)
+		public ReadyElement (bool ready, int clientId, int team)
 		{
-			ElementIndicator = elementIndicator;
+			Ready = ready;
+			ClientId = clientId;
+			Team = team;
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: ElementIndicatorElement
+		/// CONSTRUCTOR: ReadyElement
 		/// 
 		/// DATE:		January 28th, 2019
 		/// 
@@ -67,16 +78,15 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public ElementIndicatorElement (BitStream bitstream)
+		/// INTERFACE: 	public ReadyElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		ElementIndicatorElement by deserializing it 
+		/// 		ReadyElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public ElementIndicatorElement (BitStream bitStream) : base (bitStream)
+		public ReadyElement (BitStream bitstream) : base (bitstream)
 		{
 		}
-
 
 		/// ----------------------------------------------
 		/// FUNCTION:	GetIndicator
@@ -91,10 +101,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a ElementIndicatorElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a ReadyElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a ElementIndicatorElement when 
+		/// 			to reconstruct a ReadyElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -115,14 +125,15 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public int Bits ()
 		/// 
-		/// RETURNS: 	The number of bits needed to store an
-		/// 			ElementIndicatorElement
+		/// RETURNS: 	The number of bits needed to store a
+		/// 			ReadyElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			an ElementIndicatorElement
+		/// 			a ReadyElement
 		/// ----------------------------------------------
-		public override int Bits(){
-			return INDICATOR_BITS;
+		public override int Bits ()
+		{
+			return READY_BITS + CLIENTID_BITS + TEAM_BITS;
 		}
 
 		/// ----------------------------------------------
@@ -141,11 +152,13 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			ElementIndicatorElement to a BitStream.
+		/// 			ReadyElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
-			bitStream.Write ((int)ElementIndicator, 0, INDICATOR_BITS);
+			bitStream.Write (Ready ? 1 : 0, 0, READY_BITS);
+			bitStream.Write (ClientId, 0, CLIENTID_BITS);
+			bitStream.Write (Team, 0, TEAM_BITS);
 		}
 
 		/// ----------------------------------------------
@@ -164,11 +177,36 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			ElementIndicatorElement from a BitStream.
+		/// 			ReadyElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
-			ElementIndicator = (ElementId)bitstream.ReadNext (INDICATOR_BITS);
+			Ready = bitstream.ReadNext (READY_BITS) == 1 ? true : false;
+			ClientId = bitstream.ReadNext (CLIENTID_BITS);
+			Team = bitstream.ReadNext (TEAM_BITS);
+		}
+
+		/// ----------------------------------------------
+		/// FUNCTION:	UpdateState
+		/// 
+		/// DATE:		January 28th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public override void UpdateState (IStateMessageBridge bridge)
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		Contains logic needed to update the game state through
+		/// 			the use of a IStateMessageBridge.
+		/// ----------------------------------------------
+		public override void UpdateState (IStateMessageBridge bridge)
+		{
+			bridge.SetReady (ClientId, Ready, Team);
 		}
 
 		/// ----------------------------------------------
@@ -187,11 +225,13 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			ElementIndicatorElement.
+		/// 			ReadyElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			//TODO Add validation for ElementIndicatorElement
+			if (ClientId > CLIENTID_MAX || Team > TEAM_MAX) {
+				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
+			}
 		}
 	}
 }

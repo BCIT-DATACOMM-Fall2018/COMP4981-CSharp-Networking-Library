@@ -7,7 +7,7 @@ namespace NetworkLibrary.MessageElements
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// DATE: 		January 28th, 2018
+	/// DATE: 		January 28th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -23,7 +23,23 @@ namespace NetworkLibrary.MessageElements
 		ElementIndicatorElement,
 		PacketHeaderElement,
 		HealthElement,
-		ClientIDElement
+		ClientIDElement,
+		PositionElement,
+		CollisionElement,
+		TargetedAbilityElement,
+		AreaAbilityElement,
+		SpawnElement,
+		MovementElement,
+		ReadyElement,
+		GameStartElement,
+		LobbyStatusElement,
+		NameElement,
+		GameEndElement,
+		ExperienceElement,
+        MoveSpeedElement,
+        AbilityAssignmentElement,
+		TowerHealthElement,
+		RemainingLivesElement
 	}
 }
 

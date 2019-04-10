@@ -3,11 +3,11 @@
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Enum: 	ElementId - An enum to store MessageElement IDs
+	/// Enum: 	PacketType - An enum to differentiate types of packets
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// DATE: 		January 28th, 2018
+	/// DATE: 		March 8th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -21,7 +21,8 @@ namespace NetworkLibrary.MessageElements
 	{
 		GameplayPacket = 0,
 		RequestPacket,
-		ConfirmationPacket
+		ConfirmationPacket,
+		HeartbeatPacket
 	}
 }
 

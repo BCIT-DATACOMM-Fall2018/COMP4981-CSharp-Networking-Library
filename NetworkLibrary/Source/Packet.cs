@@ -13,7 +13,7 @@ namespace NetworkLibrary
 	/// 
 	/// FUNCTIONS:	None
 	/// 
-	/// DATE: 		January 28th, 2018
+	/// DATE: 		January 28th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -25,7 +25,7 @@ namespace NetworkLibrary
 	/// ----------------------------------------------
 	public class Packet
 	{
-		public const int DEFAULT_SIZE = 1024;
+		public const int DEFAULT_SIZE = 2048;
 
 		public byte[] Data { get;  set; }
 
@@ -35,7 +35,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: Packet
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -55,7 +55,7 @@ namespace NetworkLibrary
 		/// ----------------------------------------------
 		/// CONSTRUCTOR: Packet
 		/// 
-		/// DATE:		January 28th, 2018
+		/// DATE:		January 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 

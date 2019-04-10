@@ -114,6 +114,18 @@ namespace NetworkLibraryTest
 			Assert.AreEqual (testData2, retrievedData2);
 			Assert.AreEqual (testData3, retrievedData3);
 		}
+
+		[Test ()]
+		public void SerializeByte ()
+		{
+			byte[] bytes = new byte[1024];
+			byte testData = 14;
+			int bits = 4;
+			BitStream bitstream = new BitStream (bytes);
+			bitstream.Write (testData, 0, bits);
+			byte retrievedData = bitstream.ReadByte (0, bits);
+			Assert.AreEqual (testData, retrievedData);
+		}
 	}
 }
 

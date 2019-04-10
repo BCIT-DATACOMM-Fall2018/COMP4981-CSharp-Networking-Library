@@ -3,16 +3,17 @@
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: ElementIndicatorElement - A MessageElement to identify MessageElements in a Packet.
+	/// Class: GameStartElement - A UpdateElement to indicate the start of a game
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public ElementIndicatorElement (ElementId elementIndicator)
-	/// 				public ElementIndicatorElement (BitStream bitStream)
+	/// CONSTRUCTORS:	public GameStartElement (int actorId, int health)
+	/// 				public GameStartElement (BitStream bitstream)
 	/// 
 	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
 	/// 			protected override void Deserialize (BitStream bitstream)
+	/// 			public override void UpdateState (IStateMessageBridge bridge)
 	/// 			protected override void Validate ()
 	/// 
 	/// DATE: 		January 28th, 2019
@@ -23,21 +24,19 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// PROGRAMMER: Cameron Roberts
 	///
-	/// NOTES:		This ElementIndicatorElement is used to indentify reliable 
-	/// 			MessageElements placed after it in a Packet.
+	/// NOTES:		
 	/// ----------------------------------------------
-	public class ElementIndicatorElement : MessageElement
+	public class GameStartElement : UpdateElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.ElementIndicatorElement);
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.GameStartElement);
 
+		private const int PLAYERNUM_MAX = 127;
+		private static readonly int PLAYERNUM_BITS = RequiredBits (PLAYERNUM_MAX);
 
-		//TODO Add constant for maximum indicator number and base bits off that
-		private const int INDICATOR_BITS = 5;
-
-		public ElementId ElementIndicator { get; private set; }
+		public int PlayerNum { get; private set; }
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: ElementIndicatorElement
+		/// CONSTRUCTOR: GameStartElement
 		/// 
 		/// DATE:		January 28th, 2019
 		/// 
@@ -47,17 +46,17 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public ElementIndicatorElement (ElementId elementIndicator)
+		/// INTERFACE: 	public GameStartElement (int playerNum)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public ElementIndicatorElement (ElementId elementIndicator)
+		public GameStartElement (int playerNum)
 		{
-			ElementIndicator = elementIndicator;
+			PlayerNum = playerNum;
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: ElementIndicatorElement
+		/// CONSTRUCTOR: GameStartElement
 		/// 
 		/// DATE:		January 28th, 2019
 		/// 
@@ -67,16 +66,15 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public ElementIndicatorElement (BitStream bitstream)
+		/// INTERFACE: 	public GameStartElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		ElementIndicatorElement by deserializing it 
+		/// 		GameStartElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public ElementIndicatorElement (BitStream bitStream) : base (bitStream)
+		public GameStartElement (BitStream bitstream) : base (bitstream)
 		{
 		}
-
 
 		/// ----------------------------------------------
 		/// FUNCTION:	GetIndicator
@@ -91,10 +89,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a ElementIndicatorElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a GameStartElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a ElementIndicatorElement when 
+		/// 			to reconstruct a GameStartElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -115,14 +113,15 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public int Bits ()
 		/// 
-		/// RETURNS: 	The number of bits needed to store an
-		/// 			ElementIndicatorElement
+		/// RETURNS: 	The number of bits needed to store a
+		/// 			GameStartElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			an ElementIndicatorElement
+		/// 			a GameStartElement
 		/// ----------------------------------------------
-		public override int Bits(){
-			return INDICATOR_BITS;
+		public override int Bits ()
+		{
+			return PLAYERNUM_BITS;
 		}
 
 		/// ----------------------------------------------
@@ -141,11 +140,11 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			ElementIndicatorElement to a BitStream.
+		/// 			GameStartElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
-			bitStream.Write ((int)ElementIndicator, 0, INDICATOR_BITS);
+			bitStream.Write (PlayerNum, 0, PLAYERNUM_BITS);
 		}
 
 		/// ----------------------------------------------
@@ -164,11 +163,35 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			ElementIndicatorElement from a BitStream.
+		/// 			GameStartElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
-			ElementIndicator = (ElementId)bitstream.ReadNext (INDICATOR_BITS);
+			PlayerNum = bitstream.ReadNext (PLAYERNUM_BITS);
+
+		}
+
+		/// ----------------------------------------------
+		/// FUNCTION:	UpdateState
+		/// 
+		/// DATE:		January 28th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public override void UpdateState (IStateMessageBridge bridge)
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		Contains logic needed to update the game state through
+		/// 			the use of a IStateMessageBridge.
+		/// ----------------------------------------------
+		public override void UpdateState (IStateMessageBridge bridge)
+		{
+			bridge.StartGame (PlayerNum);
 		}
 
 		/// ----------------------------------------------
@@ -187,11 +210,13 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			ElementIndicatorElement.
+		/// 			GameStartElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			//TODO Add validation for ElementIndicatorElement
+			if (PlayerNum > PLAYERNUM_MAX) {
+				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
+			}
 		}
 	}
 }

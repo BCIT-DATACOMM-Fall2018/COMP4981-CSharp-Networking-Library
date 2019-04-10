@@ -3,19 +3,20 @@
 namespace NetworkLibrary.MessageElements
 {
 	/// ----------------------------------------------
-	/// Class: ElementIndicatorElement - A MessageElement to identify MessageElements in a Packet.
+	/// Class: ExperienceElement - A UpdateElement to update actor experience
 	/// 
 	/// PROGRAM: NetworkLibrary
 	///
-	/// CONSTRUCTORS:	public ElementIndicatorElement (ElementId elementIndicator)
-	/// 				public ElementIndicatorElement (BitStream bitStream)
+	/// CONSTRUCTORS:	public ExperienceElement (int actorId, int health)
+	/// 				public ExperienceElement (BitStream bitstream)
 	/// 
 	/// FUNCTIONS:	public override ElementIndicatorElement GetIndicator ()
 	///				protected override void Serialize (BitStream bitStream)
 	/// 			protected override void Deserialize (BitStream bitstream)
+	/// 			public override void UpdateState (IStateMessageBridge bridge)
 	/// 			protected override void Validate ()
 	/// 
-	/// DATE: 		January 28th, 2019
+	/// DATE: 		March 28th, 2019
 	///
 	/// REVISIONS: 
 	///
@@ -23,23 +24,25 @@ namespace NetworkLibrary.MessageElements
 	///
 	/// PROGRAMMER: Cameron Roberts
 	///
-	/// NOTES:		This ElementIndicatorElement is used to indentify reliable 
-	/// 			MessageElements placed after it in a Packet.
+	/// NOTES:		
 	/// ----------------------------------------------
-	public class ElementIndicatorElement : MessageElement
+	public class ExperienceElement : UpdateElement
 	{
-		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.ElementIndicatorElement);
+		private static readonly ElementIndicatorElement INDICATOR = new ElementIndicatorElement (ElementId.ExperienceElement);
 
+		private const int EXP_MAX = 4000;
+		private const int ACTORID_MAX = 127;
+		private static readonly int EXP_BITS = RequiredBits (EXP_MAX);
+		private static readonly int ACTORID_BITS = RequiredBits (ACTORID_MAX);
 
-		//TODO Add constant for maximum indicator number and base bits off that
-		private const int INDICATOR_BITS = 5;
+		public int ActorId { get; private set; }
 
-		public ElementId ElementIndicator { get; private set; }
+		public int Experience { get; private set; }
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: ElementIndicatorElement
+		/// CONSTRUCTOR: ExperienceElement
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -47,19 +50,20 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public ElementIndicatorElement (ElementId elementIndicator)
+		/// INTERFACE: 	public ExperienceElement (int actorId, int experience)
 		/// 
 		/// NOTES:		
 		/// ----------------------------------------------
-		public ElementIndicatorElement (ElementId elementIndicator)
+		public ExperienceElement (int actorId, int experience)
 		{
-			ElementIndicator = elementIndicator;
+			ActorId = actorId;
+			Experience = experience;
 		}
 
 		/// ----------------------------------------------
-		/// CONSTRUCTOR: ElementIndicatorElement
+		/// CONSTRUCTOR: ExperienceElement
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -67,21 +71,20 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// PROGRAMMER:	Cameron Roberts
 		/// 
-		/// INTERFACE: 	public ElementIndicatorElement (BitStream bitstream)
+		/// INTERFACE: 	public ExperienceElement (BitStream bitstream)
 		/// 
 		/// NOTES:	Calls the parent class constructor to create a 
-		/// 		ElementIndicatorElement by deserializing it 
+		/// 		ExperienceElement by deserializing it 
 		/// 		from a BitStream object.
 		/// ----------------------------------------------
-		public ElementIndicatorElement (BitStream bitStream) : base (bitStream)
+		public ExperienceElement (BitStream bitstream) : base (bitstream)
 		{
 		}
-
 
 		/// ----------------------------------------------
 		/// FUNCTION:	GetIndicator
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -91,10 +94,10 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public override ElementIndicatorElement GetIndicator ()
 		/// 
-		/// RETURNS: 	An ElementIndicatorElement appropriate for a ElementIndicatorElement
+		/// RETURNS: 	An ElementIndicatorElement appropriate for a ExperienceElement
 		/// 
 		/// NOTES:		Returns an ElementIndicatorElement to be used 
-		/// 			to reconstruct a ElementIndicatorElement when 
+		/// 			to reconstruct a ExperienceElement when 
 		/// 			deserializing a Packet.
 		/// ----------------------------------------------
 		public override ElementIndicatorElement GetIndicator ()
@@ -115,20 +118,20 @@ namespace NetworkLibrary.MessageElements
 		/// 
 		/// INTERFACE: 	public int Bits ()
 		/// 
-		/// RETURNS: 	The number of bits needed to store an
-		/// 			ElementIndicatorElement
+		/// RETURNS: 	The number of bits needed to store a
+		/// 			ExperienceElement
 		/// 
 		/// NOTES:		Returns the number of bits needed to store
-		/// 			an ElementIndicatorElement
+		/// 			a ExperienceElement
 		/// ----------------------------------------------
 		public override int Bits(){
-			return INDICATOR_BITS;
+			return EXP_BITS + ACTORID_BITS;
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Serialize
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -141,17 +144,18 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to serialize a 
-		/// 			ElementIndicatorElement to a BitStream.
+		/// 			ExperienceElement to a BitStream.
 		/// ----------------------------------------------
 		protected override void Serialize (BitStream bitStream)
 		{
-			bitStream.Write ((int)ElementIndicator, 0, INDICATOR_BITS);
+			bitStream.Write (ActorId, 0, ACTORID_BITS);
+			bitStream.Write	(Experience, 0, EXP_BITS);
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Deserialize
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -164,17 +168,42 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to deserialze a 
-		/// 			ElementIndicatorElement from a BitStream.
+		/// 			ExperienceElement from a BitStream.
 		/// ----------------------------------------------
 		protected override void Deserialize (BitStream bitstream)
 		{
-			ElementIndicator = (ElementId)bitstream.ReadNext (INDICATOR_BITS);
+			ActorId = bitstream.ReadNext (ACTORID_BITS);
+			Experience = bitstream.ReadNext (EXP_BITS);
+
+		}
+
+		/// ----------------------------------------------
+		/// FUNCTION:	UpdateState
+		/// 
+		/// DATE:		March 28th, 2019
+		/// 
+		/// REVISIONS:	
+		/// 
+		/// DESIGNER:	Cameron Roberts
+		/// 
+		/// PROGRAMMER:	Cameron Roberts
+		/// 
+		/// INTERFACE: 	public override void UpdateState (IStateMessageBridge bridge)
+		/// 
+		/// RETURNS: 	void.
+		/// 
+		/// NOTES:		Contains logic needed to update the game state through
+		/// 			the use of a IStateMessageBridge.
+		/// ----------------------------------------------
+		public override void UpdateState (IStateMessageBridge bridge)
+		{
+			bridge.UpdateActorExperience (ActorId, Experience);
 		}
 
 		/// ----------------------------------------------
 		/// FUNCTION:	Validate
 		/// 
-		/// DATE:		January 28th, 2019
+		/// DATE:		March 28th, 2019
 		/// 
 		/// REVISIONS:	
 		/// 
@@ -187,11 +216,13 @@ namespace NetworkLibrary.MessageElements
 		/// RETURNS: 	void.
 		/// 
 		/// NOTES:		Contains logic needed to validate a 
-		/// 			ElementIndicatorElement.
+		/// 			ExperienceElement.
 		/// ----------------------------------------------
 		protected override void Validate ()
 		{
-			//TODO Add validation for ElementIndicatorElement
+			if (ActorId > ACTORID_MAX || Experience > EXP_MAX) {
+				throw new System.Runtime.Serialization.SerializationException ("Attempt to deserialize invalid packet data");
+			}
 		}
 	}
 }
